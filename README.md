@@ -28,11 +28,18 @@ Post-process simulation outputs to compute the Incremental Cost-Effectiveness Ra
 
 ---
 
+## Documentation
+
+* [API & Architecture Specification](docs/API_SPECIFICATION.md): Full technical specification of function signatures, S3 class object flow, and OMOP `COST` query strategy.
+
+---
+
 ## Repository Structure
 
 ```
 HERMES/
 ├── README.md
 ├── AGENTS.md
-└── ...
+└── docs/
+    └── API_SPECIFICATION.md
 ```
