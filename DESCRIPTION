@@ -1,0 +1,30 @@
+Package: HERMES
+Title: Health Economics and Outcomes Research Pipeline on OMOP CDM
+Version: 0.1.0
+Authors@R: person("Gabriel", "Maeztu", email = "gabriel.maeztu@example.com", role = c("aut", "cre"))
+Description: An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports:
+    CDMConnector,
+    omopgenerics,
+    PatientProfiles,
+    CohortCharacteristics,
+    CohortMethod,
+    Cyclops,
+    Cohort2Trajectory,
+    TrajectoryMarkovAnalysis,
+    hesim,
+    heemod,
+    BCEA,
+    dbplyr,
+    dplyr
+Suggests: 
+    Eunomia,
+    duckdb,
+    testthat (>= 3.0.0),
+    covr,
+    withr
+Config/testthat/edition: 3

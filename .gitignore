@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+*.Rproj
+*.Rcheck/
+.Rbuildignore
+NAMESPACE

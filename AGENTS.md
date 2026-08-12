@@ -48,3 +48,9 @@ Agents developing functions or modules in HERMES must align their implementation
   - Ensure all new logic has test coverage using `testthat`.
 - **Formatting:**
   - Run `styler::style_dir()` and `lintr::lint_dir()` before committing.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan:
+specs/001-eunomia-test-implementation/plan.md
+<!-- SPECKIT END -->
