@@ -9,28 +9,26 @@ Welcome to the **HERMES** repository. HERMES is an R package ecosystem for Real-
 Agents developing functions or modules in HERMES must align their implementations with the 6-stage framework:
 
 1. **Stage 1: Cohort Generation**
-   * Interface with `CDMConnector` and `CodelistGenerator`.
+   * Define target treatment, comparator, and clinical outcome cohorts using standardized vocabularies.
    * Enforce `omopgenerics` standards for cohort table creation and cohort naming (`snake_case`, <100 characters).
 
 2. **Stage 2: Descriptive Baseline & HCRU Characterization**
-   * Utilize `PatientProfiles` for demographics enrichment.
-   * Use `CohortCharacteristics` for entry timing and attrition analysis.
-   * Utilize `ClinicalCharacteristics` for unadjusted raw HCRU and direct medical cost extraction.
+   * Build unadjusted baseline tables enriched with demographics.
+   * Evaluate entry timing and cohort attrition.
+   * Extract raw unadjusted care utilization (hospitalizations, outpatient visits, ED visits, drug prescriptions) and direct medical costs.
 
 3. **Stage 3: Causal Propensity Score (PS) Adjustment**
-   * Interface with `CohortMethod` and `Cyclops` for high-dimensional regularized logistic regression.
+   * Fit high-dimensional regularized logistic regression models based on baseline clinical features.
    * Provide modular helpers for matching, trimming, weighting, and SMD balance diagnostic plots.
 
 4. **Stage 4: Trajectory Compilation & State-Cost Extraction**
-   * Use `Cohort2Trajectory` to aggregate longitudinal patient timelines into discrete, mutually exclusive health states over uniform time cycles.
-   * Use `TrajectoryMarkovAnalysis` to compute state-to-state transition probability matrices and pull state-specific cost distributions directly from the OMOP `COST` table.
+   * Aggregate longitudinal patient timelines into discrete, mutually exclusive health states over uniform time cycles.
+   * Compute state-to-state transition probability matrices and pull state-specific cost distributions directly from the OMOP `COST` table.
 
 5. **Stage 5: Economic Simulation**
-   * Provide wrappers and exporters for decision-analytic simulators (`hesim`, `heemod`).
-   * Support Markov state-transition models and microsimulations incorporating parametric uncertainty.
+   * Provide wrappers and exporters for decision-analytic state-transition models and microsimulations incorporating parametric uncertainty.
 
 6. **Stage 6: Decision Analysis & Post-Processing (CEA)**
-   * Provide seamless integration with `BCEA`.
    * Export standardized summaries and plots for Incremental Cost-Effectiveness Ratios (ICER), Net Monetary Benefit (NMB), and Cost-Effectiveness Acceptability Curves (CEAC).
 
 ---
