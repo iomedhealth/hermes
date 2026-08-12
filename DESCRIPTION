@@ -10,6 +10,10 @@ RoxygenNote: 7.3.1
 Imports:
     CDMConnector,
     omopgenerics,
+    BCEA,
+    dbplyr,
+    dplyr
+Suggests: 
     PatientProfiles,
     CohortCharacteristics,
     CohortMethod,
@@ -18,10 +22,6 @@ Imports:
     TrajectoryMarkovAnalysis,
     hesim,
     heemod,
-    BCEA,
-    dbplyr,
-    dplyr
-Suggests: 
     Eunomia,
     duckdb,
     testthat (>= 3.0.0),
