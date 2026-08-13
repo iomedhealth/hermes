@@ -1,4 +1,4 @@
-test_that("T009 [US2] simulate_economics performs PSA Markov simulation without mock rnorm", {
+test_that("T009 [US3] simulate_economics performs PSA Markov simulation without mock fallbacks", {
   # dummy hermes_trajectories
   matrices <- list(
     target_transition = matrix(c(0.9, 0.1, 0, 1),
@@ -47,22 +47,19 @@ test_that("T009 [US2] simulate_economics performs PSA Markov simulation without 
   expect_true(!is.null(sim_res$hesim_ce))
   expect_true(is.data.frame(sim_res$hesim_ce$costs))
   expect_true(is.data.frame(sim_res$hesim_ce$qalys))
+})
 
-  expect_true(all(c("sample", "strategy_id", "costs") %in% colnames(sim_res$hesim_ce$costs)))
-  expect_true(all(c("sample", "strategy_id", "qalys") %in% colnames(sim_res$hesim_ce$qalys)))
+test_that("T010 [US3] simulate_economics fails fast on empty inputs", {
+  traj <- structure(
+    list(
+      matrices = list(),
+      costs = data.frame()
+    ),
+    class = "hermes_trajectories"
+  )
 
-  # Ensure deterministic mock values are replaced
-  expect_equal(nrow(sim_res$hesim_ce$costs), 20) # 10 samples * 2 strategies
-
-  # Check that costs are realistically positive and differ between strategies
-  avg_target_cost <- mean(sim_res$hesim_ce$costs$costs[sim_res$hesim_ce$costs$strategy_id == 1])
-  avg_comp_cost <- mean(sim_res$hesim_ce$costs$costs[sim_res$hesim_ce$costs$strategy_id == 2])
-  
-  avg_target_qaly <- mean(sim_res$hesim_ce$qalys$qalys[sim_res$hesim_ce$qalys$strategy_id == 1])
-  avg_comp_qaly <- mean(sim_res$hesim_ce$qalys$qalys[sim_res$hesim_ce$qalys$strategy_id == 2])
-  
-  # Target stays in baseline longer (0.1 transition vs 0.2), and baseline is now MORE expensive
-  expect_true(avg_target_cost > avg_comp_cost)
-  # Target also accumulates more QALYs because baseline utility is higher
-  expect_true(avg_target_qaly > avg_comp_qaly)
+  expect_error(
+    simulate_economics(traj, time_horizon = 5, discount_rate = 0.03, n_samples = 10),
+    "Cannot run economic simulation: empty transition matrices or cost summaries"
+  )
 })

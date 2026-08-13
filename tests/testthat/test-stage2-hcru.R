@@ -68,8 +68,8 @@ test_that("T006 [US2] HCRU unadjusted care utilization and medical cost extracti
   expect_true(!is.null(hcru_out$costs))
   expect_true(is.data.frame(hcru_out$costs))
 
-  # Should have 1 row since we group by cost_domain_id ("Condition")
-  expect_equal(nrow(hcru_out$costs), 1)
-  expect_equal(hcru_out$costs$record_count, 3)
+  # Should extract patient-level costs
+  expect_equal(nrow(hcru_out$costs), 3)
+  expect_true(all(c("subject_id", "total_paid", "health_state") %in% colnames(hcru_out$costs)))
   expect_equal(sum(hcru_out$costs$total_paid), 1150) # 500 + 550 + 100
 })

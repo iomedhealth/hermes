@@ -10,3 +10,9 @@ NAMESPACE
 tests/testthat/Rplots.pdf
 packrat/
 renv/
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/

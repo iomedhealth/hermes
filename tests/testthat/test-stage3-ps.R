@@ -1,24 +1,46 @@
-# tests/testthat/test-stage3-ps.R
+test_that("T003/T004/T005/T006: fit_ps and adjust_ps extract covariates and match", {
+  Sys.setenv(EUNOMIA_DATA_FOLDER = file.path(tempdir(), "eunomia"))
+  con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomiaDir("GiBleed"))
+  withr::defer(DBI::dbDisconnect(con, shutdown = TRUE))
 
-test_that("T014: fit_ps, adjust_ps, and assess_balance generate hermes_ps object with model and matched population", {
-  # Use the dummy hcru_obj for testing since full cm_data takes long to generate
-  dummy_hcru <- list(cm_data = NULL)
-  class(dummy_hcru) <- "hermes_hcru"
+  cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 
-  # T015: fit_ps
-  ps_obj <- fit_ps(dummy_hcru)
+  # Create real cohorts from GiBleed
+  cdm$target_cohort <- CohortConstructor::conceptCohort(
+    cdm = cdm,
+    conceptSet = list(target_cohort = 4285898L),
+    name = "target_cohort"
+  )
 
-  # T017: Ensure return is hermes_ps
+  cdm$comparator_cohort <- CohortConstructor::conceptCohort(
+    cdm = cdm,
+    conceptSet = list(comparator_cohort = 4266809L),
+    name = "comparator_cohort"
+  )
+
+  cdm$outcome_cohort <- CohortConstructor::conceptCohort(
+    cdm = cdm,
+    conceptSet = list(outcome_cohort = 192671L),
+    name = "outcome_cohort"
+  )
+
+  study <- init(cdm, "target_cohort", "comparator_cohort", "outcome_cohort")
+  study <- summarise_baseline(study)
+  study <- extract_hcru(study)
+
+  # fit_ps should populate cm_data and model
+  ps_obj <- fit_ps(study)
+
   expect_s3_class(ps_obj, "hermes_ps")
-  expect_true("model" %in% names(ps_obj))
+  expect_true(!is.null(ps_obj$cm_data))
+  expect_true(!is.null(ps_obj$model))
 
-  # T015: adjust_ps
-  adjusted_ps <- adjust_ps(ps_obj)
-  expect_s3_class(adjusted_ps, "hermes_ps")
-  expect_true("matched_pop" %in% names(adjusted_ps))
+  expect_true(all(c("subject_id", "treatment", "age", "sex", "sex_num", "cohort_start_date") %in% colnames(ps_obj$cm_data)))
+  expect_true("propensity_score" %in% colnames(ps_obj$cm_data))
 
-  # T016: assess_balance
-  balanced_ps <- assess_balance(adjusted_ps)
-  expect_s3_class(balanced_ps, "hermes_ps")
-  expect_true("smd_summary" %in% names(balanced_ps))
+  # adjust_ps should populate matched_pop
+  ps_obj <- adjust_ps(ps_obj)
+  expect_true(is.data.frame(ps_obj$matched_pop))
+  expect_gt(nrow(ps_obj$matched_pop), 0)
+  expect_true(all(c("subject_id", "treatment", "propensity_score", "cohort_start_date") %in% colnames(ps_obj$matched_pop)))
 })

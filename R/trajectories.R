@@ -70,11 +70,16 @@ compile_trajectories <- function(ps_obj) {
 
         costs_summary <- as.data.frame(
           costs |>
+            dplyr::group_by(.data$health_state, .data$subject_id) |>
+            dplyr::summarise(
+              patient_total = sum(.data$total_paid, na.rm = TRUE),
+              .groups = "drop"
+            ) |>
             dplyr::group_by(.data$health_state) |>
             dplyr::summarise(
               n_patients = dplyr::n(),
-              mean_cost = mean(.data$total_paid, na.rm = TRUE),
-              sd_cost = stats::sd(.data$total_paid, na.rm = TRUE),
+              mean_cost = mean(.data$patient_total, na.rm = TRUE),
+              sd_cost = stats::sd(.data$patient_total, na.rm = TRUE),
               .groups = "drop"
             ) |>
             dplyr::mutate(

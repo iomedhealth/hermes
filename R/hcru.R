@@ -13,29 +13,31 @@ extract_hcru <- function(study) {
   # ponytail: pull unadjusted care utilization and direct medical costs from COST table
   # directly via dbplyr inside the database, collect() at the end to get summary.
 
-  if (!"cost" %in% names(study$cdm)) {
-    warning("No 'cost' table found in CDM. Skipping cost extraction.")
+  if (!"cost" %in% names(study$cdm) || !"condition_occurrence" %in% names(study$cdm)) {
+    warning("Missing 'cost' or 'condition_occurrence' table in CDM. Skipping cost extraction.")
     costs <- data.frame()
   } else {
-    # TODO: Check if the cost table is empty and warn the user accordingly.
-    # The cost table should always exist, but in many real-world OMOP CDMs it may be empty.
-
-    # TODO: Handle cases where the cost table is populated but lacks cost metrics.
-    # Check if `total_charge`, `total_cost`, `total_paid`, or `paid_*` columns are all NA or 0.
-
-    # TODO: DRG Fallback Strategy.
-    # If no data is available for `total_*` or `paid_*` metrics, check if `drg_concept_id`
-    # and/or `drg_source_value` exist. If they do, prompt the user to provide a DRG
-    # costs lookup dataframe to infer costs.
-
-    costs <- study$cdm$cost |>
-      dplyr::group_by(.data$cost_domain_id) |>
-      dplyr::summarise(
-        total_paid = sum(.data$total_paid, na.rm = TRUE),
-        total_charge = sum(.data$total_charge, na.rm = TRUE),
-        record_count = dplyr::n()
-      ) |>
+    patient_costs <- study$cdm$cost |>
+      dplyr::filter(.data$cost_domain_id == "Condition") |>
+      dplyr::inner_join(study$cdm$condition_occurrence, by = c("cost_event_id" = "condition_occurrence_id")) |>
+      dplyr::select(subject_id = "person_id", "total_paid", "total_charge", "condition_start_date", "condition_concept_id") |>
       dplyr::collect()
+      
+    outcome_name <- study$outcome_cohort
+    if (!is.null(outcome_name) && outcome_name %in% names(study$cdm)) {
+      outcomes <- study$cdm[[outcome_name]] |> 
+        dplyr::select("subject_id", outcome_date = "cohort_start_date") |>
+        dplyr::collect()
+      
+      costs <- patient_costs |>
+        dplyr::left_join(outcomes, by = "subject_id", relationship = "many-to-many") |>
+        dplyr::mutate(
+          health_state = ifelse(!is.na(.data$outcome_date) & .data$condition_start_date >= .data$outcome_date,
+                                "State_Outcome", "State_Baseline")
+        )
+    } else {
+      costs <- patient_costs |> dplyr::mutate(health_state = "State_Baseline")
+    }
   }
 
   res <- c(study, list(costs = costs))

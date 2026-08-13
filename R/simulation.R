@@ -11,19 +11,8 @@ simulate_economics <- function(traj_obj, time_horizon = 10, discount_rate = 0.03
 
   n_cycles <- round(time_horizon * (365.25 / 30)) # 30-day cycles
 
-  # Fallback for empty trajectories (e.g. E2E test with empty data)
-  if (length(traj_obj$matrices) == 0) {
-    traj_obj$matrices <- list(
-      Target = matrix(c(0.9, 0.1, 0, 1), nrow = 2, byrow = TRUE),
-      Comparator = matrix(c(0.8, 0.2, 0, 1), nrow = 2, byrow = TRUE)
-    )
-  }
-  if (is.null(traj_obj$costs) || nrow(traj_obj$costs) == 0) {
-    traj_obj$costs <- data.frame(
-      health_state = c("State_Baseline", "State_Outcome"),
-      mean_cost = c(500, 100),
-      se_cost = c(50, 10)
-    )
+  if (length(traj_obj$matrices) == 0 || is.null(traj_obj$costs) || nrow(traj_obj$costs) == 0) {
+    stop("Cannot run economic simulation: empty transition matrices or cost summaries in traj_obj. Ensure Stage 3 (PS) and Stage 4 (Trajectories) completed successfully.")
   }
 
   strategies <- names(traj_obj$matrices)
@@ -31,20 +20,36 @@ simulate_economics <- function(traj_obj, time_horizon = 10, discount_rate = 0.03
   n_strategies <- length(strategies)
 
   # State space
-  states <- traj_obj$costs$health_state
-  if (is.null(states)) {
+  if (length(traj_obj$matrices) > 0 && !is.null(rownames(traj_obj$matrices[[1]]))) {
+    states <- rownames(traj_obj$matrices[[1]])
+  } else if (!is.null(traj_obj$costs$health_state)) {
+    states <- unique(traj_obj$costs$health_state)
+  } else {
     states <- c("State_Baseline", "State_Outcome")
   }
   n_states <- length(states)
+
 
   # Pre-allocate results
   res_costs <- data.frame(sample = integer(), strategy_id = integer(), costs = numeric())
   res_qalys <- data.frame(sample = integer(), strategy_id = integer(), qalys = numeric())
 
   # Method of moments for Gamma distribution (costs)
-  # shape = (mean/se)^2, scale = se^2 / mean
-  cost_shape <- ifelse(traj_obj$costs$se_cost > 0, (traj_obj$costs$mean_cost / traj_obj$costs$se_cost)^2, NA)
-  cost_scale <- ifelse(traj_obj$costs$se_cost > 0, (traj_obj$costs$se_cost^2) / traj_obj$costs$mean_cost, NA)
+  cost_means <- numeric(n_states)
+  cost_ses <- numeric(n_states)
+  for (i in seq_along(states)) {
+    idx <- which(traj_obj$costs$health_state == states[i])
+    if (length(idx) > 0) {
+      cost_means[i] <- traj_obj$costs$mean_cost[idx[1]]
+      cost_ses[i] <- traj_obj$costs$se_cost[idx[1]]
+    } else {
+      cost_means[i] <- 0
+      cost_ses[i] <- 0
+    }
+  }
+
+  cost_shape <- ifelse(cost_ses > 0, (cost_means / cost_ses)^2, NA)
+  cost_scale <- ifelse(cost_ses > 0, (cost_ses^2) / cost_means, NA)
 
   # Default utilities if not provided
   if (is.null(traj_obj$utilities) || nrow(traj_obj$utilities) == 0) {
@@ -77,7 +82,7 @@ simulate_economics <- function(traj_obj, time_horizon = 10, discount_rate = 0.03
     s_costs <- numeric(n_states)
     for (i in 1:n_states) {
       if (is.na(cost_shape[i])) {
-        s_costs[i] <- traj_obj$costs$mean_cost[i]
+        s_costs[i] <- cost_means[i]
       } else {
         s_costs[i] <- stats::rgamma(1, shape = cost_shape[i], scale = cost_scale[i])
       }

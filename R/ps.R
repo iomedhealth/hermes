@@ -2,13 +2,57 @@
 #'
 #' @export
 fit_ps <- function(hcru_obj, ...) {
-  # ponytail: minimal CohortMethod/Cyclops wrapper.
-  # 365d lookback assumed handled in getDbCohortMethodData creation prior to this.
+  # ponytail: minimal CohortMethod/Cyclops wrapper and PatientProfiles extraction
+  # skipped: full CohortMethodData structure. Add when direct OHDSI tool compatibility is requested.
 
+  cm_data <- hcru_obj$cm_data
   model_fit <- NULL
-  if (!is.null(hcru_obj$cm_data)) {
+
+  if (is.null(cm_data) && !is.null(hcru_obj$cdm) && !is.null(hcru_obj$target_cohort) && !is.null(hcru_obj$comparator_cohort)) {
+    # Extract covariates
+    target <- hcru_obj$cdm[[hcru_obj$target_cohort]] |>
+      dplyr::select("subject_id", "cohort_start_date") |>
+      PatientProfiles::addAge() |>
+      PatientProfiles::addSex() |>
+      dplyr::mutate(treatment = 1) |>
+      dplyr::collect()
+
+    comp <- hcru_obj$cdm[[hcru_obj$comparator_cohort]] |>
+      dplyr::select("subject_id", "cohort_start_date") |>
+      PatientProfiles::addAge() |>
+      PatientProfiles::addSex() |>
+      dplyr::mutate(treatment = 0) |>
+      dplyr::collect()
+
+    cm_data <- dplyr::bind_rows(target, comp) |>
+      dplyr::mutate(sex_num = ifelse(.data$sex == "Female", 1, 0))
+
+    # Add outcome_date if available
+    if (!is.null(hcru_obj$outcome_cohort) && hcru_obj$outcome_cohort %in% names(hcru_obj$cdm)) {
+      outcomes <- hcru_obj$cdm[[hcru_obj$outcome_cohort]] |>
+        dplyr::select(subject_id = "subject_id", outcome_date = "cohort_start_date") |>
+        dplyr::collect() |>
+        dplyr::group_by(.data$subject_id) |>
+        dplyr::slice_min(.data$outcome_date, with_ties = FALSE) |>
+        dplyr::ungroup()
+
+      cm_data <- cm_data |>
+        dplyr::left_join(outcomes, by = "subject_id")
+    }
+
+    if (nrow(cm_data) > 0) {
+      cyclops_data <- Cyclops::createCyclopsData(
+        treatment ~ age + sex_num,
+        modelType = "lr",
+        data = cm_data
+      )
+
+      model_fit <- Cyclops::fitCyclopsModel(cyclops_data)
+      cm_data$propensity_score <- predict(model_fit)
+    }
+  } else if (!is.null(cm_data) && inherits(cm_data, "CohortMethodData")) {
     model_fit <- CohortMethod::createPs(
-      cohortMethodData = hcru_obj$cm_data,
+      cohortMethodData = cm_data,
       prior = Cyclops::createPrior("laplace", useCrossValidation = TRUE),
       control = Cyclops::createControl(cvType = "auto", fold = 10, cvRepetitions = 1)
     )
@@ -16,6 +60,7 @@ fit_ps <- function(hcru_obj, ...) {
 
   structure(
     list(
+      cm_data = cm_data,
       model = model_fit,
       hcru_obj = hcru_obj
     ),
@@ -26,11 +71,47 @@ fit_ps <- function(hcru_obj, ...) {
 #' Adjust Propensity Scores
 #'
 #' @export
-adjust_ps <- function(ps_obj, ...) {
-  # ponytail: minimal matching wrapper
-  matched <- NA
-  if (!is.null(ps_obj$model)) {
-    matched <- CohortMethod::matchOnPs(ps_obj$model, caliper = 0.2, caliperScale = "standardized logit")
+adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
+  # ponytail: minimal caliper matching
+  # skipped: MatchIt or exact nearest-neighbor. Add when OHDSI MatchOnPs isn't sufficient or dependencies expand.
+
+  matched <- data.frame()
+  if (inherits(ps_obj$model, "cyclopsFit")) {
+    # Simple greedy caliper matching on propensity score
+    t_idx <- which(ps_obj$cm_data$treatment == 1)
+    c_idx <- which(ps_obj$cm_data$treatment == 0)
+
+    if (length(t_idx) > 0 && length(c_idx) > 0) {
+      t_ps <- ps_obj$cm_data$propensity_score[t_idx]
+      c_ps <- ps_obj$cm_data$propensity_score[c_idx]
+
+      matched_c_idx <- rep(NA, length(t_idx))
+      available_c <- rep(TRUE, length(c_idx))
+
+      for (i in seq_along(t_idx)) {
+        ps_t <- t_ps[i]
+        diffs <- abs(c_ps - ps_t)
+        diffs[!available_c] <- Inf
+        min_idx <- which.min(diffs)
+        if (length(min_idx) > 0 && diffs[min_idx] <= caliper) {
+          matched_c_idx[i] <- min_idx
+          available_c[min_idx] <- FALSE
+        }
+      }
+
+      valid <- !is.na(matched_c_idx)
+      t_matched <- t_idx[valid]
+      c_matched <- c_idx[matched_c_idx[valid]]
+
+      cols_to_keep <- c("subject_id", "treatment", "propensity_score", "cohort_start_date")
+      if ("outcome_date" %in% colnames(ps_obj$cm_data)) {
+        cols_to_keep <- c(cols_to_keep, "outcome_date")
+      }
+
+      matched <- ps_obj$cm_data[c(t_matched, c_matched), cols_to_keep]
+    }
+  } else if (!is.null(ps_obj$model)) {
+    matched <- CohortMethod::matchOnPs(ps_obj$model, caliper = caliper, caliperScale = "standardized logit")
   }
 
   ps_obj$matched_pop <- matched
@@ -42,9 +123,11 @@ adjust_ps <- function(ps_obj, ...) {
 #' @export
 assess_balance <- function(ps_obj, ...) {
   # ponytail: minimal balance wrapper
-  smd <- NA
-  if (!is.na(ps_obj$matched_pop[1]) && !is.null(ps_obj$hcru_obj$cm_data)) {
-    smd <- CohortMethod::computeCovariateBalance(ps_obj$matched_pop, ps_obj$hcru_obj$cm_data)
+  smd <- data.frame()
+  if (is.data.frame(ps_obj$matched_pop) && nrow(ps_obj$matched_pop) > 0 && !is.null(ps_obj$hcru_obj$cm_data)) {
+    if (inherits(ps_obj$hcru_obj$cm_data, "CohortMethodData")) {
+      smd <- CohortMethod::computeCovariateBalance(ps_obj$matched_pop, ps_obj$hcru_obj$cm_data)
+    }
   }
 
   ps_obj$smd_summary <- smd
