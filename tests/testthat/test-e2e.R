@@ -12,41 +12,23 @@ test_that("End-to-End pipeline produces valid CEA plots", {
   # Comparator: Diverticular disease (4266809)
   # Outcome: Gastrointestinal hemorrhage (192671)
   
-  cohort <- cdm$condition_occurrence |>
-    dplyr::inner_join(cdm$observation_period, by = "person_id") |>
-    dplyr::filter(
-      .data$condition_start_date >= .data$observation_period_start_date, 
-      .data$condition_start_date <= .data$observation_period_end_date
-    ) |>
-    dplyr::select(
-      subject_id = "person_id", 
-      cohort_start_date = "condition_start_date", 
-      cohort_end_date = "condition_start_date",
-      condition_concept_id = "condition_concept_id"
-    ) |>
-    dplyr::distinct(.data$subject_id, .data$condition_concept_id, .data$cohort_start_date, .keep_all = TRUE)
-
-  target_cohort <- cohort |> 
-    dplyr::filter(.data$condition_concept_id == 4285898L) |> 
-    dplyr::mutate(cohort_definition_id = 1L) |>
-    dplyr::select(-"condition_concept_id") |>
-    dplyr::compute(name = "target_cohort", temporary = FALSE)
-    
-  comparator_cohort <- cohort |> 
-    dplyr::filter(.data$condition_concept_id == 4266809L) |> 
-    dplyr::mutate(cohort_definition_id = 1L) |>
-    dplyr::select(-"condition_concept_id") |>
-    dplyr::compute(name = "comparator_cohort", temporary = FALSE)
-    
-  outcome_cohort <- cohort |> 
-    dplyr::filter(.data$condition_concept_id == 192671L) |> 
-    dplyr::mutate(cohort_definition_id = 1L) |>
-    dplyr::select(-"condition_concept_id") |>
-    dplyr::compute(name = "outcome_cohort", temporary = FALSE)
-
-  cdm$target_cohort <- omopgenerics::newCohortTable(target_cohort)
-  cdm$comparator_cohort <- omopgenerics::newCohortTable(comparator_cohort)
-  cdm$outcome_cohort <- omopgenerics::newCohortTable(outcome_cohort)
+  cdm$target_cohort <- CohortConstructor::conceptCohort(
+    cdm = cdm, 
+    conceptSet = list(target_cohort = 4285898L), 
+    name = "target_cohort"
+  )
+  
+  cdm$comparator_cohort <- CohortConstructor::conceptCohort(
+    cdm = cdm, 
+    conceptSet = list(comparator_cohort = 4266809L), 
+    name = "comparator_cohort"
+  )
+  
+  cdm$outcome_cohort <- CohortConstructor::conceptCohort(
+    cdm = cdm, 
+    conceptSet = list(outcome_cohort = 192671L), 
+    name = "outcome_cohort"
+  )
 
   study <- init(cdm, "target_cohort", "comparator_cohort", "outcome_cohort")
 
