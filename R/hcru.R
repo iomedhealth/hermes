@@ -11,6 +11,17 @@ extract_hcru <- function(study) {
     warning("No 'cost' table found in CDM. Skipping cost extraction.")
     costs <- data.frame()
   } else {
+    # TODO: Check if the cost table is empty and warn the user accordingly.
+    # The cost table should always exist, but in many real-world OMOP CDMs it may be empty.
+    
+    # TODO: Handle cases where the cost table is populated but lacks cost metrics.
+    # Check if `total_charge`, `total_cost`, `total_paid`, or `paid_*` columns are all NA or 0.
+    
+    # TODO: DRG Fallback Strategy.
+    # If no data is available for `total_*` or `paid_*` metrics, check if `drg_concept_id` 
+    # and/or `drg_source_value` exist. If they do, prompt the user to provide a DRG 
+    # costs lookup dataframe to infer costs.
+
     costs <- study$cdm$cost |>
       dplyr::group_by(.data$cost_domain_id) |>
       dplyr::summarise(
