@@ -5,6 +5,28 @@ test_that("End-to-End pipeline produces valid CEA plots", {
   Sys.setenv(EUNOMIA_DATA_FOLDER = file.path(tempdir(), "eunomia"))
   con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomiaDir("GiBleed"))
   withr::defer(DBI::dbDisconnect(con, shutdown = TRUE))
+  
+  # Inject synthetic realistic costs so E2E uses actual logic instead of fallback
+  DBI::dbExecute(con, "
+    CREATE OR REPLACE TABLE cost AS
+    SELECT 
+      ROW_NUMBER() OVER () as cost_id,
+      condition_occurrence_id as cost_event_id,
+      'Condition' as cost_domain_id,
+      32814 as cost_type_concept_id,
+      CASE 
+        WHEN condition_concept_id IN (4285898, 4266809) THEN 500.0
+        WHEN condition_concept_id = 192671 THEN 100.0
+        ELSE 50.0 
+      END as total_paid,
+      CASE 
+        WHEN condition_concept_id IN (4285898, 4266809) THEN 600.0
+        WHEN condition_concept_id = 192671 THEN 150.0
+        ELSE 75.0 
+      END as total_charge
+    FROM condition_occurrence
+  ")
+
   cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 
   # Create real cohorts from GiBleed conditions with semantic clinical meaning

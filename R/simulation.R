@@ -21,8 +21,8 @@ simulate_economics <- function(traj_obj, time_horizon = 10, discount_rate = 0.03
   if (is.null(traj_obj$costs) || nrow(traj_obj$costs) == 0) {
     traj_obj$costs <- data.frame(
       health_state = c("State_Baseline", "State_Outcome"),
-      mean_cost = c(100, 500),
-      se_cost = c(10, 50)
+      mean_cost = c(500, 100),
+      se_cost = c(50, 10)
     )
   }
 
