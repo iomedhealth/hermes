@@ -7,7 +7,11 @@ test_that("End-to-End pipeline produces valid CEA plots", {
   withr::defer(DBI::dbDisconnect(con, shutdown = TRUE))
   cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
 
-  # Create real cohorts from GiBleed conditions
+  # Create real cohorts from GiBleed conditions with semantic clinical meaning
+  # Target: Polyp of colon (4285898)
+  # Comparator: Diverticular disease (4266809)
+  # Outcome: Gastrointestinal hemorrhage (192671)
+  
   cohort <- cdm$condition_occurrence |>
     dplyr::inner_join(cdm$observation_period, by = "person_id") |>
     dplyr::filter(
@@ -17,21 +21,27 @@ test_that("End-to-End pipeline produces valid CEA plots", {
     dplyr::select(
       subject_id = "person_id", 
       cohort_start_date = "condition_start_date", 
-      cohort_end_date = "condition_start_date"
+      cohort_end_date = "condition_start_date",
+      condition_concept_id = "condition_concept_id"
     ) |>
-    dplyr::mutate(cohort_definition_id = 1L) |>
-    dplyr::distinct(.data$subject_id, .data$cohort_definition_id, .keep_all = TRUE)
+    dplyr::distinct(.data$subject_id, .data$condition_concept_id, .data$cohort_start_date, .keep_all = TRUE)
 
   target_cohort <- cohort |> 
-    dplyr::filter(.data$subject_id %% 2 == 0) |> 
+    dplyr::filter(.data$condition_concept_id == 4285898L) |> 
+    dplyr::mutate(cohort_definition_id = 1L) |>
+    dplyr::select(-"condition_concept_id") |>
     dplyr::compute(name = "target_cohort", temporary = FALSE)
     
   comparator_cohort <- cohort |> 
-    dplyr::filter(.data$subject_id %% 2 == 1) |> 
+    dplyr::filter(.data$condition_concept_id == 4266809L) |> 
+    dplyr::mutate(cohort_definition_id = 1L) |>
+    dplyr::select(-"condition_concept_id") |>
     dplyr::compute(name = "comparator_cohort", temporary = FALSE)
     
   outcome_cohort <- cohort |> 
-    dplyr::filter(.data$subject_id %% 5 == 0) |> 
+    dplyr::filter(.data$condition_concept_id == 192671L) |> 
+    dplyr::mutate(cohort_definition_id = 1L) |>
+    dplyr::select(-"condition_concept_id") |>
     dplyr::compute(name = "outcome_cohort", temporary = FALSE)
 
   cdm$target_cohort <- omopgenerics::newCohortTable(target_cohort)
