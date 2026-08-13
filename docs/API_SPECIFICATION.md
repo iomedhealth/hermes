@@ -37,10 +37,10 @@
   [ hermes::compile_trajectories() ] ──────────> hermes_trajectories
        |
        v
-  [ hermes::run_simulation() ] ────────────────> hermes_sim
+  [ hermes::simulate_economics() ] ────────────> hermes_sim
        |
        v
-  [ hermes::compute_cea() ] ───────────────────> hermes_cea
+  [ hermes::run_cea() ] ───────────────────────> hermes_cea
 ```
 
 ---
@@ -211,46 +211,41 @@ hermes::extract_state_costs(
 
 ### Stage 5: Economic Simulation
 
-#### `hermes::run_simulation()`
+#### `hermes::simulate_economics()`
 Integrates transition probabilities and state-cost distributions into an economic state-transition model.
 
 ```r
-hermes::run_simulation(
+hermes::simulate_economics(
   trajectories,
   time_horizon = 10,
-  cycle_length = "30 days",
-  discount_cost = 0.03,
-  discount_qaly = 0.03,
-  n_samples = 1000
+  discount_rate = 0.03,
+  n_samples = 100
 )
 ```
 
 * **Arguments:**
   * `trajectories`: A `hermes_trajectories` object.
   * `time_horizon`: Numeric (years). Total projection period.
-  * `cycle_length`: String. Duration of each Markov cycle.
-  * `discount_cost`, `discount_qaly`: Annual discount rates.
+  * `discount_rate`: Annual discount rate for costs and QALYs.
   * `n_samples`: Integer. Number of Probabilistic Sensitivity Analysis (PSA) iterations.
 * **Returns:** A `hermes_sim` object containing simulated cost and QALY trajectories across iterations.
-* **Underlying Engine:** `hesim`, `heemod`.
+* **Underlying Engine:** `hesim`.
 
 ---
 
 ### Stage 6: Decision Analysis & Post-Processing (CEA)
 
-#### `hermes::compute_cea()`
+#### `hermes::run_cea()`
 Calculates Incremental Cost-Effectiveness Ratios (ICER) and Net Monetary Benefit (NMB) across willingness-to-pay (WTP) thresholds.
 
 ```r
-hermes::compute_cea(
-  sim_object,
-  wtp_thresholds = seq(0, 100000, by = 5000)
+hermes::run_cea(
+  sim_object
 )
 ```
 
 * **Arguments:**
   * `sim_object`: A `hermes_sim` object.
-  * `wtp_thresholds`: Numeric vector of WTP values per QALY gained.
 * **Returns:** A `hermes_cea` object.
 * **Underlying Engine:** `BCEA`.
 
@@ -332,13 +327,11 @@ results <- cdm |>
     cycle_length = "30 days"
   ) |>
   hermes::extract_state_costs() |>
-  hermes::run_simulation(
+  hermes::simulate_economics(
     time_horizon = 10,
     n_samples    = 1000
   ) |>
-  hermes::compute_cea(
-    wtp_thresholds = seq(0, 100000, by = 5000)
-  )
+  hermes::run_cea()
 
 # Render Decision Analytic Visuals
 hermes::plot_ceac(results)
