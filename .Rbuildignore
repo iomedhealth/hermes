@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^NAMESPACE$
 ^\.github$
 ^specs$
 ^\.specify$
@@ -11,4 +10,6 @@
 ^audit$
 ^docs$
 ^LICENSE\.md$
-^generate_plots\.R$
+^generate_plots\.R$^_pkgdown\.yml$
+^docs$
+^\.github$

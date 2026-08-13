@@ -1,6 +1,7 @@
 #' Fit Propensity Score Model
 #'
 #' @export
+#' @importFrom stats predict
 fit_ps <- function(hcru_obj, ...) {
   # ponytail: minimal CohortMethod/Cyclops wrapper and PatientProfiles extraction
   # skipped: full CohortMethodData structure. Add when direct OHDSI tool compatibility is requested.
