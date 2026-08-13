@@ -1,5 +1,7 @@
 # ponytail: minimal cea wrappers
 
+#' Run Cost-Effectiveness Analysis
+#' @param hermes_sim A hermes_sim object
 #' @export
 run_cea <- function(hermes_sim) {
   if (is.null(hermes_sim$hesim_ce)) {
@@ -23,11 +25,17 @@ run_cea <- function(hermes_sim) {
   return(out)
 }
 
+#' Plot CEAC
+#' @param study A hermes_cea object
 #' @export
 plot_ceac <- function(study) BCEA::ceac.plot(study$cea_results)
 
+#' Plot CE Plane
+#' @param study A hermes_cea object
 #' @export
 plot_plane <- function(study) BCEA::ceplane.plot(study$cea_results)
 
+#' Summary Table
+#' @param study A hermes_cea object
 #' @export
 table_summary <- function(study) summary(study$cea_results)

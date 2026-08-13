@@ -6,6 +6,13 @@
 \usage{
 adjust_ps(ps_obj, caliper = 0.2, ...)
 }
+\arguments{
+\item{ps_obj}{A hermes_ps object}
+
+\item{caliper}{Caliper distance}
+
+\item{...}{Additional arguments}
+}
 \description{
 Adjust Propensity Scores
 }

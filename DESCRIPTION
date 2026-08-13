@@ -11,8 +11,12 @@ Imports:
     omopgenerics,
     BCEA,
     dbplyr,
-    dplyr
+    dplyr,
+    rlang,
+    DBI,
+    tibble
 Suggests: 
+    pkgdown,
     PatientProfiles,
     CohortConstructor,
     CohortCharacteristics,

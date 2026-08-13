@@ -6,6 +6,11 @@
 \usage{
 fit_ps(hcru_obj, ...)
 }
+\arguments{
+\item{hcru_obj}{A hermes_hcru object}
+
+\item{...}{Additional arguments}
+}
 \description{
 Fit Propensity Score Model
 }

@@ -6,6 +6,11 @@
 \usage{
 assess_balance(ps_obj, ...)
 }
+\arguments{
+\item{ps_obj}{A hermes_ps object}
+
+\item{...}{Additional arguments}
+}
 \description{
 Assess Balance
 }

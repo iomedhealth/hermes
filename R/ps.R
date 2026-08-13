@@ -1,5 +1,7 @@
 #' Fit Propensity Score Model
 #'
+#' @param hcru_obj A hermes_hcru object
+#' @param ... Additional arguments
 #' @export
 #' @importFrom stats predict
 fit_ps <- function(hcru_obj, ...) {
@@ -71,6 +73,9 @@ fit_ps <- function(hcru_obj, ...) {
 
 #' Adjust Propensity Scores
 #'
+#' @param ps_obj A hermes_ps object
+#' @param caliper Caliper distance
+#' @param ... Additional arguments
 #' @export
 adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
   # ponytail: minimal caliper matching
@@ -121,6 +126,8 @@ adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
 
 #' Assess Balance
 #'
+#' @param ps_obj A hermes_ps object
+#' @param ... Additional arguments
 #' @export
 assess_balance <- function(ps_obj, ...) {
   # ponytail: minimal balance wrapper
