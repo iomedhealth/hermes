@@ -8,3 +8,5 @@
 .Rbuildignore
 NAMESPACE
 tests/testthat/Rplots.pdf
+packrat/
+renv/

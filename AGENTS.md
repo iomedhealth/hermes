@@ -52,5 +52,5 @@ Agents developing functions or modules in HERMES must align their implementation
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/001-eunomia-test-implementation/plan.md
+specs/002-pipeline-wrappers/plan.md
 <!-- SPECKIT END -->
