@@ -17,8 +17,6 @@ Suggests:
     CohortCharacteristics,
     CohortMethod,
     Cyclops,
-    Cohort2Trajectory,
-    TrajectoryMarkovAnalysis,
     hesim,
     heemod,
     Eunomia,

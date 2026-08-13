@@ -1,0 +1,14 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^NAMESPACE$
+^\.github$
+^specs$
+^\.specify$
+^\.DS_Store$
+^\.vscode$
+^\.idea$
+^\.opencode$
+^audit$
+^docs$
+^LICENSE\.md$
+^generate_plots\.R$
