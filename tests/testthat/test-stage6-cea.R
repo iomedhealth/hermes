@@ -20,9 +20,6 @@ test_that("T010: run_cea extracts actual matrices and returns hermes_cea", {
   )
   class(mock_sim) <- "hermes_sim"
 
-  # Source the implementation directly for testing
-  source("../../R/cea.R")
-
   res <- run_cea(mock_sim)
 
   expect_s3_class(res, "hermes_cea")
