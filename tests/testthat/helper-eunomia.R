@@ -34,11 +34,11 @@ hermes_test_cdm <- function(env = parent.frame()) {
     cost_event_id = c(1L, 2L, 3L),
     cost_domain_id = rep("Condition", 3),
     cost_type_concept_id = rep(32814L, 3),
-    total_paid = c(100.0, 150.0, 200.0),
-    total_charge = c(150.0, 200.0, 250.0),
-    amount_allowed = c(120.0, 180.0, 230.0),
-    paid_by_payer = c(80.0, 120.0, 180.0),
-    paid_by_patient = c(20.0, 30.0, 20.0)
+    total_paid = c(500.0, 550.0, 100.0),
+    total_charge = c(600.0, 650.0, 150.0),
+    amount_allowed = c(500.0, 550.0, 100.0),
+    paid_by_payer = c(400.0, 450.0, 80.0),
+    paid_by_patient = c(100.0, 100.0, 20.0)
   )
 
   DBI::dbWriteTable(con, "person", person)

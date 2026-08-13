@@ -20,8 +20,8 @@ test_that("T009 [US2] simulate_economics performs PSA Markov simulation without 
   costs <- data.frame(
     health_state = c("State_Baseline", "State_Outcome"),
     n_patients = c(10, 10),
-    mean_cost = c(100, 500),
-    se_cost = c(10, 50)
+    mean_cost = c(500, 100),
+    se_cost = c(50, 10)
   )
 
   utilities <- data.frame(
@@ -57,7 +57,12 @@ test_that("T009 [US2] simulate_economics performs PSA Markov simulation without 
   # Check that costs are realistically positive and differ between strategies
   avg_target_cost <- mean(sim_res$hesim_ce$costs$costs[sim_res$hesim_ce$costs$strategy_id == 1])
   avg_comp_cost <- mean(sim_res$hesim_ce$costs$costs[sim_res$hesim_ce$costs$strategy_id == 2])
-
-  # Comparator transitions to outcome faster, outcome is more expensive
-  expect_true(avg_comp_cost > avg_target_cost)
+  
+  avg_target_qaly <- mean(sim_res$hesim_ce$qalys$qalys[sim_res$hesim_ce$qalys$strategy_id == 1])
+  avg_comp_qaly <- mean(sim_res$hesim_ce$qalys$qalys[sim_res$hesim_ce$qalys$strategy_id == 2])
+  
+  # Target stays in baseline longer (0.1 transition vs 0.2), and baseline is now MORE expensive
+  expect_true(avg_target_cost > avg_comp_cost)
+  # Target also accumulates more QALYs because baseline utility is higher
+  expect_true(avg_target_qaly > avg_comp_qaly)
 })

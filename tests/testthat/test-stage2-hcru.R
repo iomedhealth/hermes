@@ -71,5 +71,5 @@ test_that("T006 [US2] HCRU unadjusted care utilization and medical cost extracti
   # Should have 1 row since we group by cost_domain_id ("Condition")
   expect_equal(nrow(hcru_out$costs), 1)
   expect_equal(hcru_out$costs$record_count, 3)
-  expect_equal(sum(hcru_out$costs$total_paid), 450) # 100 + 150 + 200
+  expect_equal(sum(hcru_out$costs$total_paid), 1150) # 500 + 550 + 100
 })

@@ -8,7 +8,7 @@ test_that("T005 [US1] compile_trajectories generates dynamic matrices and cost s
 
   costs_df <- data.frame(
     health_state = c("State_Baseline", "State_Outcome", "State_Baseline"),
-    total_paid = c(100, 500, 150)
+    total_paid = c(500, 100, 550)
   )
 
   ps_obj <- structure(
@@ -31,9 +31,9 @@ test_that("T005 [US1] compile_trajectories generates dynamic matrices and cost s
 
   # Check stats
   baseline_costs <- traj_obj$costs[traj_obj$costs$health_state == "State_Baseline", ]
-  expect_equal(baseline_costs$mean_cost, mean(c(100, 150)))
-
+  expect_equal(baseline_costs$mean_cost, mean(c(500, 550)))
+  
   outcome_costs <- traj_obj$costs[traj_obj$costs$health_state == "State_Outcome", ]
-  expect_equal(outcome_costs$mean_cost, 500)
+  expect_equal(outcome_costs$mean_cost, 100)
   expect_equal(outcome_costs$se_cost, 0) # Fallback to 0 if n <= 1
 })
