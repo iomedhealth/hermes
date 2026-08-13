@@ -1,9 +1,9 @@
 #' Extract HCRU from cost table
 #'
 #' Extracts unadjusted care utilization and direct medical costs from the OMOP `cost` table.
-#' It safely handles edge cases like missing tables, empty tables, and masked financial values 
+#' It safely handles edge cases like missing tables, empty tables, and masked financial values
 #' by defaulting to fallback logic (like DRG-based cost inference).
-#' 
+#'
 #' @seealso See \code{docs/hcru_logic.md} for the complete ASCII flow diagram of the extraction logic.
 #'
 #' @param study A hermes_study (or hermes_hcru) object
@@ -19,13 +19,13 @@ extract_hcru <- function(study) {
   } else {
     # TODO: Check if the cost table is empty and warn the user accordingly.
     # The cost table should always exist, but in many real-world OMOP CDMs it may be empty.
-    
+
     # TODO: Handle cases where the cost table is populated but lacks cost metrics.
     # Check if `total_charge`, `total_cost`, `total_paid`, or `paid_*` columns are all NA or 0.
-    
+
     # TODO: DRG Fallback Strategy.
-    # If no data is available for `total_*` or `paid_*` metrics, check if `drg_concept_id` 
-    # and/or `drg_source_value` exist. If they do, prompt the user to provide a DRG 
+    # If no data is available for `total_*` or `paid_*` metrics, check if `drg_concept_id`
+    # and/or `drg_source_value` exist. If they do, prompt the user to provide a DRG
     # costs lookup dataframe to infer costs.
 
     costs <- study$cdm$cost |>

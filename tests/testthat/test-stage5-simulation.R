@@ -1,14 +1,47 @@
-test_that("simulate_economics works and returns hermes_sim", {
+test_that("T009 [US2] simulate_economics performs PSA Markov simulation without mock rnorm", {
   # dummy hermes_trajectories
+  matrices <- list(
+    target_transition = matrix(c(0.9, 0.1, 0, 1),
+      nrow = 2, byrow = TRUE,
+      dimnames = list(
+        c("State_Baseline", "State_Outcome"),
+        c("State_Baseline", "State_Outcome")
+      )
+    ),
+    comparator_transition = matrix(c(0.8, 0.2, 0, 1),
+      nrow = 2, byrow = TRUE,
+      dimnames = list(
+        c("State_Baseline", "State_Outcome"),
+        c("State_Baseline", "State_Outcome")
+      )
+    )
+  )
+
+  costs <- data.frame(
+    health_state = c("State_Baseline", "State_Outcome"),
+    n_patients = c(10, 10),
+    mean_cost = c(100, 500),
+    se_cost = c(10, 50)
+  )
+
+  utilities <- data.frame(
+    health_state = c("State_Baseline", "State_Outcome"),
+    mean_utility = c(0.85, 0.70),
+    se_utility = c(0.05, 0.05)
+  )
+
   traj <- structure(
     list(
-      matrices = list(transition = matrix(c(0.8, 0.2, 0.1, 0.9), nrow = 2)),
-      costs = data.frame(health_state = c(1, 2), cost = c(100, 200))
+      matrices = matrices,
+      costs = costs,
+      utilities = utilities
     ),
     class = "hermes_trajectories"
   )
 
-  sim_res <- simulate_economics(traj, time_horizon = 10, discount_rate = 0.03)
+  # Run simulation
+  set.seed(42)
+  sim_res <- simulate_economics(traj, time_horizon = 5, discount_rate = 0.03, n_samples = 10)
 
   expect_s3_class(sim_res, "hermes_sim")
   expect_true(!is.null(sim_res$hesim_ce))
@@ -17,4 +50,14 @@ test_that("simulate_economics works and returns hermes_sim", {
 
   expect_true(all(c("sample", "strategy_id", "costs") %in% colnames(sim_res$hesim_ce$costs)))
   expect_true(all(c("sample", "strategy_id", "qalys") %in% colnames(sim_res$hesim_ce$qalys)))
+
+  # Ensure deterministic mock values are replaced
+  expect_equal(nrow(sim_res$hesim_ce$costs), 20) # 10 samples * 2 strategies
+
+  # Check that costs are realistically positive and differ between strategies
+  avg_target_cost <- mean(sim_res$hesim_ce$costs$costs[sim_res$hesim_ce$costs$strategy_id == 1])
+  avg_comp_cost <- mean(sim_res$hesim_ce$costs$costs[sim_res$hesim_ce$costs$strategy_id == 2])
+
+  # Comparator transitions to outcome faster, outcome is more expensive
+  expect_true(avg_comp_cost > avg_target_cost)
 })

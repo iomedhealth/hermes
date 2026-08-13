@@ -67,6 +67,9 @@ test_that("T006 [US2] HCRU unadjusted care utilization and medical cost extracti
   expect_true(inherits(hcru_out, "hermes_hcru"))
   expect_true(!is.null(hcru_out$costs))
   expect_true(is.data.frame(hcru_out$costs))
-  # Should have cost metrics since cost table has 1 record
-  expect_true(nrow(hcru_out$costs) > 0)
+
+  # Should have 1 row since we group by cost_domain_id ("Condition")
+  expect_equal(nrow(hcru_out$costs), 1)
+  expect_equal(hcru_out$costs$record_count, 3)
+  expect_equal(sum(hcru_out$costs$total_paid), 450) # 100 + 150 + 200
 })

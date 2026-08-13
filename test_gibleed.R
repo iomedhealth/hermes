@@ -13,9 +13,15 @@ cohort <- cdm$condition_occurrence |>
   mutate(cohort_definition_id = 1L) |>
   distinct(subject_id, cohort_definition_id, .keep_all = TRUE)
 
-target_cohort <- cohort |> filter(subject_id %% 2 == 0) |> compute(name = "target_cohort", temporary = FALSE)
-comparator_cohort <- cohort |> filter(subject_id %% 2 == 1) |> compute(name = "comparator_cohort", temporary = FALSE)
-outcome_cohort <- cohort |> filter(subject_id %% 5 == 0) |> compute(name = "outcome_cohort", temporary = FALSE)
+target_cohort <- cohort |>
+  filter(subject_id %% 2 == 0) |>
+  compute(name = "target_cohort", temporary = FALSE)
+comparator_cohort <- cohort |>
+  filter(subject_id %% 2 == 1) |>
+  compute(name = "comparator_cohort", temporary = FALSE)
+outcome_cohort <- cohort |>
+  filter(subject_id %% 5 == 0) |>
+  compute(name = "outcome_cohort", temporary = FALSE)
 
 cdm$target_cohort <- omopgenerics::newCohortTable(target_cohort)
 cdm$comparator_cohort <- omopgenerics::newCohortTable(comparator_cohort)

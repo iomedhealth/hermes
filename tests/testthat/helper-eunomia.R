@@ -21,15 +21,29 @@ hermes_test_cdm <- function(env = parent.frame()) {
     observation_period_end_date = as.Date("2020-12-31"),
     period_type_concept_id = 0L
   )
+  condition_occurrence <- tibble::tibble(
+    condition_occurrence_id = c(1L, 2L, 3L),
+    person_id = c(1L, 1L, 1L),
+    condition_concept_id = c(4285898L, 4266809L, 192671L),
+    condition_start_date = as.Date(c("2010-01-01", "2010-06-01", "2010-12-01")),
+    condition_end_date = as.Date(c("2010-01-10", "2010-06-10", "2010-12-10")),
+    condition_type_concept_id = 0L
+  )
   cost <- tibble::tibble(
-    cost_id = 1L, cost_event_id = 1L, cost_domain_id = "Visit",
-    cost_type_concept_id = 32814L, total_paid = 100.0,
-    total_charge = 150.0, amount_allowed = 120.0,
-    paid_by_payer = 80.0, paid_by_patient = 20.0
+    cost_id = c(1L, 2L, 3L),
+    cost_event_id = c(1L, 2L, 3L),
+    cost_domain_id = rep("Condition", 3),
+    cost_type_concept_id = rep(32814L, 3),
+    total_paid = c(100.0, 150.0, 200.0),
+    total_charge = c(150.0, 200.0, 250.0),
+    amount_allowed = c(120.0, 180.0, 230.0),
+    paid_by_payer = c(80.0, 120.0, 180.0),
+    paid_by_patient = c(20.0, 30.0, 20.0)
   )
 
   DBI::dbWriteTable(con, "person", person)
   DBI::dbWriteTable(con, "observation_period", observation_period)
+  DBI::dbWriteTable(con, "condition_occurrence", condition_occurrence)
   DBI::dbWriteTable(con, "cost", cost)
 
   cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")

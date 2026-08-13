@@ -11,22 +11,22 @@ test_that("End-to-End pipeline produces valid CEA plots", {
   # Target: Polyp of colon (4285898)
   # Comparator: Diverticular disease (4266809)
   # Outcome: Gastrointestinal hemorrhage (192671)
-  
+
   cdm$target_cohort <- CohortConstructor::conceptCohort(
-    cdm = cdm, 
-    conceptSet = list(target_cohort = 4285898L), 
+    cdm = cdm,
+    conceptSet = list(target_cohort = 4285898L),
     name = "target_cohort"
   )
-  
+
   cdm$comparator_cohort <- CohortConstructor::conceptCohort(
-    cdm = cdm, 
-    conceptSet = list(comparator_cohort = 4266809L), 
+    cdm = cdm,
+    conceptSet = list(comparator_cohort = 4266809L),
     name = "comparator_cohort"
   )
-  
+
   cdm$outcome_cohort <- CohortConstructor::conceptCohort(
-    cdm = cdm, 
-    conceptSet = list(outcome_cohort = 192671L), 
+    cdm = cdm,
+    conceptSet = list(outcome_cohort = 192671L),
     name = "outcome_cohort"
   )
 
