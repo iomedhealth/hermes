@@ -1,5 +1,11 @@
 #' Extract HCRU from cost table
 #'
+#' Extracts unadjusted care utilization and direct medical costs from the OMOP `cost` table.
+#' It safely handles edge cases like missing tables, empty tables, and masked financial values 
+#' by defaulting to fallback logic (like DRG-based cost inference).
+#' 
+#' @seealso See \code{docs/hcru_logic.md} for the complete ASCII flow diagram of the extraction logic.
+#'
 #' @param study A hermes_study (or hermes_hcru) object
 #' @return A hermes_hcru object with costs data
 #' @export

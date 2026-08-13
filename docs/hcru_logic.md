@@ -1,0 +1,73 @@
+# HCRU Extraction Logic
+
+This document outlines the extraction logic for Healthcare Resource Utilization (HCRU) from the OMOP `COST` table. 
+
+## Logical Flow
+
+```text
+                            +--------------------------+
+                            |       extract_hcru()     |
+                            +-------------+------------+
+                                          |
+                                          v
+                              +----------------------+
+                              |  Does 'cost' table   |
+                              |  exist in the CDM?   |
+                              +------+---------+-----+
+                                     |         |
+                                [No] |         | [Yes]
+                                     v         v
+                  +--------------------+     +---------------------------+
+                  | Warn user: "No     |     |   Is 'cost' table empty?  |
+                  | cost table found"  |     |   (record count == 0)     |
+                  | Return empty data. |     +-------+---------+---------+
+                  +--------------------+             |         |
+                                                [Yes]|         | [No]
+                                                     v         |
+                                     +--------------------+    |
+                                     | Warn user: Table   |    |
+                                     | exists but empty.  |    |
+                                     | Return empty data. |    |
+                                     +--------------------+    v
+                                                 +--------------------------------+
+                                                 | Are financial metrics          |
+                                                 | (total_paid, total_charge)     |
+                                                 | available and > 0?             |
+                                                 +---------+-------------+--------+
+                                                           |             |
+                                                      [No] |             | [Yes]
+                                                           v             |
+                                     +---------------------------+       |
+                                     | Do drg_concept_id or      |       |
+                                     | drg_source_value exist    |       |
+                                     | in the table?             |       |
+                                     +-------+---------+---------+       |
+                                             |         |                 |
+                                        [No] |         | [Yes]           |
+                                             v         v                 |
+                      +------------------------+  +-------------------+  |
+                      | Warn user: "No cost    |  | Prompt user for   |  |
+                      | metrics or DRGs found" |  | DRG-to-Cost       |  |
+                      | Return empty data.     |  | lookup dictionary |  |
+                      +------------------------+  +--------+----------+  |
+                                                           |             |
+                                                           |             |
+                                                           v             v
+                                                +--------------------------------+
+                                                | Extract unadjusted costs &     |
+                                                | summarize by cost_domain_id    |
+                                                | via dplyr::group_by()          |
+                                                +--------------------------------+
+                                                           |
+                                                           v
+                                                +--------------------------------+
+                                                | Return hermes_hcru object      |
+                                                +--------------------------------+
+```
+
+## Detailed Rules
+
+1. **Structural Check**: First, verify if the `cost` table actually exists in the database schema.
+2. **Content Check**: OMOP CDMs often generate the structure for all tables by default. The `COST` table might exist but contain 0 rows.
+3. **Metric Check**: Some databases populate the `COST` table with event linkages but mask the actual financial values due to privacy. Check if `total_charge`, `total_cost`, `total_paid`, or `paid_*` columns are all `NA` or `0`.
+4. **DRG Fallback**: If the financial values are masked, the pipeline pivots to check for Diagnosis-Related Group (DRG) codes (`drg_concept_id` or `drg_source_value`). If present, prompt the user for a standardized DRG lookup table to infer an estimated cost for the event, ensuring economic simulations don't fail due to zero-cost data.
