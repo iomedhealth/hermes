@@ -10,6 +10,8 @@
 ^audit$
 ^docs$
 ^LICENSE\.md$
-^generate_plots\.R$^_pkgdown\.yml$
+^generate_plots\.R$
+^_pkgdown\.yml$
+^AGENTS\.md$
 ^docs$
 ^\.github$

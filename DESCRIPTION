@@ -14,11 +14,13 @@ Imports:
     BCEA,
     dbplyr,
     dplyr,
-    rlang,
-    DBI,
-    tibble
+    rlang
 Suggests: 
     pkgdown,
+    knitr,
+    rmarkdown,
+    DBI,
+    tibble,
     PatientProfiles,
     CohortConstructor,
     CohortCharacteristics,
@@ -39,3 +41,5 @@ Remotes:
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 Encoding: UTF-8
+VignetteBuilder: knitr
+
