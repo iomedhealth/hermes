@@ -2,17 +2,27 @@
 % Please edit documentation in R/ps.R
 \name{adjust_ps}
 \alias{adjust_ps}
-\title{Adjust Propensity Scores}
+\title{Adjust Propensity Scores (Stage 3: Causal Adjustment)}
 \usage{
 adjust_ps(ps_obj, caliper = 0.2, ...)
 }
 \arguments{
-\item{ps_obj}{A hermes_ps object}
+\item{ps_obj}{A \code{hermes_ps} object returned by \code{fit_ps()}.}
 
-\item{caliper}{Caliper distance}
+\item{caliper}{A numeric value specifying the maximum allowed distance between matched
+propensity scores. Default is 0.2.}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments passed to the matching function.}
+}
+\value{
+A \code{hermes_ps} object updated with a \code{matched_pop} attribute containing the matched cohort.
 }
 \description{
-Adjust Propensity Scores
+\code{adjust_ps()} applies a matching algorithm based on the propensity scores calculated
+by \code{fit_ps()}.
+
+By default, it performs greedy nearest-neighbor caliper matching. This pairs patients
+in the target cohort with similar patients in the comparator cohort, discarding
+unmatched patients. The resulting matched population is less biased and suitable
+for generating the transition probabilities and costs used in the economic simulation.
 }

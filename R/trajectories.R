@@ -1,6 +1,19 @@
-#' Compile Trajectories
+#' Compile State Trajectories and Costs (Stage 4: Trajectory Compilation)
 #'
-#' @param ps_obj A hermes_ps object
+#' @description
+#' `compile_trajectories()` aggregates the longitudinal patient timelines from the
+#' matched cohorts into discrete health states and calculates transition probabilities.
+#'
+#' To run a Markov model for economic simulation, we need to know the probability
+#' of a patient moving from one state (e.g., 'Baseline') to another (e.g., 'Outcome').
+#' This function calculates those probabilities empirically from the OMOP data. It also
+#' aggregates the total costs incurred by patients while residing in each specific
+#' health state.
+#'
+#' @param ps_obj A `hermes_ps` object containing the matched population and cost data.
+#'
+#' @return A `hermes_trajectories` object containing transition matrices and state-specific cost summaries.
+#'
 #' @export
 compile_trajectories <- function(ps_obj) {
   # ponytail: minimal dynamic matrix derivation and cost aggregation

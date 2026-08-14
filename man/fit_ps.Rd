@@ -2,15 +2,26 @@
 % Please edit documentation in R/ps.R
 \name{fit_ps}
 \alias{fit_ps}
-\title{Fit Propensity Score Model}
+\title{Fit Propensity Score Model (Stage 3: Causal Adjustment)}
 \usage{
 fit_ps(hcru_obj, ...)
 }
 \arguments{
-\item{hcru_obj}{A hermes_hcru object}
+\item{hcru_obj}{A \code{hermes_hcru} object containing the cohort data.}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments passed to the underlying model fitting functions.}
+}
+\value{
+A \code{hermes_ps} object containing the propensity score model and covariate data.
 }
 \description{
-Fit Propensity Score Model
+\code{fit_ps()} estimates the probability (propensity score) of a patient being
+assigned to the target cohort versus the comparator cohort, based on their baseline
+covariates (e.g., age, sex).
+
+Because observational data lacks randomization, direct comparison between treatments
+is often biased by confounding variables. Propensity scores are used in HEOR to
+emulate a randomized controlled trial by matching or weighting patients who have
+similar baseline characteristics. This function currently uses regularized logistic
+regression via the \code{Cyclops} package.
 }

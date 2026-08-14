@@ -2,21 +2,36 @@
 % Please edit documentation in R/hcru.R
 \name{extract_hcru}
 \alias{extract_hcru}
-\title{Extract HCRU from cost table}
+\title{Extract Healthcare Resource Utilization (HCRU) from the OMOP COST table (Stage 2: HCRU)}
 \usage{
 extract_hcru(study)
 }
 \arguments{
-\item{study}{A hermes_study (or hermes_hcru) object}
+\item{study}{A \code{hermes_study} or \code{hermes_hcru} object.}
 }
 \value{
-A hermes_hcru object with costs data
+A \code{hermes_hcru} object enriched with raw, patient-level cost data.
 }
 \description{
-Extracts unadjusted care utilization and direct medical costs from the OMOP \code{cost} table.
-It safely handles edge cases like missing tables, empty tables, and masked financial values
-by defaulting to fallback logic (like DRG-based cost inference).
+\code{extract_hcru()} queries the OMOP CDM \code{cost} table to extract direct medical costs
+and resource utilization associated with the patients in the study cohorts.
+
+In Cost-Effectiveness Analysis (CEA), Healthcare Resource Utilization (HCRU) forms
+the numerator of the Incremental Cost-Effectiveness Ratio (ICER). This function
+safely handles edge cases (like missing tables or masked financial values) and
+tags costs with the patient's health state at the time the cost was incurred
+(e.g., before or after the outcome event).
+
+\strong{Example Output Structure:}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# A tibble: 5 × 5
+  subject_id total_paid total_charge condition_concept_id health_state  
+       <int>      <dbl>        <dbl>                <int> <chr>         
+1        101       150.         300.               317009 State_Baseline
+2        101       450.         900.               317009 State_Outcome 
+3        102      1200.        2400.               432904 State_Baseline
+}\if{html}{\out{</div>}}
 }
 \seealso{
-See \code{docs/hcru_logic.md} for the complete ASCII flow diagram of the extraction logic.
+See \code{vignette("hcru_logic")} for the complete ASCII flow diagram of the extraction logic.
 }

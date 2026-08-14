@@ -7,8 +7,25 @@
 table_summary(study)
 }
 \arguments{
-\item{study}{A hermes_cea object}
+\item{study}{A \code{hermes_cea} object}
 }
 \description{
-Summary Table
+Returns a statistical summary table of the CEA results, detailing incremental costs,
+incremental QALYs, and the ICER.
+
+\strong{Example Output:}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Cost-effectiveness analysis summary
+
+Reference intervention: Strategy 1
+Comparator intervention: Strategy 2
+
+Optimal decision: Strategy 2
+
+                 Strategy 1  Strategy 2
+Expected Costs   15000       18000
+Expected QALYs   12.5        13.1
+
+ICER: 5000 / QALY
+}\if{html}{\out{</div>}}
 }

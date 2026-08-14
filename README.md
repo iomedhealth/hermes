@@ -49,8 +49,8 @@ plot_plane(study)
 ### Outputs
 
 <p align="center">
-  <img src="docs/assets/ceplane.png" width="45%" alt="Cost-Effectiveness Plane" />
-  <img src="docs/assets/ceac.png" width="45%" alt="Cost-Effectiveness Acceptability Curve" />
+  <img src="man/figures/ceplane.png" width="45%" alt="Cost-Effectiveness Plane" />
+  <img src="man/figures/ceac.png" width="45%" alt="Cost-Effectiveness Acceptability Curve" />
 </p>
 
 ---
@@ -89,7 +89,7 @@ graph TD
 
 For a detailed technical overview, function signatures, S3 class object flow, and OMOP `COST` query strategies, please refer to the documentation:
 
-- [API & Architecture Specification](docs/API_SPECIFICATION.md)
+- [API & Architecture Specification](vignettes/API_SPECIFICATION.Rmd)
 - [Agent Guidelines & Architecture Instructions](AGENTS.md)
 
 </details>

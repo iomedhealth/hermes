@@ -8,13 +8,4 @@
 \description{
 An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data.
 }
-\author{
-\strong{Maintainer}: Gabriel Maeztu \email{gabriel.maeztu@example.com}
-
-Authors:
-\itemize{
-  \item Gabriel Maeztu \email{gabriel.maeztu@example.com}
-}
-
-}
 \keyword{internal}

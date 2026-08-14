@@ -2,13 +2,20 @@
 % Please edit documentation in R/cea.R
 \name{plot_plane}
 \alias{plot_plane}
-\title{Plot CE Plane}
+\title{Plot Cost-Effectiveness Plane}
 \usage{
 plot_plane(study)
 }
 \arguments{
-\item{study}{A hermes_cea object}
+\item{study}{A \code{hermes_cea} object.}
+}
+\value{
+A \code{ggplot2} object representing the CE plane.
 }
 \description{
-Plot CE Plane
+Generates a Cost-Effectiveness Plane scatter plot. The plot shows the difference
+in effects (Incremental QALYs) on the x-axis and the difference in costs
+(Incremental Costs) on the y-axis for each PSA sample.
+
+\figure{ceplane.png}
 }

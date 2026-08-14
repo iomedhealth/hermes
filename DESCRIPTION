@@ -2,10 +2,11 @@ Package: HERMES
 Title: Health Economics and Outcomes Research Pipeline on OMOP CDM
 Version: 0.1.0
 Author: Gabriel Maeztu [aut, cre]
-Maintainer: Gabriel Maeztu <gabriel.maeztu@example.com>
-Description: An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data.
+Maintainer: Gabriel Maeztu <gabriel@iomed.health>
+Description: An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data. Developed by IOMED.
 License: MIT + file LICENSE
-Encoding: UTF-8
+Copyright: IOMED, S.L.
+URL: https://iomed.health, https://github.com/iomedhealth/hermes
 Roxygen: list(markdown = TRUE)
 Imports:
     CDMConnector,
@@ -37,3 +38,4 @@ Remotes:
     HealthInformaticsUT/TrajectoryMarkovAnalysis
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
+Encoding: UTF-8

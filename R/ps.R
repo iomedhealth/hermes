@@ -1,7 +1,21 @@
-#' Fit Propensity Score Model
+#' Fit Propensity Score Model (Stage 3: Causal Adjustment)
 #'
-#' @param hcru_obj A hermes_hcru object
-#' @param ... Additional arguments
+#' @description
+#' `fit_ps()` estimates the probability (propensity score) of a patient being
+#' assigned to the target cohort versus the comparator cohort, based on their baseline
+#' covariates (e.g., age, sex).
+#'
+#' Because observational data lacks randomization, direct comparison between treatments
+#' is often biased by confounding variables. Propensity scores are used in HEOR to
+#' emulate a randomized controlled trial by matching or weighting patients who have
+#' similar baseline characteristics. This function currently uses regularized logistic
+#' regression via the `Cyclops` package.
+#'
+#' @param hcru_obj A `hermes_hcru` object containing the cohort data.
+#' @param ... Additional arguments passed to the underlying model fitting functions.
+#'
+#' @return A `hermes_ps` object containing the propensity score model and covariate data.
+#'
 #' @export
 #' @importFrom stats predict
 fit_ps <- function(hcru_obj, ...) {
@@ -71,11 +85,24 @@ fit_ps <- function(hcru_obj, ...) {
   )
 }
 
-#' Adjust Propensity Scores
+#' Adjust Propensity Scores (Stage 3: Causal Adjustment)
 #'
-#' @param ps_obj A hermes_ps object
-#' @param caliper Caliper distance
-#' @param ... Additional arguments
+#' @description
+#' `adjust_ps()` applies a matching algorithm based on the propensity scores calculated
+#' by `fit_ps()`.
+#'
+#' By default, it performs greedy nearest-neighbor caliper matching. This pairs patients
+#' in the target cohort with similar patients in the comparator cohort, discarding
+#' unmatched patients. The resulting matched population is less biased and suitable
+#' for generating the transition probabilities and costs used in the economic simulation.
+#'
+#' @param ps_obj A `hermes_ps` object returned by `fit_ps()`.
+#' @param caliper A numeric value specifying the maximum allowed distance between matched
+#' propensity scores. Default is 0.2.
+#' @param ... Additional arguments passed to the matching function.
+#'
+#' @return A `hermes_ps` object updated with a `matched_pop` attribute containing the matched cohort.
+#'
 #' @export
 adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
   # ponytail: minimal caliper matching
@@ -124,10 +151,21 @@ adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
   structure(ps_obj, class = "hermes_ps")
 }
 
-#' Assess Balance
+#' Assess Covariate Balance (Stage 3: Causal Adjustment)
 #'
-#' @param ps_obj A hermes_ps object
-#' @param ... Additional arguments
+#' @description
+#' `assess_balance()` calculates the Standardized Mean Differences (SMD) for covariates
+#' before and after propensity score matching.
+#'
+#' In HEOR, this is a critical diagnostic step. A well-specified propensity score model
+#' should balance the baseline covariates between the treatment and comparator arms,
+#' resulting in SMDs close to zero (typically < 0.1).
+#'
+#' @param ps_obj A `hermes_ps` object returned by `adjust_ps()`.
+#' @param ... Additional arguments.
+#'
+#' @return A `hermes_ps` object updated with an `smd_summary` attribute.
+#'
 #' @export
 assess_balance <- function(ps_obj, ...) {
   # ponytail: minimal balance wrapper

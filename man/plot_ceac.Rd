@@ -2,13 +2,20 @@
 % Please edit documentation in R/cea.R
 \name{plot_ceac}
 \alias{plot_ceac}
-\title{Plot CEAC}
+\title{Plot Cost-Effectiveness Acceptability Curve (CEAC)}
 \usage{
 plot_ceac(study)
 }
 \arguments{
-\item{study}{A hermes_cea object}
+\item{study}{A \code{hermes_cea} object.}
+}
+\value{
+A \code{ggplot2} object representing the CEAC.
 }
 \description{
-Plot CEAC
+Generates a CEAC plot based on the CEA results. The CEAC shows the probability
+that an intervention is cost-effective across a range of Willingness-to-Pay (WTP)
+thresholds. It is a standard way to represent parametric uncertainty in HEOR.
+
+\figure{ceac.png}
 }

@@ -1,0 +1,76 @@
+---
+title: "Introduction to HEOR for OMOP Users"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to HEOR for OMOP Users}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Welcome to HERMES
+
+If you are reading this, you are likely familiar with the Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) and the OHDSI ecosystem. You know how to define cohorts, run incidence rate analyses, and perhaps perform population-level effect estimation.
+
+**HERMES** (Health Economic Resource Modeling & Evaluation System) bridges the gap between the OMOP world and **Health Economics and Outcomes Research (HEOR)**. This guide will help translate the concepts you already know into the framework of Cost-Effectiveness Analysis (CEA).
+
+## What is HEOR and CEA?
+
+When a new drug or intervention enters the market, regulatory bodies (like the FDA or EMA) care about *safety and efficacy*. However, healthcare payers (governments, insurance companies, Health Technology Assessment (HTA) bodies like NICE in the UK) ask a different question: **"Is this new treatment worth the extra money?"**
+
+**Cost-Effectiveness Analysis (CEA)** is the formal mathematical process used to answer that question. It compares the relative costs and outcomes (effects) of different courses of action.
+
+### The Key Metrics: ICER and QALY
+
+To compare apples to apples across different diseases, health economists use standardized metrics:
+
+1. **QALY (Quality-Adjusted Life-Year)**: A measure of disease burden, including both the quality and the quantity of life lived. One QALY equates to one year in perfect health.
+2. **ICER (Incremental Cost-Effectiveness Ratio)**: The core output of a CEA. It represents the additional cost per additional unit of health gained (usually per QALY). 
+
+$$ ICER = \frac{Cost_{Target} - Cost_{Comparator}}{Effect_{Target} - Effect_{Comparator}} $$
+
+If a new drug costs $50,000 more than the standard of care but provides 1 additional QALY, the ICER is $50,000/QALY. Payers have a "Willingness-to-Pay" (WTP) threshold (e.g., $100,000/QALY). If the ICER is below the threshold, the drug is considered cost-effective.
+
+## The Rosetta Stone: OMOP to HEOR
+
+How do we build these economic models using observational data in the OMOP CDM? We map OHDSI concepts to HEOR concepts.
+
+| OMOP / OHDSI Concept | HEOR / CEA Concept | HERMES Stage |
+| :--- | :--- | :--- |
+| **Target Cohort** (e.g., new users of Drug A) | **Treatment Arm** (The new intervention being evaluated) | Stage 1 |
+| **Comparator Cohort** (e.g., new users of Drug B) | **Standard of Care Arm** (The baseline intervention) | Stage 1 |
+| **Outcome Cohorts** (e.g., stroke, myocardial infarction) | **Health States / Clinical Events** (Transitions in a Markov state-transition model) | Stage 4 |
+| **Concept Sets & Covariates** (Age, sex, baseline conditions) | **Patient Characteristics & Confounders** (Used for Propensity Score matching to emulate a randomized trial) | Stage 2 & 3 |
+| **COST Table** (Total paid, charge, cost concept) | **Healthcare Resource Utilization (HCRU) & Direct Medical Costs** (The numerator in the ICER) | Stage 2 & 4 |
+
+## The HERMES 6-Stage Pipeline
+
+To get from raw OMOP data to a finalized ICER and decision-analytic plots, HERMES enforces a strict 6-stage pipeline. 
+
+### 1. Cohort Generation
+You define your `target_cohort`, `comparator_cohort`, and `outcome_cohort` using standard OHDSI tools (like Atlas, Capr, or CohortConstructor) and instantiate them in the database.
+
+### 2. Descriptive Baseline & HCRU Characterization
+HERMES profiles the cohorts, extracting demographics and calculating unadjusted care utilization (hospitalizations, outpatient visits) and direct medical costs by directly querying the OMOP `COST` table.
+
+### 3. Causal Propensity Score (PS) Adjustment
+Observational data is biased. Patients prescribed the new expensive drug might be sicker (or healthier) than those on the standard of care. HERMES uses high-dimensional regularized logistic regression (via `Cyclops`) to calculate Propensity Scores and match/weight the cohorts, creating a pseudo-randomized population.
+
+### 4. Trajectory Compilation & State-Cost Extraction
+Patient timelines are sliced into discrete time cycles (e.g., months). HERMES tracks how patients transition between different health states (e.g., from "Healthy" to "Outcome Event" to "Dead") and extracts the specific costs accrued while in those states.
+
+### 5. Economic Simulation
+Using the transition probabilities and cost distributions derived in Stage 4, HERMES simulates a decision-analytic model (often a Markov model or microsimulation via `hesim`). This projects the long-term costs and QALYs over a lifetime horizon.
+
+### 6. Decision Analysis & Post-Processing (CEA)
+Finally, HERMES calculates the ICER and Net Monetary Benefit (NMB), generating standardized visualizations like the Cost-Effectiveness Plane and the Cost-Effectiveness Acceptability Curve (CEAC), powered by `BCEA`.
+
+## Next Steps
+
+Now that you understand the conceptual mapping, check out the **Guides** section to see how HERMES handles specific technical challenges, such as safely extracting data from the OMOP `COST` table.
