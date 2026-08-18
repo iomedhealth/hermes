@@ -27,11 +27,11 @@ to generate these standardized summaries.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{# A tibble: 5 × 4
   variable_name variable_level estimate_name estimate_value
-  <chr>         <chr>          <chr>         <chr>         
-1 Number records NA             count         1000          
-2 Age           NA             mean          65.2          
-3 Age           NA             sd            10.1          
-4 Sex           Female         count         450           
-5 Sex           Female         percentage    45.0          
+  <chr>         <chr>          <chr>         <chr>
+1 Number records NA             count         1000
+2 Age           NA             mean          65.2
+3 Age           NA             sd            10.1
+4 Sex           Female         count         450
+5 Sex           Female         percentage    45.0
 }\if{html}{\out{</div>}}
 }

@@ -2,36 +2,53 @@
 % Please edit documentation in R/hcru.R
 \name{extract_hcru}
 \alias{extract_hcru}
-\title{Extract Healthcare Resource Utilization (HCRU) from the OMOP COST table (Stage 2: HCRU)}
+\title{Extract Healthcare Resource Utilization (HCRU) from OMOP CDM (Stage 2: HCRU)}
 \usage{
-extract_hcru(study)
+extract_hcru(
+  study,
+  baseline_window = c(-365, -1),
+  followup_window = c(0, 365),
+  cost_field = "total_paid",
+  visit_domains = c("inpatient", "outpatient", "emergency", "specialist"),
+  pharmacotherapy = TRUE,
+  diagnostics = TRUE,
+  post_acute = TRUE,
+  calculate_readmissions = FALSE,
+  persistence = FALSE
+)
 }
 \arguments{
 \item{study}{A \code{hermes_study} or \code{hermes_hcru} object.}
+
+\item{baseline_window}{Relative days from cohort start date defining baseline (default \code{c(-365, -1)}).}
+
+\item{followup_window}{Relative days from cohort start date defining follow-up (default \code{c(0, 365)}).}
+
+\item{cost_field}{Column name in \code{cost} table to aggregate (default \code{"total_paid"}).}
+
+\item{visit_domains}{Visit categories to extract from \code{visit_occurrence}.}
+
+\item{pharmacotherapy}{Logical, whether to extract drug exposures (default \code{TRUE}).}
+
+\item{diagnostics}{Logical, whether to extract procedures and measurements (default \code{TRUE}).}
+
+\item{post_acute}{Logical, whether to extract post-acute/SNF/hospice care (default \code{TRUE}).}
+
+\item{calculate_readmissions}{Logical, whether to compute 30-day and 90-day readmissions (default \code{FALSE}).}
+
+\item{persistence}{Logical, whether to calculate Proportion of Days Covered (PDC) (default \code{FALSE}).}
 }
 \value{
-A \code{hermes_hcru} object enriched with raw, patient-level cost data.
+A \code{hermes_hcru} object enriched with \code{study$costs} and \code{study$hcru}.
 }
 \description{
-\code{extract_hcru()} queries the OMOP CDM \code{cost} table to extract direct medical costs
-and resource utilization associated with the patients in the study cohorts.
+\code{extract_hcru()} queries the OMOP CDM to extract direct medical costs and
+resource utilization across five core clinical domains (inpatient, outpatient,
+pharmacotherapy, diagnostics/procedures, post-acute care) for patients in the
+study cohorts across baseline and follow-up temporal windows.
 
 In Cost-Effectiveness Analysis (CEA), Healthcare Resource Utilization (HCRU) forms
 the numerator of the Incremental Cost-Effectiveness Ratio (ICER). This function
-safely handles edge cases (like missing tables or masked financial values) and
-tags costs with the patient's health state at the time the cost was incurred
-(e.g., before or after the outcome event).
-
-\strong{Example Output Structure:}
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{# A tibble: 5 × 5
-  subject_id total_paid total_charge condition_concept_id health_state  
-       <int>      <dbl>        <dbl>                <int> <chr>         
-1        101       150.         300.               317009 State_Baseline
-2        101       450.         900.               317009 State_Outcome 
-3        102      1200.        2400.               432904 State_Baseline
-}\if{html}{\out{</div>}}
-}
-\seealso{
-See \code{vignette("hcru_logic")} for the complete ASCII flow diagram of the extraction logic.
+links OMOP \code{cost} records to clinical events and tags costs with the patient's
+health state (e.g., before or after the outcome event).
 }

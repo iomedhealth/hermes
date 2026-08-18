@@ -6,6 +6,16 @@
 \alias{HERMES-package}
 \title{HERMES: Health Economics and Outcomes Research Pipeline on OMOP CDM}
 \description{
-An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data.
+\if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
+
+An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data. Developed by IOMED.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://iomed.health}
+  \item \url{https://github.com/iomedhealth/hermes}
+}
+
 }
 \keyword{internal}

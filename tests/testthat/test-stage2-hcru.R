@@ -1,30 +1,5 @@
-test_that("T005 [US2] baseline demographics and comorbidity generation", {
-  cdm <- hermes_test_cdm()
-
-  # create mock cohort tables
-  target <- tibble::tibble(
-    cohort_definition_id = 1L,
-    subject_id = 1L,
-    cohort_start_date = as.Date("2010-01-01"),
-    cohort_end_date = as.Date("2010-12-31")
-  )
-
-  DBI::dbWriteTable(attr(cdm, "dbcon"), "target_cohort", target)
-  DBI::dbWriteTable(attr(cdm, "dbcon"), "comparator_cohort", target)
-  DBI::dbWriteTable(attr(cdm, "dbcon"), "outcome_cohort", target)
-
-  cdm <- CDMConnector::cdmFromCon(attr(cdm, "dbcon"), cdmSchema = "main", writeSchema = "main")
-
-  cdm$target_cohort <- dplyr::tbl(attr(cdm, "dbcon"), "target_cohort")
-  cdm$comparator_cohort <- dplyr::tbl(attr(cdm, "dbcon"), "comparator_cohort")
-  cdm$outcome_cohort <- dplyr::tbl(attr(cdm, "dbcon"), "outcome_cohort")
-
-  cdm$target_cohort <- omopgenerics::newCohortTable(cdm$target_cohort)
-  cdm$comparator_cohort <- omopgenerics::newCohortTable(cdm$comparator_cohort)
-  cdm$outcome_cohort <- omopgenerics::newCohortTable(cdm$outcome_cohort)
-
-  study <- init(cdm, "target_cohort", "comparator_cohort", "outcome_cohort")
-
+test_that("baseline demographics and comorbidity generation", {
+  study <- hermes_test_study()
   hcru <- summarise_baseline(study)
 
   expect_true(inherits(hcru, "hermes_hcru"))
@@ -32,44 +7,183 @@ test_that("T005 [US2] baseline demographics and comorbidity generation", {
   expect_true(inherits(hcru$baseline_summary, "summarised_result"))
 })
 
-test_that("T006 [US2] HCRU unadjusted care utilization and medical cost extraction", {
-  cdm <- hermes_test_cdm()
+test_that("T005 [US1] extract_hcru validates arguments correctly", {
+  study <- hermes_test_study()
+  expect_error(extract_hcru(list()), "Argument 'study' must be a hermes_study or hermes_hcru object")
+  expect_error(extract_hcru(study, baseline_window = c(0, -100)), "Argument 'baseline_window' must be a numeric vector of length 2 with start <= end")
+  expect_error(extract_hcru(study, followup_window = c(100, 50)), "Argument 'followup_window' must be a numeric vector of length 2 with start <= end")
+  expect_error(extract_hcru(study, cost_field = 123), "Argument 'cost_field' must be a single string")
+})
 
-  # create mock cohort tables
-  target <- tibble::tibble(
-    cohort_definition_id = 1L,
-    subject_id = 1L,
-    cohort_start_date = as.Date("2010-01-01"),
-    cohort_end_date = as.Date("2010-12-31")
+test_that("T005 [US1] extract_hcru filters to cohort members and tags temporal windows and health states", {
+  study <- hermes_test_study()
+
+  hcru_out <- extract_hcru(
+    study = study,
+    baseline_window = c(-365, -1),
+    followup_window = c(0, 365),
+    cost_field = "total_paid"
   )
 
-  DBI::dbWriteTable(attr(cdm, "dbcon"), "target_cohort", target)
-  DBI::dbWriteTable(attr(cdm, "dbcon"), "comparator_cohort", target)
-  DBI::dbWriteTable(attr(cdm, "dbcon"), "outcome_cohort", target)
+  expect_true(inherits(hcru_out, "hermes_hcru"))
+  expect_true(inherits(hcru_out, "hermes_study"))
+  expect_true(!is.null(hcru_out$costs))
+  expect_true(is.data.frame(hcru_out$costs))
+  expect_true(all(c("subject_id", "total_paid", "total_charge", "health_state", "cost_domain") %in% colnames(hcru_out$costs)))
 
-  cdm <- CDMConnector::cdmFromCon(attr(cdm, "dbcon"), cdmSchema = "main", writeSchema = "main")
+  # All extracted costs belong to cohort subjects (1, 2, 3)
+  expect_true(all(hcru_out$costs$subject_id %in% c(1L, 2L, 3L)))
 
-  cdm$target_cohort <- dplyr::tbl(attr(cdm, "dbcon"), "target_cohort")
-  cdm$comparator_cohort <- dplyr::tbl(attr(cdm, "dbcon"), "comparator_cohort")
-  cdm$outcome_cohort <- dplyr::tbl(attr(cdm, "dbcon"), "outcome_cohort")
+  # Patient 1 has outcome on 2010-06-01. Events on or after 2010-06-01 should be tagged State_Outcome
+  post_outcome_costs <- hcru_out$costs |> dplyr::filter(subject_id == 1L, health_state == "State_Outcome")
+  expect_gte(nrow(post_outcome_costs), 1)
 
-  cdm$target_cohort <- omopgenerics::newCohortTable(cdm$target_cohort)
-  cdm$comparator_cohort <- omopgenerics::newCohortTable(cdm$comparator_cohort)
-  cdm$outcome_cohort <- omopgenerics::newCohortTable(cdm$outcome_cohort)
+  # Check patient_summary presence and structure
+  expect_true(!is.null(hcru_out$hcru$patient_summary))
+  expect_true(is.data.frame(hcru_out$hcru$patient_summary))
+  expect_true(all(c("subject_id", "window", "total_cost") %in% colnames(hcru_out$hcru$patient_summary)))
+
+  # Scaffolding: all 3 cohort patients must exist across both baseline and followup windows (3 * 2 = 6 rows)
+  expect_equal(nrow(hcru_out$hcru$patient_summary), 6)
+  expect_setequal(unique(hcru_out$hcru$patient_summary$subject_id), c(1L, 2L, 3L))
+})
+
+test_that("T005 [US1] extract_hcru handles missing cost table gracefully", {
+  con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+  withr::defer(DBI::dbDisconnect(con, shutdown = TRUE))
+
+  person <- tibble::tibble(person_id = 1L, gender_concept_id = 0L, year_of_birth = 1980L, race_concept_id = 0L, ethnicity_concept_id = 0L)
+  observation_period <- tibble::tibble(observation_period_id = 1L, person_id = 1L, observation_period_start_date = as.Date("2000-01-01"), observation_period_end_date = as.Date("2020-12-31"), period_type_concept_id = 0L)
+  target <- tibble::tibble(cohort_definition_id = 1L, subject_id = 1L, cohort_start_date = as.Date("2010-01-01"), cohort_end_date = as.Date("2010-12-31"))
+
+  DBI::dbWriteTable(con, "person", person)
+  DBI::dbWriteTable(con, "observation_period", observation_period)
+
+  cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+  cdm <- omopgenerics::insertTable(cdm, name = "target_cohort", table = target)
+  cdm$target_cohort <- newCohortTable(cdm$target_cohort)
+  cdm <- omopgenerics::insertTable(cdm, name = "comparator_cohort", table = target)
+  cdm$comparator_cohort <- newCohortTable(cdm$comparator_cohort)
+  cdm <- omopgenerics::insertTable(cdm, name = "outcome_cohort", table = target)
+  cdm$outcome_cohort <- newCohortTable(cdm$outcome_cohort)
 
   study <- init(cdm, "target_cohort", "comparator_cohort", "outcome_cohort")
 
-  # Create a dummy hcru object like it passed from summarise_baseline
-  hcru_in <- structure(study, class = c("hermes_hcru", "hermes_study", "list"))
+  expect_warning(
+    hcru_out <- extract_hcru(study),
+    "Missing 'cost' table in CDM. Skipping cost extraction."
+  )
 
-  hcru_out <- extract_hcru(hcru_in)
-
-  expect_true(inherits(hcru_out, "hermes_hcru"))
-  expect_true(!is.null(hcru_out$costs))
   expect_true(is.data.frame(hcru_out$costs))
+  expect_equal(nrow(hcru_out$costs), 0)
+  expect_true(all(c("subject_id", "total_paid", "total_charge", "health_state", "cost_domain") %in% colnames(hcru_out$costs)))
+})
 
-  # Should extract patient-level costs
-  expect_equal(nrow(hcru_out$costs), 3)
-  expect_true(all(c("subject_id", "total_paid", "health_state") %in% colnames(hcru_out$costs)))
-  expect_equal(sum(hcru_out$costs$total_paid), 1150) # 500 + 550 + 100
+test_that("T010 [US2] extract_hcru extracts inpatient LOS, ICU, readmissions, and outpatient specialty", {
+  study <- hermes_test_study()
+
+  hcru_out <- extract_hcru(
+    study = study,
+    calculate_readmissions = TRUE
+  )
+
+  # Check inpatient table
+  expect_true(!is.null(hcru_out$hcru$inpatient))
+  expect_true(is.data.frame(hcru_out$hcru$inpatient))
+  expect_true(all(c("subject_id", "window", "inpatient_admissions", "inpatient_los_days", "icu_admissions", "icu_los_days", "readmissions_30d", "readmissions_90d") %in% colnames(hcru_out$hcru$inpatient)))
+
+  # Patient 1 has 2 inpatient visits (LOS 4 + 3 = 7 days), 1 ICU visit (LOS 2 days), and 1 30d readmission in followup
+  p1_followup_inp <- hcru_out$hcru$inpatient |> dplyr::filter(subject_id == 1L, window == "followup")
+  expect_equal(p1_followup_inp$inpatient_admissions, 2)
+  expect_equal(p1_followup_inp$inpatient_los_days, 7)
+  expect_equal(p1_followup_inp$icu_admissions, 1)
+  expect_equal(p1_followup_inp$icu_los_days, 2)
+  expect_equal(p1_followup_inp$readmissions_30d, 1)
+
+  # Patient 3 has zero inpatient visits
+  p3_inp <- hcru_out$hcru$inpatient |> dplyr::filter(subject_id == 3L)
+  expect_equal(sum(p3_inp$inpatient_admissions), 0)
+  expect_equal(sum(p3_inp$inpatient_los_days), 0)
+
+  # Check outpatient table
+  expect_true(!is.null(hcru_out$hcru$outpatient))
+  expect_true(is.data.frame(hcru_out$hcru$outpatient))
+  expect_true(all(c("subject_id", "window", "emergency_visits", "gp_visits", "specialist_visits", "other_outpatient_visits") %in% colnames(hcru_out$hcru$outpatient)))
+
+  # Patient 1 in baseline has 1 ED visit (2009-10-01)
+  p1_base_out <- hcru_out$hcru$outpatient |> dplyr::filter(subject_id == 1L, window == "baseline")
+  expect_equal(p1_base_out$emergency_visits, 1)
+  expect_equal(p1_base_out$gp_visits, 0)
+
+  # Patient 1 in followup has 1 GP visit and 1 Specialist visit
+  p1_foll_out <- hcru_out$hcru$outpatient |> dplyr::filter(subject_id == 1L, window == "followup")
+  expect_equal(p1_foll_out$gp_visits, 1)
+  expect_equal(p1_foll_out$specialist_visits, 1)
+})
+
+test_that("T014 [US3] extract_hcru extracts pharmacotherapy, diagnostics, and post-acute stays", {
+  study <- hermes_test_study()
+
+  hcru_out <- extract_hcru(
+    study = study,
+    pharmacotherapy = TRUE,
+    diagnostics = TRUE,
+    post_acute = TRUE,
+    persistence = TRUE
+  )
+
+  # Check pharmacotherapy table
+  expect_true(!is.null(hcru_out$hcru$pharmacotherapy))
+  expect_true(is.data.frame(hcru_out$hcru$pharmacotherapy))
+  expect_true(all(c("subject_id", "window", "prescription_fills", "total_days_supply", "pdc") %in% colnames(hcru_out$hcru$pharmacotherapy)))
+
+  # Patient 1 has 1 drug in baseline (2009-08-01, 30 days) and 1 drug in followup (2010-01-15, 30 days)
+  p1_pharma_base <- hcru_out$hcru$pharmacotherapy |> dplyr::filter(subject_id == 1L, window == "baseline")
+  expect_equal(p1_pharma_base$prescription_fills, 1)
+  expect_equal(p1_pharma_base$total_days_supply, 30)
+
+  p1_pharma_foll <- hcru_out$hcru$pharmacotherapy |> dplyr::filter(subject_id == 1L, window == "followup")
+  expect_equal(p1_pharma_foll$prescription_fills, 1)
+  expect_equal(p1_pharma_foll$total_days_supply, 30)
+  expect_true(!is.na(p1_pharma_foll$pdc))
+
+  # Check procedures & diagnostics table
+  expect_true(!is.null(hcru_out$hcru$procedures_diagnostics))
+  expect_true(is.data.frame(hcru_out$hcru$procedures_diagnostics))
+  expect_true(all(c("subject_id", "window", "procedure_count", "measurement_count") %in% colnames(hcru_out$hcru$procedures_diagnostics)))
+
+  p1_diag_base <- hcru_out$hcru$procedures_diagnostics |> dplyr::filter(subject_id == 1L, window == "baseline")
+  expect_equal(p1_diag_base$procedure_count, 1)
+  expect_equal(p1_diag_base$measurement_count, 1)
+
+  p1_diag_foll <- hcru_out$hcru$procedures_diagnostics |> dplyr::filter(subject_id == 1L, window == "followup")
+  expect_equal(p1_diag_foll$procedure_count, 1)
+  expect_equal(p1_diag_foll$measurement_count, 1)
+
+  # Check post-acute table
+  expect_true(!is.null(hcru_out$hcru$post_acute))
+  expect_true(is.data.frame(hcru_out$hcru$post_acute))
+  expect_true(all(c("subject_id", "window", "post_acute_stays", "post_acute_los_days") %in% colnames(hcru_out$hcru$post_acute)))
+
+  # Patient 1 has 1 SNF visit in followup (LOS = 9 days)
+  p1_post_foll <- hcru_out$hcru$post_acute |> dplyr::filter(subject_id == 1L, window == "followup")
+  expect_equal(p1_post_foll$post_acute_stays, 1)
+  expect_equal(p1_post_foll$post_acute_los_days, 9)
+
+  # Patient 3 has zero post-acute stays
+  p3_post <- hcru_out$hcru$post_acute |> dplyr::filter(subject_id == 3L)
+  expect_equal(sum(p3_post$post_acute_stays), 0)
+  expect_equal(sum(p3_post$post_acute_los_days), 0)
+
+  # Check patient_summary combined columns
+  summary_cols <- colnames(hcru_out$hcru$patient_summary)
+  expect_true(all(c(
+    "subject_id", "window",
+    "inpatient_admissions", "inpatient_los_days", "icu_admissions", "icu_los_days",
+    "emergency_visits", "gp_visits", "specialist_visits",
+    "prescription_fills", "total_days_supply",
+    "procedure_count", "measurement_count",
+    "post_acute_stays", "post_acute_los_days",
+    "total_cost"
+  ) %in% summary_cols))
 })

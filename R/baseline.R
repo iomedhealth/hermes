@@ -9,17 +9,17 @@
 #' (e.g., the target cohort is much older or sicker), direct cost or outcome comparisons
 #' will be biased. This function leverages `PatientProfiles` and `CohortCharacteristics`
 #' to generate these standardized summaries.
-#' 
+#'
 #' **Example Output Structure:**
 #' ```
 #' # A tibble: 5 × 4
 #'   variable_name variable_level estimate_name estimate_value
-#'   <chr>         <chr>          <chr>         <chr>         
-#' 1 Number records NA             count         1000          
-#' 2 Age           NA             mean          65.2          
-#' 3 Age           NA             sd            10.1          
-#' 4 Sex           Female         count         450           
-#' 5 Sex           Female         percentage    45.0          
+#'   <chr>         <chr>          <chr>         <chr>
+#' 1 Number records NA             count         1000
+#' 2 Age           NA             mean          65.2
+#' 3 Age           NA             sd            10.1
+#' 4 Sex           Female         count         450
+#' 5 Sex           Female         percentage    45.0
 #' ```
 #'
 #' @param study A `hermes_study` object, typically the output of `init()`.

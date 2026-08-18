@@ -44,7 +44,7 @@ run_cea <- function(hermes_sim) {
 #' Generates a CEAC plot based on the CEA results. The CEAC shows the probability
 #' that an intervention is cost-effective across a range of Willingness-to-Pay (WTP)
 #' thresholds. It is a standard way to represent parametric uncertainty in HEOR.
-#' 
+#'
 #' \figure{ceac.png}
 #'
 #' @param study A `hermes_cea` object.
@@ -71,24 +71,24 @@ plot_ceac <- function(study) BCEA::ceac.plot(study$cea_results)
 plot_plane <- function(study) BCEA::ceplane.plot(study$cea_results)
 
 #' Summary Table
-#' 
+#'
 #' @description
-#' Returns a statistical summary table of the CEA results, detailing incremental costs, 
+#' Returns a statistical summary table of the CEA results, detailing incremental costs,
 #' incremental QALYs, and the ICER.
-#' 
+#'
 #' **Example Output:**
 #' ```
 #' Cost-effectiveness analysis summary
-#' 
+#'
 #' Reference intervention: Strategy 1
 #' Comparator intervention: Strategy 2
-#' 
+#'
 #' Optimal decision: Strategy 2
-#' 
+#'
 #'                  Strategy 1  Strategy 2
 #' Expected Costs   15000       18000
 #' Expected QALYs   12.5        13.1
-#' 
+#'
 #' ICER: 5000 / QALY
 #' ```
 #'

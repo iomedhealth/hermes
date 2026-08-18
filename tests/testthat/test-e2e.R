@@ -56,7 +56,18 @@ test_that("End-to-End pipeline produces valid CEA plots", {
 
   # Stage 2: Baseline & HCRU
   study <- summarise_baseline(study)
-  study <- extract_hcru(study)
+  study <- extract_hcru(study, calculate_readmissions = TRUE)
+
+  expect_true(inherits(study, "hermes_hcru"))
+  expect_true(!is.null(study$costs))
+  expect_true(is.data.frame(study$costs))
+  expect_true(!is.null(study$hcru$patient_summary))
+  expect_true(is.data.frame(study$hcru$inpatient))
+  expect_true(is.data.frame(study$hcru$outpatient))
+  expect_true(is.data.frame(study$hcru$pharmacotherapy))
+  expect_true(is.data.frame(study$hcru$procedures_diagnostics))
+  expect_true(is.data.frame(study$hcru$post_acute))
+  expect_gt(nrow(study$hcru$patient_summary), 0)
 
   # Stage 3: PS Adjustment
   study <- fit_ps(study)

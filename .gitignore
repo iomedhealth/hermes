@@ -17,3 +17,5 @@ Thumbs.db
 .idea/
 docs/
 pkgdown/
+.specify/extensions/.cache/
+.specify/feature.json

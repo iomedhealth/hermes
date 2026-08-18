@@ -52,5 +52,5 @@ Agents developing functions or modules in HERMES must align their implementation
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/004-fix-e2e-data-flow/plan.md
+specs/005-hcru-domain-extraction/plan.md
 <!-- SPECKIT END -->
