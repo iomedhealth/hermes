@@ -290,6 +290,71 @@ year_escalation.columns = ['Decree Year', 'INE Index (2021=100)', 'Deflator Fact
 
 
 # ==========================================
+# 7. Summary Variables for Dynamic Templating
+# ==========================================
+total_records = len(costs_df)
+n_jurisdictions = costs_df['ccaa'].nunique()
+year_min = costs_df['year_original'].min()
+year_max = costs_df['year_original'].max()
+n_settings = costs_df['setting'].nunique()
+
+domain_counts = costs_df['omop_domain'].value_counts()
+pct_visit = (domain_counts.get('Visit', 0) / total_records * 100)
+pct_meas = (domain_counts.get('Measurement', 0) / total_records * 100)
+pct_proc = (domain_counts.get('Procedure', 0) / total_records * 100)
+
+n_coded = (costs_df['code_std'] != '').sum()
+pct_coded = (n_coded / total_records * 100)
+n_apr = costs_df['code_std'].str.startswith('APR-GRD:').sum()
+pct_apr = (n_apr / total_records * 100)
+n_reg = costs_df['code_std'].str.startswith('REGIONAL:').sum()
+pct_reg = (n_reg / total_records * 100)
+n_icd9 = costs_df['code_std'].str.startswith('ICD-9-CM:').sum()
+pct_icd9 = (n_icd9 / total_records * 100)
+n_icd10 = costs_df['code_std'].str.startswith('ICD-10-PCS:').sum()
+pct_icd10 = (n_icd10 / total_records * 100)
+
+unadj_mean = costs_df['cost_original'].mean()
+unadj_median = costs_df['cost_original'].median()
+unadj_min = costs_df['cost_original'].min()
+unadj_max = costs_df['cost_original'].max()
+
+upd_mean = costs_df['cost_updated'].mean()
+upd_median = costs_df['cost_updated'].median()
+upd_min = costs_df['cost_updated'].min()
+upd_max = costs_df['cost_updated'].max()
+
+agg_orig_m = costs_df['cost_original'].sum() / 1e6
+agg_upd_m = costs_df['cost_updated'].sum() / 1e6
+agg_diff_pct = ((agg_upd_m / agg_orig_m) - 1.0) * 100
+
+top5_ccaa = ccaa_summary.head(5)
+top5_text = ", ".join([f"**{r['ccaa']} ({r['pct_total']:.2f}%)**" for _, r in top5_ccaa.iterrows()])
+top5_share = top5_ccaa['pct_total'].sum()
+
+bottom3_ccaa = ccaa_summary.tail(3)
+bottom3_text = ", ".join([f"**{r['ccaa']} ({r['pct_total']:.2f}%)**" for _, r in bottom3_ccaa.iterrows()])
+
+n_sev_records = len(sev_df)
+sev1_mean = sev_summary.loc[sev_summary['severity'] == 1, 'mean_upd'].values[0] if 1 in sev_summary['severity'].values else 0
+sev1_med = sev_summary.loc[sev_summary['severity'] == 1, 'median_upd'].values[0] if 1 in sev_summary['severity'].values else 0
+
+sev2_mean = sev_summary.loc[sev_summary['severity'] == 2, 'mean_upd'].values[0] if 2 in sev_summary['severity'].values else 0
+sev2_med = sev_summary.loc[sev_summary['severity'] == 2, 'median_upd'].values[0] if 2 in sev_summary['severity'].values else 0
+sev2_step = sev_summary.loc[sev_summary['severity'] == 2, 'step_increase_mean'].values[0] if 2 in sev_summary['severity'].values else 0
+sev2_ratio = sev_summary.loc[sev_summary['severity'] == 2, 'relative_to_sev1'].values[0] if 2 in sev_summary['severity'].values else 0
+
+sev3_mean = sev_summary.loc[sev_summary['severity'] == 3, 'mean_upd'].values[0] if 3 in sev_summary['severity'].values else 0
+sev3_med = sev_summary.loc[sev_summary['severity'] == 3, 'median_upd'].values[0] if 3 in sev_summary['severity'].values else 0
+sev3_step = sev_summary.loc[sev_summary['severity'] == 3, 'step_increase_mean'].values[0] if 3 in sev_summary['severity'].values else 0
+sev3_ratio = sev_summary.loc[sev_summary['severity'] == 3, 'relative_to_sev1'].values[0] if 3 in sev_summary['severity'].values else 0
+
+sev4_mean = sev_summary.loc[sev_summary['severity'] == 4, 'mean_upd'].values[0] if 4 in sev_summary['severity'].values else 0
+sev4_med = sev_summary.loc[sev_summary['severity'] == 4, 'median_upd'].values[0] if 4 in sev_summary['severity'].values else 0
+sev4_step = sev_summary.loc[sev_summary['severity'] == 4, 'step_increase_mean'].values[0] if 4 in sev_summary['severity'].values else 0
+sev4_ratio = sev_summary.loc[sev_summary['severity'] == 4, 'relative_to_sev1'].values[0] if 4 in sev_summary['severity'].values else 0
+
+# ==========================================
 # BUILD MARKDOWN REPORT
 # ==========================================
 
@@ -309,48 +374,48 @@ report_md = f"""# Exploratory Data Analysis (EDA) & HEOR Statistical Audit: Span
 
 This report delivers a comprehensive, mathematically rigorous Exploratory Data Analysis (EDA) and Health Economics and Outcomes Research (HEOR) validation of the canonical Spanish ground-source healthcare cost database in **HERMES**.
 
-The database unifies **33,030 standardized cost line-items** extracted from official regional gazettes (*Boletines Oficiales*) across all **17 Autonomous Communities**, the autonomous cities of **Ceuta and Melilla (INGESA)**, and the **Ministry of Health National Casemix (SNS APR-GRD)**, linked to the official **Instituto Nacional de Estadística (INE) ECOICOP 06 Sanidad** deflator series (Base 2021 = 100).
+The database unifies **{total_records:,} standardized cost line-items** extracted from official regional gazettes (*Boletines Oficiales*) across all **17 Autonomous Communities**, the autonomous cities of **Ceuta and Melilla (INGESA)**, and the **Ministry of Health National Casemix (SNS APR-GRD)**, linked to the official **Instituto Nacional de Estadística (INE) ECOICOP 06 Sanidad** deflator series (Base 2021 = 100).
 
 ```
 ========================================================================================
                               HERMES COST DATABASE AT A GLANCE
 ========================================================================================
-  • Total Catalog Records:          33,030 line items (100% complete across 15 attributes)
-  • Jurisdictional Entities:       19 (17 Autonomous Communities + INGESA + National Casemix)
-  • Publication Decrees Span:       2013 to 2024 (Official Gazettes / BOC, BOJA, DOGV, etc.)
-  • Clinical Settings Covered:      7 (Outpatient, Inpatient, Diagnostics, Procedures, ICU, ED, Primary Care)
-  • OMOP CDM Domains:               3 (Visit: 81.44%, Measurement: 14.26%, Procedure: 4.30%)
-  • Standardized Coding Coverage:   37.41% (APR-GRD: 19.42%, REGIONAL: 17.99%, ICD-9-CM: 0.003%)
-  • Unadjusted Mean Tariff:         €5,368.53 (Median: €436.00 | Range: €0.50 – €199,208.00)
-  • Constant 2026 Mean Tariff:      €5,716.49 (Median: €468.20 | Range: €0.52 – €211,664.54)
-  • Aggregate Catalog Value:        €177.33M (Baseline) ──> €188.82M (Constant 2026, +6.49%)
+  • Total Catalog Records:          {total_records:,} line items (100% complete across 15 attributes)
+  • Jurisdictional Entities:       {n_jurisdictions} (17 Autonomous Communities + INGESA + National Casemix)
+  • Publication Decrees Span:       {year_min} to {year_max} (Official Gazettes / BOC, BOJA, DOGV, etc.)
+  • Clinical Settings Covered:      {n_settings} (Outpatient, Inpatient, Diagnostics, Procedures, Emergency, Primary Care, ICU)
+  • OMOP CDM Domains:               3 (Visit: {pct_visit:.2f}%, Measurement: {pct_meas:.2f}%, Procedure: {pct_proc:.2f}%)
+  • Standardized Coding Coverage:   {pct_coded:.2f}% (APR-GRD: {pct_apr:.2f}%, REGIONAL: {pct_reg:.2f}%, ICD-10-PCS: {pct_icd10:.2f}%, ICD-9-CM: {pct_icd9:.2f}%)
+  • Unadjusted Mean Tariff:         €{unadj_mean:,.2f} (Median: €{unadj_median:,.2f} | Range: €{unadj_min:,.2f} – €{unadj_max:,.2f})
+  • Constant 2026 Mean Tariff:      €{upd_mean:,.2f} (Median: €{upd_median:,.2f} | Range: €{upd_min:,.2f} – €{upd_max:,.2f})
+  • Aggregate Catalog Value:        €{agg_orig_m:,.2f}M (Baseline) ──> €{agg_upd_m:,.2f}M (Constant 2026, +{agg_diff_pct:.2f}%)
 ========================================================================================
 ```
 
 ### Key Analytical Takeaways
 
 1. **Volume & Coverage Heterogeneity**:
-   Catalog volume exhibits high concentration in five major autonomous communities—**Cataluña (15.70%)**, **Andalucía (14.69%)**, **Extremadura (11.18%)**, **Baleares (10.15%)**, and **Región de Murcia (9.55%)**—which collectively account for **61.27%** of all catalog items. Conversely, sparse catalogs exist in **Comunitat Valenciana (0.85%)**, **Castilla-La Mancha (0.46%)**, and **Asturias (0.38%)**, driven by differences in gazette granularity (modular procedure catalogs vs bundled per diem fees).
+   Catalog volume exhibits high concentration in five major autonomous communities—{top5_text}—which collectively account for **{top5_share:.2f}%** of all catalog items. Conversely, sparser catalogs exist in {bottom3_text}, driven by differences in gazette granularity (modular procedure catalogs vs bundled per diem fees).
 
 2. **Empirical Validation of APR-GRD Severity Escalation**:
-   Analysis of **5,884 APR-GRD records** with explicit severity levels (1 through 4) reveals **strict monotonic cost escalation** with clinical complexity:
-   - **Severity 1 (Minor)**: Mean €8,129.41 (Median €4,854.53)
-   - **Severity 2 (Moderate)**: Mean €10,856.61 (**+33.55%** over Sev 1 | Median €6,631.83)
-   - **Severity 3 (Major)**: Mean €16,254.61 (**+49.72%** over Sev 2 | Median €10,690.80)
-   - **Severity 4 (Extreme)**: Mean €29,900.24 (**+83.95%** over Sev 3 | Median €22,351.43; **3.68x** Severity 1).
+   Analysis of **{n_sev_records:,} APR-GRD records** with explicit severity levels (1 through 4) reveals **strict monotonic cost escalation** with clinical complexity:
+   - **Severity 1 (Minor)**: Mean €{sev1_mean:,.2f} (Median €{sev1_med:,.2f})
+   - **Severity 2 (Moderate)**: Mean €{sev2_mean:,.2f} (**+{sev2_step:.2f}%** over Sev 1 | Median €{sev2_med:,.2f})
+   - **Severity 3 (Major)**: Mean €{sev3_mean:,.2f} (**+{sev3_step:.2f}%** over Sev 2 | Median €{sev3_med:,.2f})
+   - **Severity 4 (Extreme)**: Mean €{sev4_mean:,.2f} (**+{sev4_step:.2f}%** over Sev 3 | Median €{sev4_med:,.2f}; **{sev4_ratio:.2f}x** Severity 1).
    This empirical step-function provides statistical validation for Stage 4 health state cost modeling in HERMES.
 
 3. **High Regional Price Disparities Across Clinical Benchmarks**:
    Substantial inter-regional coefficient of variation ($CV = \\sigma / \\mu$) is observed across standard HEOR benchmarks:
-   - Standardized consultations show moderate variation ($CV = 0.406$ for Specialist First Visits, Mean €115.88; $CV = 0.536$ for Primary Care Visits, Mean €83.84).
-   - Inpatient per diem ($CV = 4.021$) and ICU per diem ($CV = 2.161$) show extreme variation due to structural divergence in regional billing methodologies (unbundled base bed per diem vs fully loaded per diem encompassing diagnostics, pharmacy, and physician fees).
-   - Standard surgical DRGs demonstrate consistent relative cost structures across regions with modest variation ($CV = 0.506$ for Knee Arthroplasty, $CV = 0.639$ for Appendectomy).
+   - Standardized consultations show moderate variation for Specialist First Visits and Primary Care Visits.
+   - Inpatient per diem and ICU per diem show variation due to structural divergence in regional billing methodologies (unbundled base bed per diem vs fully loaded per diem encompassing diagnostics, pharmacy, and physician fees).
+   - Standard surgical DRGs demonstrate consistent relative cost structures across regions with modest variation.
 
 4. **Inflation Escalation Dynamics (INE ECOICOP 06 Sanidad)**:
    Healthcare sector inflation between 2013 and 2024 lagged general headline CPI during 2014–2020 before accelerating post-2021. Escalating legacy tariffs (2013–2014 decrees from Castilla y León, Galicia, Castilla-La Mancha, INGESA) to constant 2026 values requires a **+12.52% to +12.68% upward adjustment**, whereas recent decrees (2024 from Andalucía, Canarias, Murcia, País Vasco, Extremadura) require **+4.13%**.
 
 5. **Data Hygiene & Cleansing Directives for HERMES**:
-   The audit identified 350 low-tariff line items (< €2.00) in certain regional gazettes (e.g. Murcia, Comunitat Valenciana) corresponding to non-clinical administrative taxes (port authority concessions, administrative certification fees) captured during legal scraping. These records must be filtered prior to OMOP HCRU matching.
+   Sub-Euro line items correspond to per-kilometer transport fees and laboratory tests. The scraper distinguishes `per_km` transport tariffs and filters out non-tariff glossary definitions.
 
 ---
 
@@ -366,17 +431,17 @@ The dataset contains representation from all **17 Autonomous Communities**, **IN
 ```
 Regional Decree Vintage Distribution (Publication Years)
 ========================================================================================
-2013 █▎ (1,361 items: Castilla y León, INGESA)
-2014 ▉ (794 items: Galicia, Castilla-La Mancha)
-2017 █▍ (1,116 items: Cantabria)
-2018 ██▌ (2,077 items: Navarra)
-2022 ████ (3,352 items: Baleares)
-2023 ███████████▋ (9,761 items: Cataluña, Madrid, Aragón, Asturias, La Rioja, Comunitat Valenciana, Nacional)
-2024 █████████████████▍ (14,569 items: Andalucía, Extremadura, Murcia, País Vasco, Canarias)
+2013 (Castilla y León, INGESA)
+2014 (Galicia, Castilla-La Mancha)
+2017 (Cantabria)
+2018 (Navarra)
+2022 (Baleares)
+2023 (Cataluña, Madrid, Aragón, Asturias, La Rioja, Comunitat Valenciana, Nacional)
+2024 (Andalucía, Extremadura, Murcia, País Vasco, Canarias)
 ========================================================================================
 ```
 
-- **Freshness Profile**: **73.66%** of all catalog items originate from decrees published in **2023 or 2024**, ensuring modern baseline valuation.
+- **Freshness Profile**: The vast majority of catalog items originate from decrees published in **2023 or 2024**, ensuring modern baseline valuation.
 - **Aging Gazettes**: Catalogs from **Castilla y León (2013)**, **INGESA (2013)**, **Galicia (2014)**, **Castilla-La Mancha (2014)**, and **Cantabria (2017)** have not been re-gazetted comprehensively in over 7–13 years. In these jurisdictions, health systems apply annual percentage indexing by default; HERMES explicitly models this through the INE ECOICOP 06 deflator engine.
 - **Catalog Structure Types**:
   - *Full Micro-Costing Catalogs* (Cataluña, Andalucía, Extremadura, Baleares, Murcia): Granular line-item pricing for individual diagnostic tests, laboratory determinations, and specialized procedures.
@@ -392,27 +457,28 @@ Each catalog item is mapped to a standardized clinical `setting` and target `omo
 
 {df_to_markdown(xtab_domain)}
 
-- **Visit Domain Dominance (81.44%)**: Encompasses hospitalizations, specialist visits, ED encounters, ICU days, and outpatient day hospital sessions.
-- **Measurement Domain (14.26%)**: 4,710 clinical laboratory tests, diagnostic imaging scans, pathology biopsies, and specialized functional tests.
-- **Procedure Domain (4.30%)**: 1,419 specialized surgical and interventional procedures billed outside of standardized DRG bundles.
+- **Visit Domain**: Encompasses hospitalizations, specialist visits, ED encounters, ICU days, and outpatient day hospital sessions.
+- **Measurement Domain**: Clinical laboratory tests, diagnostic imaging scans, pathology biopsies, and specialized functional tests.
+- **Procedure Domain**: Specialized surgical and interventional procedures billed outside of standardized DRG bundles.
 
 ### 2.2 Setting vs. Unit Type Cross-Tabulation
 Tariff granularity is governed by `unit_type`, dictating how health economic models in HERMES multiply utilization frequencies by unit costs.
 
 {df_to_markdown(xtab_unit)}
 
-- **`per_visit` (57.78%)**: Standard unit for outpatient consultations, emergency department attendances, and diagnostic appointments.
-- **`per_episode` (17.42%)**: Full all-inclusive inpatient admissions or surgical packages (primarily APR-GRD casemix).
-- **`per_test` (14.17%)**: Laboratory determinations and radiological acquisitions.
-- **`per_procedure` (7.41%)**: Surgical interventions, endoscopic procedures, and radiotherapy sessions.
-- **`per_diem` (2.62%)**: Daily hospital stay rate for ordinary ward and intensive care units.
-- **`per_session` (0.58%)**: Hemodialysis, rehabilitation, and chemotherapy day hospital cycles.
+- **`per_visit`**: Standard unit for outpatient consultations, emergency department attendances, and diagnostic appointments.
+- **`per_episode`**: Full all-inclusive inpatient admissions or surgical packages (primarily APR-GRD casemix).
+- **`per_test`**: Laboratory determinations and radiological acquisitions.
+- **`per_procedure`**: Surgical interventions, endoscopic procedures, and radiotherapy sessions.
+- **`per_diem`**: Daily hospital stay rate for ordinary ward and intensive care units.
+- **`per_session`**: Hemodialysis, rehabilitation, and chemotherapy day hospital cycles.
+- **`per_km`**: Ambulance and urgent transport mileage tariffs.
 
 ### 2.3 Medical Specialty Distribution Across Settings
 
 {df_to_markdown(spec_top)}
 
-- **Dominance of General Nomenclature**: 92.5% of items are classified under `General` because regional gazettes typically publish unified tariff schedules applicable across all hospital departments rather than specialty-segregated pricing.
+- **Dominance of General Nomenclature**: A large portion of items are classified under `General` because regional gazettes typically publish unified tariff schedules applicable across all hospital departments rather than specialty-segregated pricing.
 - **Specialty-Specific Schedules**: Dedicated sub-schedules exist for `Neumología` (pulmonology/sleep studies), `Cardiología` (hemodynamics/electrophysiology), `Aparato Digestivo` (endoscopy), `Traumatología` (prosthetics/rehabilitation), and `Atención Primaria`.
 
 ---
@@ -424,12 +490,13 @@ To facilitate automated OMOP vocabulary cross-walking, catalog items are tagged 
 
 {df_to_markdown(code_summary)}
 
-- **`APR-GRD:` (19.42%, n=6,415)**: All Patient Refined Diagnosis Related Groups (APR-DRG v32.0/v35.0/v38.0). This standard provides the primary cross-regional baseline for inpatient episode costing.
-- **`REGIONAL:` (17.99%, n=5,942)**: Regional billing codes (e.g. Catsalut `V03H...` codes, Andalusian SAS tariff codes).
-- **`Unprefixed / Local` (62.59%, n=20,672)**: Text-based line items from regional decrees mapped via NLP / concept string matching.
+- **`APR-GRD:`**: All Patient Refined Diagnosis Related Groups (APR-DRG v32.0/v35.0/v38.0/v40.0). This standard provides the primary cross-regional baseline for inpatient episode costing.
+- **`REGIONAL:`**: Regional billing codes (e.g. Catsalut `V03H...` codes, Andalusian SAS tariff codes).
+- **`ICD-10-PCS:` / `ICD-9-CM:`**: Procedural coding systems mapped directly from statutory catalogs.
+- **`Unprefixed / Local`**: Text-based line items from regional decrees mapped via NLP / concept string matching.
 
 ### 3.2 APR-GRD Severity Monotonic Escalation Analysis
-A key principle of healthcare resource utilization and casemix systems is that treatment costs scale monotonically with patient illness severity and complication level. We evaluated **5,884 APR-GRD records** categorized into four standardized severity levels:
+A key principle of healthcare resource utilization and casemix systems is that treatment costs scale monotonically with patient illness severity and complication level. We evaluated **{n_sev_records:,} APR-GRD records** categorized into four standardized severity levels:
 
 {df_to_markdown(sev_table)}
 
@@ -437,16 +504,16 @@ A key principle of healthcare resource utilization and casemix systems is that t
 ========================================================================================
                   APR-GRD CASEMIX COST ESCALATION (CONSTANT 2026 EUROS)
 ========================================================================================
- Severity 1 (Minor)     :  €8,129.41   [████████] (Baseline = 1.00x)
- Severity 2 (Moderate)  : €10,856.61   [███████████] (+33.55% | 1.34x)
- Severity 3 (Major)     : €16,254.61   [████████████████] (+49.72% | 2.00x)
- Severity 4 (Extreme)   : €29,900.24   [█████████████████████████████] (+83.95% | 3.68x)
+ Severity 1 (Minor)     :  €{sev1_mean:,.2f}   [████████] (Baseline = 1.00x)
+ Severity 2 (Moderate)  : €{sev2_mean:,.2f}   [███████████] (+{sev2_step:.2f}% | {sev2_ratio:.2f}x)
+ Severity 3 (Major)     : €{sev3_mean:,.2f}   [████████████████] (+{sev3_step:.2f}% | {sev3_ratio:.2f}x)
+ Severity 4 (Extreme)   : €{sev4_mean:,.2f}   [█████████████████████████████] (+{sev4_step:.2f}% | {sev4_ratio:.2f}x)
 ========================================================================================
 ```
 
 **Statistical Validation**:
 - **Strict Monotonicity**: Mean and median costs increase monotonically at every severity level ($p < 0.001$ across pairwise Wilcoxon rank-sum tests).
-- **Exponential Escalation at Level 4**: The jump from Severity 3 to Severity 4 (**+83.95%**) reflects the exponential accumulation of intensive care per diem, prolonged mechanical ventilation, hemodialysis, and specialized pharmacology in critically ill patients.
+- **Exponential Escalation at Level 4**: The jump from Severity 3 to Severity 4 reflects the exponential accumulation of intensive care per diem, prolonged mechanical ventilation, hemodialysis, and specialized pharmacology in critically ill patients.
 - **HEOR Utility**: When OMOP inpatient episodes cannot be linked directly to an exact regional tariff, assigning state-specific costs based on APR-GRD severity level provides an empirically grounded, disease-severity-adjusted proxy.
 
 ---
@@ -469,15 +536,15 @@ A key principle of healthcare resource utilization and casemix systems is that t
 ========================================================================================
  Parameter                          Original (€)                 Updated 2026 (€)
 ----------------------------------------------------------------------------------------
- First Quartile (Q1 / P25)               €70.82                           €75.44
- Median (P50)                           €436.00                          €468.20
- Third Quartile (Q3 / P75)            €4,936.01                        €5,301.18
- Interquartile Range (IQR)            €4,865.18                        €5,225.73
- Upper Fence (Q3 + 1.5 * IQR)        €12,233.78                       €13,139.78
- Extreme Fence (Q3 + 3.0 * IQR)      €19,531.55                       €20,978.38
- IQR Upper Outliers (> Q3+1.5*IQR)   3,997 (12.10%)                   3,985 (12.06%)
- Extreme Outliers (> Q3+3.0*IQR)     2,460  (7.45%)                   2,455  (7.43%)
- Z-Score Outliers (|Z| > 3.0)          691  (2.09%)                     690  (2.09%)
+ First Quartile (Q1 / P25)               €{costs_df['cost_original'].quantile(0.25):,.2f}                           €{costs_df['cost_updated'].quantile(0.25):,.2f}
+ Median (P50)                           €{costs_df['cost_original'].median():,.2f}                          €{costs_df['cost_updated'].median():,.2f}
+ Third Quartile (Q3 / P75)            €{costs_df['cost_original'].quantile(0.75):,.2f}                        €{costs_df['cost_updated'].quantile(0.75):,.2f}
+ Interquartile Range (IQR)            €{(costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25)):,.2f}                        €{iqr_upd:,.2f}
+ Upper Fence (Q3 + 1.5 * IQR)        €{(costs_df['cost_original'].quantile(0.75) + 1.5 * (costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25))):,.2f}                       €{upper_fence_upd:,.2f}
+ Extreme Fence (Q3 + 3.0 * IQR)      €{(costs_df['cost_original'].quantile(0.75) + 3.0 * (costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25))):,.2f}                       €{extreme_fence_upd:,.2f}
+ IQR Upper Outliers (> Q3+1.5*IQR)   {(costs_df['cost_original'] > (costs_df['cost_original'].quantile(0.75) + 1.5 * (costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25)))).sum():,} ({(costs_df['cost_original'] > (costs_df['cost_original'].quantile(0.75) + 1.5 * (costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25)))).sum() / total_records * 100:.2f}%)                   {n_iqr_outliers:,} ({n_iqr_outliers / total_records * 100:.2f}%)
+ Extreme Outliers (> Q3+3.0*IQR)     {(costs_df['cost_original'] > (costs_df['cost_original'].quantile(0.75) + 3.0 * (costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25)))).sum():,}  ({(costs_df['cost_original'] > (costs_df['cost_original'].quantile(0.75) + 3.0 * (costs_df['cost_original'].quantile(0.75) - costs_df['cost_original'].quantile(0.25)))).sum() / total_records * 100:.2f}%)                   {n_extreme_outliers:,}  ({n_extreme_outliers / total_records * 100:.2f}%)
+ Z-Score Outliers (|Z| > 3.0)          {((costs_df['cost_original'] - costs_df['cost_original'].mean()) / costs_df['cost_original'].std()).abs().gt(3).sum():,}  ({((costs_df['cost_original'] - costs_df['cost_original'].mean()) / costs_df['cost_original'].std()).abs().gt(3).sum() / total_records * 100:.2f}%)                     {n_z3_outliers:,}  ({n_z3_outliers / total_records * 100:.2f}%)
 ========================================================================================
 ```
 
@@ -486,17 +553,16 @@ Extreme cost outliers (> €100,000) are clinically valid high-technology proced
 
 {df_to_markdown(top_high)}
 
-- **Neonatal ECMO (GRD 583.04 / APR-GRD:583-4)**: €205,580 to €211,665. Reflects months of multi-specialty pediatric ICU care, continuous extracorporeal membrane oxygenation circuitry, and complex surgical cannulation.
-- **CAR-T Cell Immunotherapy (GRD 011.04)**: €189,488. Encompasses autologous T-cell apheresis, viral vector genetic transduction, leukodepletion, and management of cytokine release syndrome (CRS).
-- **Heart / Lung Transplantation (GRD 002.04 / APR-GRD:002-4)**: €174,567 to €192,379. Full surgical harvesting, bicaval orthotopic transplantation, and prolonged postoperative intensive recovery.
+- **Neonatal ECMO (GRD 583.04 / APR-GRD:583-4)**: Reflects months of multi-specialty pediatric ICU care, continuous extracorporeal membrane oxygenation circuitry, and complex surgical cannulation.
+- **CAR-T Cell Immunotherapy (GRD 011.04)**: Encompasses autologous T-cell apheresis, viral vector genetic transduction, leukodepletion, and management of cytokine release syndrome (CRS).
+- **Heart / Lung Transplantation (GRD 002.04 / APR-GRD:002-4)**: Full surgical harvesting, bicaval orthotopic transplantation, and prolonged postoperative intensive recovery.
 
 ### 4.4 Low-Cost Determination Audit & Data Hygiene Flags
 
 {df_to_markdown(top_low)}
 
 **Data Hygiene Finding**:
-Sub-Euro records (< €1.00) in Murcia and Valencia correspond to administrative non-sanitary fees (e.g. port berth fees, administrative certificate stamps) that were co-published in regional tax statutes.
-- **Recommendation for HERMES**: Implement an automated pre-filter in `extract_hcru()` to exclude items with `cost_original < 2.00` and lacking a valid clinical keyword or OMOP concept mapping.
+Sub-Euro records (< €1.00) represent valid clinical micro-costing line items (e.g. single laboratory determinations for glucose, bilirubin, creatinine) and per-kilometer emergency transport increments.
 
 ---
 
@@ -508,36 +574,17 @@ To benchmark price variation across Spain's decentralized autonomous health serv
 
 ### 5.1 Clinical & Economic Interpretation of Benchmarks
 
-```
-========================================================================================
-             CROSS-REGIONAL PRICE VARIATION (COEFFICIENT OF VARIATION CV = σ/μ)
-========================================================================================
- Specialist Consultation  [████]                     CV = 0.41 (Mean: €115.88 | Med: €109.32)
- Primary Care Visit       [█████]                    CV = 0.54 (Mean:  €83.84 | Med:  €67.79)
- Knee Arthroplasty        [█████]                    CV = 0.51 (Mean: €17,025 | Med: €14,225)
- Appendectomy (GRD 225)   [██████]                   CV = 0.64 (Mean: €11,075 | Med:  €9,012)
- Brain MRI                [███████]                  CV = 0.67 (Mean: €243.15 | Med: €201.16)
- Chest CT Scan            [████████]                 CV = 0.83 (Mean: €184.74 | Med: €135.30)
- Cataract Surgery         [██████████]               CV = 1.05 (Mean:  €5,160 | Med:  €3,593)
- ICU Per Diem Stay        [█████████████████████]    CV = 2.16 (Mean:  €4,850 | Med:    €515)
- Emergency Episode        [████████████████████████████████████] CV = 3.80 (Mean: €356 | Med: €40)
- Inpatient Per Diem Stay  [████████████████████████████████████████] CV = 4.02 (Mean: €1,288 | Med: €455)
-========================================================================================
-```
+1. **Consultations & Outpatient Encounters**:
+   Specialist first visits and primary care consultations exhibit moderate price dispersion, reflecting regional wage agreements and staffing structures.
 
-1. **Consultations & Outpatient Encounters ($CV \\approx 0.40 - 0.54$)**:
-   Specialist first visits exhibit moderate price dispersion, ranging from **€31.88** (La Rioja) to **€278.02** (Extremadura), with an interquartile range of **€78.88 to €151.27**. Primary care consultations center around **€67.79** (median), ranging from **€37.19** (Cataluña/Valencia basic nursing visit) to **€167.15** (Andalucía full GP consultation).
-
-2. **Surgical Procedures & DRGs ($CV \\approx 0.50 - 0.64$)**:
+2. **Surgical Procedures & DRGs**:
    Inpatient surgical packages show consistent cross-regional pricing:
-   - **Knee Arthroplasty (GRD 301/302)**: Median €14,224.78 (Mean €17,024.55).
-   - **Appendectomy (GRD 225)**: Median €9,012.38 (Mean €11,074.91).
-   - **Cataract Surgery (GRD 073)**: Shows higher variance ($CV = 1.047$) due to outpatient ambulatory surgery tariffs (€374.51 in basic regional centers) versus all-inclusive complex bilateral inpatient admissions (€20,350.17).
+   - **Knee Arthroplasty (GRD 301/302)**
+   - **Appendectomy (GRD 225)**
+   - **Cataract Surgery (GRD 073)**
 
-3. **Inpatient & ICU Per Diem Dispersion ($CV > 2.0$)**:
-   The very high CV for Inpatient Per Diem ($CV = 4.021$) and ICU Per Diem ($CV = 2.161$) stems from **structural billing divergence**:
-   - *Modular / Unbundled Jurisdictions*: Gazettes quote the basic "hotel" bed cost (e.g. €455/day general ward, €515/day basic ICU), billing medications, diagnostics, and surgical interventions separately.
-   - *All-Inclusive Global Per Diem Jurisdictions*: Gazettes quote a fully loaded flat per diem encompassing all intensive therapies, mechanical ventilation, and physician services (up to €41,796/day for specialized burn/organ failure units).
+3. **Inpatient & ICU Per Diem Dispersion**:
+   The CV for Inpatient Per Diem and ICU Per Diem reflects structural differences in billing methodologies (modular bed-only per diem vs all-inclusive intensive care bundles).
 
 ---
 
@@ -553,7 +600,7 @@ Official annual indices from the Instituto Nacional de Estadística (INE) for EC
 {df_to_markdown(year_escalation)}
 
 **Key Inflation Insights**:
-- **Cumulative Cost Escalation**: Adjusting all catalog items to constant 2026 Euros increases the total database valuation from **€177.33M** to **€188.82M**, representing an overall inflation adjustment of **+€11.49M (+6.49%)**.
+- **Cumulative Cost Escalation**: Adjusting all catalog items to constant 2026 Euros increases the total database valuation from **€{agg_orig_m:,.2f}M** to **€{agg_upd_m:,.2f}M**, representing an overall inflation adjustment of **+€{(agg_upd_m - agg_orig_m):,.2f}M (+{agg_diff_pct:.2f}%)**.
 - **Differential Age Drag**: 2013 decrees (Castilla y León, INGESA) experience a **+12.68%** upward adjustment, preventing substantial cost underestimation when analyzing older longitudinal OMOP cohorts.
 
 ---
@@ -566,9 +613,8 @@ Official annual indices from the Instituto Nacional de Estadística (INE) for EC
   - ICU: Dedicated critical care per diem tariffs.
   - Outpatient: General and specialty consultation rates.
   - Emergency: Emergency episode tariffs.
-  - Diagnostics: 4,710 laboratory and imaging test codes.
+  - Diagnostics: Laboratory and imaging test codes.
 - **National Casemix Fallback**: For regions with sparse catalogs (e.g. Asturias, Castilla-La Mancha), HERMES can seamlessly fallback to `ccaa == 'Nacional'` (SNS APR-GRD catalog) with zero loss of clinical validity.
-- **Sanitization Rule**: Automated exclusion of non-clinical lines (`cost_original < 2.00` without valid clinical keyword) must be enforced.
 
 ### 7.2 Integration with Stage 4: Trajectory Compilation & State-Cost Extraction
 - **Severity-Adjusted Markov States**: The verified monotonic escalation of APR-GRD costs across Severities 1 through 4 allows Stage 4 to assign authentic, disease-severity-calibrated costs to progressive Markov health states.
@@ -580,9 +626,9 @@ Official annual indices from the Instituto Nacional de Estadística (INE) for EC
 
 | Dimension | Verification Status | Auditor Remarks |
 | :--- | :---: | :--- |
-| **1. Volume & Completeness** | **PASS** | 33,030 / 33,030 complete records across 19 jurisdictions. No missing values. |
+| **1. Volume & Completeness** | **PASS** | {total_records:,} / {total_records:,} complete records across {n_jurisdictions} jurisdictions. No missing values. |
 | **2. OMOP CDM Mapping** | **PASS** | 100% alignment across `Visit`, `Procedure`, and `Measurement` domains. |
-| **3. Coding Standardization** | **PASS** | 37.41% explicit standardized prefix coverage; APR-GRD severity escalation verified. |
+| **3. Coding Standardization** | **PASS** | {pct_coded:.2f}% explicit standardized prefix coverage; APR-GRD severity escalation verified. |
 | **4. Cost Diagnostics** | **PASS** | Full parametric/non-parametric matrices computed. High-cost outliers clinically justified. |
 | **5. HEOR Benchmarks** | **PASS** | 10 benchmark procedures analyzed across 17 CCAA with exact CV computation. |
 | **6. INE Inflation Engine** | **PASS** | 2002–2026 series validated; baseline-to-2026 escalation factors operational. |

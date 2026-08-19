@@ -224,11 +224,24 @@ def clean_description_text(desc: str) -> str:
     t = re.sub(r"\s*\(\s*#\s*\)$", "", t)
     t = re.sub(r"\s*\*{1,4}$", "", t)
 
-    # Leading list numbering
+    # Multi-spaced numeric indexing headers (e.g. "2 2 ", "4 1 4 ", "1 304 ")
+    t = re.sub(r"^(?:[A-Z]\d\s+)?(?:\d+\s+){2,}", "", t).strip()
+
+    # Regional item code tags with underscore (e.g. "ANVCE-SCAT_", "EC----DIGE_", "CASP2_", "TCTOR-AREM_")
+    t = re.sub(r"^[A-Z0-9\-]{2,10}(?:-[A-Z0-9\-]+)?_\s*", "", t).strip()
+
+    # Leading list numbering (e.g. "1.1", "A.1.")
     t = re.sub(r"^(?:[0-9]+(?:\.[0-9]+)*|[A-Z]\.(?:[0-9]+(?:\.[0-9]+)*)?)\s*[\.\-\)]?\s*", "", t).strip()
+
+    # Leading orphan punctuation / brackets / parentheses
+    t = re.sub(r"^[)\],:\-_/\\.]+\s*", "", t).strip()
 
     # Casing and whitespace
     t = re.sub(r"\s+", " ", t).strip().upper()
+
+    # Broken spaced words (e.g. SANGR E -> SANGRE, OR INA -> ORINA)
+    t = re.sub(r"\bSANGR\s+E\b", "SANGRE", t)
+    t = re.sub(r"\bOR\s+INA\b", "ORINA", t)
 
     # Trailing punctuation
     t = re.sub(r"[.,\-_:;/\\+]+$", "", t).strip()
@@ -236,35 +249,51 @@ def clean_description_text(desc: str) -> str:
 
 
 def infer_setting(desc: str, code_std: str = "") -> str:
-    """Infer clinical setting with APR-GRD precedence and expanded keywords."""
+    """Infer clinical setting with APR-GRD precedence and regex-hardened keywords."""
     d = desc.lower()
 
-    # Precedence: APR-GRD casemix categories default to Inpatient unless CMA
+    # Precedence 1: APR-GRD casemix categories default to Inpatient unless explicit CMA
     if code_std.startswith("APR-GRD:"):
         if any(k in d for k in ["cma", "ambulatori", "sin ingreso", "mayor ambulatoria"]):
             return "Procedures"
         return "Inpatient"
 
-    if any(k in d for k in ["uci", "intensivos", "reanimaci", "cuidados intensivos", "criticos", "críticos", "quemados"]) and not any(k in d for k in ["movil", "móvil", "ambulancia", "transporte"]):
+    # Precedence 2: Consultations & Outpatient visits (including specialized consultations)
+    if re.search(r"\b(?:consulta|consultas|visita|visitas|interconsulta|interconsultas|revisi[oó]n|revisiones)\b", d):
+        if any(
+            k in d
+            for k in [
+                "atención primaria",
+                "atencion primaria",
+                "médico de familia",
+                "medico de familia",
+                "pediatría ap",
+                "pediatria ap",
+                "enfermería ap",
+                "enfermeria ap",
+                "centro de salud",
+                "consultorio",
+                "médica ap",
+            ]
+        ):
+            return "Primary Care"
+        return "Outpatient"
+
+    # Precedence 3: ICU / Critical Care (hardened against substring matches like 'resolución', 'sustitución')
+    if (
+        re.search(r"\b(?:uci|uvi|cuidados intensivos|vigilancia intensiva|cr[ií]ticos|críticos|quemados)\b", d)
+        or (re.search(r"\breanimaci[oó]n\b", d) and "consulta" not in d)
+    ) and not re.search(r"\b(?:m[oó]vil|ambulancia|transporte)\b", d):
         return "ICU"
-    if any(
-        k in d
-        for k in [
-            "urgencia",
-            "emergencia",
-            "112",
-            "061",
-            "atención continuada",
-            "atencion continuada",
-            "guardia médica",
-            "uvi móvil",
-            "soporte vital",
-            "ambulancia medicalizada",
-            "interurbano",
-            "traslado urgente",
-        ]
+
+    # Precedence 4: Emergency Care & Urgent Medical Transport
+    if re.search(
+        r"\b(?:urgencia|urgencias|emergencia|emergencias|112|061|atenci[oó]n continuada|atencion continuada|guardia m[eé]dica|soporte vital|ambulancia medicalizada|interurbano|traslado urgente)\b",
+        d,
     ):
         return "Emergency"
+
+    # Precedence 5: Primary Care / Oral Health Programs
     if any(
         k in d
         for k in [
@@ -288,230 +317,54 @@ def infer_setting(desc: str, code_std: str = "") -> str:
         ]
     ):
         return "Primary Care"
-    if any(
-        k in d
-        for k in [
-            "hospitaliz",
-            "estancia",
-            "ingreso",
-            "cama ocupada",
-            "cama",
-            "convalecencia",
-            "internamiento",
-            "craneotom",
-            "trasplante",
-            "traqueostom",
-            "infarto",
-            "neumonía",
-            "sepsis",
-        ]
+
+    # Precedence 6: Inpatient Hospitalization
+    if re.search(
+        r"\b(?:hospitaliz|estancia|ingreso|cama ocupada|internamiento|convalecencia|craneotom|trasplante|traqueostom|infarto|neumon[ií]a|sepsis)\b",
+        d,
     ):
         return "Inpatient"
-    if any(
-        k in d
-        for k in [
-            "resonancia",
-            "tac",
-            "tomograf",
-            "radiolog",
-            "radiografía",
-            "radiografia",
-            "ecograf",
-            "ecocardiograf",
-            "gammagraf",
-            "spect",
-            "pet-tac",
-            "pet",
-            "endoscop",
-            "mamograf",
-            "electrocardiograma",
-            "ecg",
-            "eeg",
-            "electromiograf",
-            "espirometria",
-            "espirometría",
-            "audiometria",
-            "audiometría",
-            "campimetria",
-            "campimetría",
-            "densitometria",
-            "densitometría",
-            "ergometria",
-            "ergometría",
-            "holter",
-            "polisomnograf",
-            "alergia",
-            "provocacion",
-            "analitica",
-            "analítica",
-            "laboratorio",
-            "biopsia",
-            "determinacion",
-            "determinación",
-            "estudio genetico",
-            "serologia",
-            "serología",
-            "cultivo",
-            "citologia",
-            "citología",
-            "perfil",
-            "tincion",
-            "tinción",
-            "microbiolog",
-            "ige",
-            "igg",
-            "igm",
-            "suero",
-            "plasma",
-            "orina",
-            "lcr",
-            "líquido",
-            "bioquímica",
-            "hematimetría",
-            "hemograma",
-            "frotis",
-            "antígeno",
-            "anticuerpo",
-            "inmunoglobulina",
-            "pcr",
-            "genotipado",
-            "cariotipo",
-            "secuenciacion",
-            "ácido",
-            "amilasa",
-            "albúmina",
-            "fosfatasa",
-            "glucosa",
-            "creatinina",
-            "colesterol",
-            "triglicéridos",
-            "transaminasas",
-            "bilirrubina",
-            "urea",
-            "troponina",
-            "tiroxina",
-            "tsh",
-            "ferritina",
-            "hierro",
-            "potasio",
-            "sodio",
-            "calcio",
-            "gasometría",
-            "coagulación",
-            "hemostasia",
-            "d-dímero",
-            "hla-",
-            "cyp",
-        ]
-    ) or code_std.startswith(("REGIONAL:LQ", "REGIONAL:E03.1.6")):
-        return "Diagnostics"
-    if any(
-        k in d
-        for k in [
-            "quirurg",
-            "quirúrg",
-            "cirugia",
-            "cirugía",
-            "intervencion",
-            "intervención",
-            "artroscopia",
-            "escision",
-            "escisión",
-            "reparacion",
-            "reparación",
-            "injerto",
-            "sustitucion",
-            "sustitución",
-            "osteotomia",
-            "osteotomía",
-            "amigdalectomia",
-            "amigdalectomía",
-            "catarata",
-            "safenectomia",
-            "safenectomía",
-            "fistul",
-            "fístul",
-            "gastrectom",
-            "implante",
-            "protesis",
-            "prótesis",
-            "endarterectomia",
-            "facoemulsificacion",
-            "facoemulsificación",
-            "tiroidectomia",
-            "tiroidectomía",
-            "mastectomia",
-            "mastectomía",
-            "colecistectomia",
-            "colecistectomía",
-            "hernioplastia",
-            "apendicectomia",
-            "apendicectomía",
-            "amputacion",
-            "amputación",
-            "hemodialisis",
-            "hemodiálisis",
-            "litotricia",
-            "cateterismo",
-            "angioplastia",
-            "embolizacion",
-            "embolización",
-            "drenaje",
-            "cma",
-            "legrado",
-            "cesárea",
-            "parto",
-            "ablacion",
-            "ablación",
-            "infiltracion",
-            "infiltración",
-            "paracentesis",
-            "toracocentesis",
-            "artrocentesis",
-            "bloqueo",
-            "traqueostomia",
-            "marcapasos",
-            "endoprótesis",
-            "stent",
-            "desfibrilador",
-            "valvuloplastia",
-            "extirpacion",
-            "extirpación",
-            "reseccion",
-            "resección",
-            "liberacion",
-            "liberación",
-        ]
-    ) or code_std.startswith(("ICD-9-CM:", "ICD-10-PCS:", "REGIONAL:CMA")):
-        return "Procedures"
-    if any(
-        k in d
-        for k in [
-            "consulta",
-            "visita",
-            "revision",
-            "revisión",
-            "rehabilitacion",
-            "rehabilitación",
-            "fisioterapia",
-            "psicoterapia",
-            "logopedia",
-            "terapia ocupacional",
-            "hospital de día",
-            "hospital dia",
-            "ambulanci",
-            "transporte sanitario",
-            "sesión",
-            "sesion",
-        ]
+
+    # Precedence 7: Diagnostics, Imaging, and Clinical Laboratory
+    if (
+        re.search(
+            r"\b(?:resonancia|tac|tc|tomograf[ií]a|radiolog[ií]a|radiograf[ií]a|ecograf[ií]a|ecocardiograf[ií]a|gammagraf[ií]a|spect|pet-tac|pet|endoscop|mamograf[ií]a|electrocardiograma|ecg|eeg|electromiograf|espirometr|audiometr|campimetr|densitometr|ergometr|holter|polisomnograf|alergia|provocaci|analitica|analítica|laboratorio|biopsia|determinaci|estudio genetico|serolog|cultivo|citolog|perfil|tinci|microbiolog|ige|igg|igm|suero|plasma|orina|lcr|l[ií]quido|bioqu[ií]mica|hematimetr|hemograma|frotis|ant[ií]geno|anticuerpo|inmunoglobulina|pcr|genotipado|cariotipo|secuenciaci|[aá]cido|amilasa|alb[uú]mina|fosfatasa|glucosa|creatinina|colesterol|triglic[eé]ridos|transaminasas|bilirrubina|urea|troponina|tiroxina|tsh|ferritina|hierro|potasio|sodio|calcio|gasometr|coagulaci|hemostasia|d-d[ií]mero|hla-|cyp)\b",
+            d,
+        )
+        or code_std.startswith(("REGIONAL:LQ", "REGIONAL:E03.1.6"))
     ):
-        return "Outpatient"
+        return "Diagnostics"
+
+    # Precedence 8: Procedures, CMA, Interventions, Surgeries
+    if (
+        re.search(
+            r"\b(?:quirurg|quirúrg|cirug[ií]a|intervenci[oó]n|artroscop|escisi[oó]n|reparaci[oó]n|injerto|sustituci[oó]n|osteotom|amigdalectom|catarata|safenectom|f[ií]stul|gastrectom|implante|pr[oó]tesis|endarterectom|facoemulsif|tiroidectom|mastectom|colecistectom|hernioplastia|apendicectom|amputaci[oó]n|hemodi[aá]lisis|litotricia|cateterismo|angioplastia|embolizaci[oó]n|drenaje|cma|legrado|ces[aá]rea|parto|ablaci[oó]n|infiltraci[oó]n|paracentesis|toracocentesis|artrocentesis|bloqueo|traqueostom|marcapasos|endopr[oó]tesis|stent|desfibrilador|valvuloplastia|extirpaci[oó]n|resecci[oó]n|liberaci[oó]n)\b",
+            d,
+        )
+        or code_std.startswith(("ICD-9-CM:", "ICD-10-PCS:", "REGIONAL:CMA"))
+    ):
+        return "Procedures"
+
+    # Precedence 9: Outpatient Care / Consultations / Day Hospital
     return "Outpatient"
 
 
 def infer_unit_type(setting: str, desc: str) -> str:
     d = desc.lower()
-    if any(k in d for k in ["sesion", "sesión", "tratamiento continuo", "hemodialisis", "hemodiálisis"]):
+    if any(k in d for k in ["por km", "cada km", "por cada km", "porkm", "/km"]):
+        return "per_km"
+    if any(
+        k in d
+        for k in [
+            "sesion",
+            "sesión",
+            "tratamiento continuo",
+            "hemodialisis",
+            "hemodiálisis",
+            "fisioterapia",
+            "rehabilitaci",
+        ]
+    ):
         return "per_session"
     if setting in ["Inpatient", "ICU"]:
         if any(k in d for k in ["dia", "día", "diaria", "diario", "estancia", "cama"]):
@@ -1167,53 +1020,70 @@ def extract_pdf_catalog(
                 desc = m_pvas_grd.group(2).strip()
                 price = parse_price(m_pvas_grd.group(3))
             else:
-                # Pattern 2: País Vasco procedures / lab / tests with SAP article ID (100xxxxx)
-                m_pvas_proc = re.search(
-                    r"^([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.\/\-\,\(\)]+?)\s+(?:\d+(?:[,\.]\d+)?\s+)?(\d{1,3}(?:\.\d{3})*|\d+)\s+(?:(?:\d{1,3}(?:\.\d{3})*|\d+)\s+)?(100\d{5})\b",
+                # Pattern 1b: La Rioja / Regional GRD layout (e.g. "E.1.5 21 G 1 Craneotomía excepto por trauma 10.410 3.751" or "20 G 1 Craneotomía...")
+                m_rio_grd = re.search(
+                    r"^(?:E\.\d+(?:\.\d+)*\s+)?(\d{1,4})\s+G\s*([1-4])\s+(.+?)\s+(\d{1,3}(?:\.\d{3})*|\d+)(?:\s+(\d{1,3}(?:\.\d{3})*|\d+))?$",
                     candidate_line,
                 )
-                if m_pvas_proc and not is_noise_text(m_pvas_proc.group(1)):
-                    desc = m_pvas_proc.group(1).strip()
-                    price = parse_price(m_pvas_proc.group(2))
-                    code_raw = f"SAP:{m_pvas_proc.group(3)}"
+                if m_rio_grd:
+                    grd_num = m_rio_grd.group(1).zfill(3)
+                    sev_num = m_rio_grd.group(2)
+                    code_raw = f"APR-GRD:{grd_num}-{sev_num}"
+                    desc = m_rio_grd.group(3).strip()
+                    price = parse_price(m_rio_grd.group(4))
                 else:
-                    # Pattern 3: General decimal or integer price at line end
-                    m_gen_end = re.search(
-                        r"(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d{1,3}(?:\.\d{3})+|\d+\.\d{2}|(?<!_)\b\d{1,6}\b)\s*€?$",
+                    # Pattern 2: País Vasco procedures / lab / tests with SAP article ID (100xxxxx)
+                    m_pvas_proc = re.search(
+                        r"^([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.\/\-\,\(\)]+?)\s+(?:\d+(?:[,\.]\d+)?\s+)?(\d{1,3}(?:\.\d{3})*|\d+)\s+(?:(?:\d{1,3}(?:\.\d{3})*|\d+)\s+)?(100\d{5})\b",
                         candidate_line,
                     )
-                    if m_gen_end:
-                        price = parse_price(m_gen_end.group(1))
-                        raw_desc = candidate_line[: m_gen_end.start()].strip()
-
-                        # Check if raw_desc contains embedded GRD (e.g. Andalusia B2 1 1 129 GRD 055 - ...)
-                        m_grd = re.search(
-                            r"GRD\s*0?(\d{1,4})\s*[-–]\s*(.*?)(?:_?SEV[_\s]?(\d))?$",
-                            raw_desc,
-                            re.I,
+                    if m_pvas_proc and not is_noise_text(m_pvas_proc.group(1)):
+                        desc = m_pvas_proc.group(1).strip()
+                        price = parse_price(m_pvas_proc.group(2))
+                        code_raw = f"SAP:{m_pvas_proc.group(3)}"
+                    else:
+                        # Pattern 3: General decimal or integer price at line end
+                        m_gen_end = re.search(
+                            r"(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d{1,3}(?:\.\d{3})+|\d+\.\d{2}|(?<!_)\b\d{1,6}\b)\s*€?$",
+                            candidate_line,
                         )
-                        if m_grd:
-                            grd_num = m_grd.group(1).zfill(3)
-                            sev_num = m_grd.group(3)
-                            code_raw = f"APR-GRD:{grd_num}-{sev_num}" if sev_num else f"APR-GRD:{grd_num}"
-                            desc = m_grd.group(2).strip()
-                        else:
-                            # Check leading code or embedded regional codes
-                            m_lead = re.match(r"^([A-Za-z0-9\.\-\/]{2,12})\s+(.*)$", raw_desc)
-                            if m_lead and len(m_lead.group(2)) > 2 and not m_lead.group(1).upper().startswith(("ART", "NUM", "PAG")):
-                                code_raw = m_lead.group(1)
-                                desc = m_lead.group(2)
+                        if m_gen_end:
+                            matched_str = m_gen_end.group(1)
+                            # Guard: reject bare isolated integer line endings from pure section index numbers (e.g. 'B2 2 4 1 27')
+                            if ("," not in matched_str and "." not in matched_str) and len(re.sub(r"[\d\s\.\-_/]", "", candidate_line)) < 4:
+                                price = None
                             else:
-                                m_emb = re.search(
-                                    r"\b(CIE\.?9(?:\.MC)?\.[A-Z0-9\.]+|GRD\.\d+|[A-D]\.\d+(?:\.[A-Z0-9]+)*|AM\d{4}|TS\d{4}|317\.\d+(?:\.[0-9]+)*|70\d{4}|0[12]\.\d+[A-Z]+)\s*(.*)$",
+                                price = parse_price(matched_str)
+                                raw_desc = candidate_line[: m_gen_end.start()].strip()
+
+                                # Check if raw_desc contains embedded GRD (e.g. Andalusia B2 1 1 129 GRD 055 - ...)
+                                m_grd = re.search(
+                                    r"GRD\s*0?(\d{1,4})\s*[-–]\s*(.*?)(?:_?SEV[_\s]?(\d))?$",
                                     raw_desc,
                                     re.I,
                                 )
-                                if m_emb:
-                                    code_raw = m_emb.group(1).strip()
-                                    desc = m_emb.group(2).strip()
+                                if m_grd:
+                                    grd_num = m_grd.group(1).zfill(3)
+                                    sev_num = m_grd.group(3)
+                                    code_raw = f"APR-GRD:{grd_num}-{sev_num}" if sev_num else f"APR-GRD:{grd_num}"
+                                    desc = m_grd.group(2).strip()
                                 else:
-                                    desc = raw_desc
+                                    # Check leading code or embedded regional codes
+                                    m_lead = re.match(r"^([A-Za-z0-9\.\-\/]{2,12})\s+(.*)$", raw_desc)
+                                    if m_lead and len(m_lead.group(2)) > 2 and not m_lead.group(1).upper().startswith(("ART", "NUM", "PAG")):
+                                        code_raw = m_lead.group(1)
+                                        desc = m_lead.group(2)
+                                    else:
+                                        m_emb = re.search(
+                                            r"\b(CIE\.?9(?:\.MC)?\.[A-Z0-9\.]+|GRD\.\d+|[A-D]\.\d+(?:\.[A-Z0-9]+)*|AM\d{4}|TS\d{4}|317\.\d+(?:\.[0-9]+)*|70\d{4}|0[12]\.\d+[A-Z]+)\s*(.*)$",
+                                            raw_desc,
+                                            re.I,
+                                        )
+                                        if m_emb:
+                                            code_raw = m_emb.group(1).strip()
+                                            desc = m_emb.group(2).strip()
+                                        else:
+                                            desc = raw_desc
 
             # If no price found on this line, buffer it as candidate prefix for next line
             if not price or not desc:
@@ -1282,6 +1152,9 @@ def extract_source_records(
     deflators: Optional[Dict[int, float]] = None,
 ) -> List[CostRecord]:
     """Extract and standardize records from a single local file (PDF, XLSX, HTML)."""
+    if src.get("id") == "sns-2024-siap":
+        # SIAP glossary PDF contains statistical definitions, not direct tariff rates
+        return []
     if deflators is None:
         deflators = fetch_ine_deflators()
     fmt = src.get("file_format", "pdf")
