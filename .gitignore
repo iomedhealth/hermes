@@ -19,3 +19,7 @@ docs/
 pkgdown/
 .specify/extensions/.cache/
 .specify/feature.json
+__pycache__/
+*.pyc
+.venv/
+data/raw/

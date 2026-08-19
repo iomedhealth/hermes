@@ -1,0 +1,370 @@
+sources:
+  - id: "and-2024-precios"
+    ccaa: "Andalucía"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Orden de 24 de mayo de 2024, por la que se establece el importe de los servicios, actividades y bienes de naturaleza sanitaria, prestados en centros sanitarios del Sistema Sanitario Público de Andalucía, que deben ser retribuidos mediante precios públicos"
+    gazette: "Boletín Oficial de la Junta de Andalucía (BOJA)"
+    gazette_number: 108
+    publication_date: "2024-06-05"
+    year: 2024
+    url_gazette: "https://www.juntadeandalucia.es/eboja/2024/108/BOJA24-108-00163-45904-01_00302853.pdf"
+    url_pdf: "https://www.juntadeandalucia.es/eboja/2024/108/BOJA24-108-00163-45904-01_00302853.pdf"
+    file_format: "pdf"
+    content_summary: "Public healthcare tariffs for Andalusian Health Service (SAS): hospital stays, outpatient care, diagnostic tests, surgical procedures, and emergency episodes."
+    table_locations:
+      - section: "Anexo de Tarifas"
+        description: "Catálogo actualizado de precios públicos de servicios sanitarios del SAS"
+
+  - id: "arag-2023-precios"
+    ccaa: "Aragón"
+    scope: "regional"
+    category: "Precios Públicos / Tarifas Sanitarias"
+    legal_title: "Orden SAN/30/2023, de 19 de enero, por la que se modifica el anexo de la Orden SAN/1221/2017, de 21 de julio, por la que se establecen los precios y tarifas máximas aplicables en la prestación de servicios sanitarios con medios ajenos al Sistema de Salud"
+    gazette: "Boletín Oficial de Aragón (BOA) / Portal Gobierno de Aragón"
+    publication_date: "2023-01-19"
+    year: 2023
+    url_gazette: "https://www.aragon.es/documents/20127/94293693/Orden_SAN_30_2023_Modif_Anexo_Precios_Tarifas.pdf/a402db55-ef96-9c14-84f5-2005e56c6597?t=1677578158691"
+    url_pdf: "https://www.aragon.es/documents/20127/94293693/Orden_SAN_30_2023_Modif_Anexo_Precios_Tarifas.pdf/a402db55-ef96-9c14-84f5-2005e56c6597?t=1677578158691"
+    url_data: "https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ&MLKOB=977342223030"
+    file_format: "pdf"
+    content_summary: "Updated maximum reference tariffs and public prices for healthcare assistance: surgical specialties, diagnostic tests, and consultations."
+    table_locations:
+      - section: "Anexo Precios y Tarifas"
+        description: "Tarifas máximas y precios públicos aplicables a la asistencia sanitaria"
+
+  - id: "ast-2023-precios"
+    ccaa: "Asturias"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Decreto 72/2023, de 18 de agosto, de tercera modificación del Decreto 87/2009, de 29 de julio, por el que se establecen los precios públicos a aplicar por el Servicio de Salud del Principado de Asturias por la prestación de servicios sanitarios"
+    gazette: "Boletín Oficial del Principado de Asturias (BOPA)"
+    gazette_number: 166
+    publication_date: "2023-08-29"
+    year: 2023
+    url_gazette: "https://sede.asturias.es/bopa/2023/08/29/2023-07791.pdf"
+    url_pdf: "https://sede.asturias.es/bopa/2023/08/29/2023-07791.pdf"
+    file_format: "pdf"
+    content_summary: "Updated public healthcare tariffs for SESPA facilities: hospital stays, outpatient care, diagnostic tests, and surgical procedures."
+    table_locations:
+      - section: "Anexo de Tarifas"
+        description: "Precios públicos a aplicar por el Servicio de Salud del Principado de Asturias"
+
+  - id: "bal-2022-precios"
+    ccaa: "Baleares"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Resolución del director general del Servei de Salut de las Islas Baleares de 5 de diciembre de 2022 por la que se modifica la Orden de la consejera de Salud y Consumo de 22 de diciembre de 2006 por la que se establecen los precios públicos que han de aplicar los centros sanitarios de la red pública de las Islas Baleares"
+    gazette: "Boletín Oficial de las Islas Baleares (BOIB) / Noticias Jurídicas"
+    publication_date: "2022-12-05"
+    year: 2022
+    url_gazette: "https://noticias.juridicas.com/base_datos/CCAA/744588-r-servei-de-salut-de-las-islas-baleares-de-5-dic-2022-ca-illes-balears-modificacion.html"
+    url_pdf: null
+    file_format: "html"
+    content_summary: "Public healthcare tariffs for IBSALUT facilities: hospitalization, primary and specialized consultations, urgent transport, and specialized tests."
+    table_locations:
+      - section: "Anexo I"
+        description: "Tarifas de los servicios asistenciales de IBSALUT"
+
+  - id: "can-2024-precios"
+    ccaa: "Canarias"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Resolución de 3 de abril de 2024, del Director, por la que se actualiza la cuantía de los precios públicos previstos en el Decreto 81/2009, de 16 de junio, que establece los precios públicos de los servicios sanitarios prestados por el Servicio Canario de la Salud y se fijan sus cuantías"
+    gazette: "Boletín Oficial de Canarias (BOC)"
+    gazette_number: 77
+    publication_date: "2024-04-18"
+    year: 2024
+    url_gazette: "https://www.gobiernodecanarias.org/boc/2024/077/001.html"
+    url_pdf: "https://sede.gobiernodecanarias.org/boc/boc-a-2024-077-1282.pdf"
+    file_format: "pdf"
+    content_summary: "SCS public healthcare prices: updated per diem stays, emergency visits, medical transport, and clinical laboratory diagnostics."
+    table_locations:
+      - section: "Anexo Único"
+        description: "Cuadro general actualizado de tarifas de servicios sanitarios del SCS"
+
+  - id: "cant-2017-precios"
+    ccaa: "Cantabria"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Orden SAN/35/2017, de 15 de diciembre, por la que se fijan las cuantías de los Precios Públicos de los Servicios Sanitarios prestados por el Servicio Cántabro de Salud"
+    gazette: "Boletín Oficial de Cantabria (BOC)"
+    publication_date: "2017-12-22"
+    year: 2017
+    url_gazette: "https://boc.cantabria.es/boces/verAnuncioAction.do?idAnuBlob=320839"
+    url_pdf: "https://boc.cantabria.es/boces/verAnuncioAction.do?idAnuBlob=320839"
+    file_format: "pdf"
+    content_summary: "Public prices of the Cantabrian Health Service: hospitalization, clinical analysis, surgical procedures, and emergency room attention."
+    table_locations:
+      - section: "Anexo"
+        description: "Estructura tarifaria de precios públicos del SCS"
+
+  - id: "cyl-2013-precios"
+    ccaa: "Castilla y León"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Decreto 25/2010, de 17 de junio, sobre precios públicos por actos asistenciales y servicios sanitarios prestados por la Gerencia Regional de Salud, revisado en 2013"
+    gazette: "Sanidad Castilla y León (SACyL)"
+    publication_date: "2013-01-01"
+    year: 2013
+    url_gazette: "https://www.sanidadsoria.es/Files/TRANSPARIENCIA/4%20GESTION%20ECONOMICA/4.4%20COSTE%20DE%20LOS%20SERVICIOS/ANEXO%20PRECIOS%20PuBLICOS.pdf"
+    url_pdf: "https://www.sanidadsoria.es/Files/TRANSPARIENCIA/4%20GESTION%20ECONOMICA/4.4%20COSTE%20DE%20LOS%20SERVICIOS/ANEXO%20PRECIOS%20PuBLICOS.pdf"
+    file_format: "pdf"
+    content_summary: "SACyL public healthcare tariffs: primary and specialized medical consultations, hospital stays, surgical acts, and diagnostic procedures."
+    table_locations:
+      - section: "Anexo Precios Públicos"
+        description: "Catálogo de precios públicos por actos asistenciales y servicios sanitarios de SACyL"
+
+  - id: "clm-2014-precios"
+    ccaa: "Castilla-La Mancha"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Orden de 17/11/2014, de la Consejería de Sanidad y Asuntos Sociales, por la que se establecen los precios públicos de la asistencia sanitaria y de los servicios prestados en la red de centros sanitarios dependientes del Servicio de Salud de Castilla-La Mancha"
+    gazette: "Diario Oficial de Castilla-La Mancha (DOCM)"
+    publication_date: "2014-11-21"
+    year: 2014
+    url_gazette: "https://docm.jccm.es/portaldocm/descargarArchivo.do?ruta=2014/11/21/pdf/2014_15022.pdf&tipo=rutaDocm"
+    url_pdf: "https://docm.jccm.es/portaldocm/descargarArchivo.do?ruta=2014/11/21/pdf/2014_15022.pdf&tipo=rutaDocm"
+    file_format: "pdf"
+    content_summary: "Public prices for SESCAM: primary healthcare, hospital stays, ICU, day hospitalization, dialysis, and advanced diagnostic imaging."
+    table_locations:
+      - section: "Anexo"
+        description: "Tarifas de servicios sanitarios y hospitalarios de Castilla-La Mancha"
+
+  - id: "cat-2023-precios"
+    ccaa: "Cataluña"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Resolución SLT/4326/2023, de 20 de diciembre, sobre la revisión de precios públicos correspondientes a los servicios sanitarios que presta el Instituto Catalán de la Salud"
+    gazette: "Diari Oficial de la Generalitat de Catalunya (DOGC) / Noticias Jurídicas"
+    publication_date: "2023-12-20"
+    year: 2023
+    url_gazette: "https://noticias.juridicas.com/base_datos/CCAA/823656-r-slt-4326-2023-de-20-dic-ca-cataluna-revision-de-precios-publicos-correspondientes.html"
+    url_pdf: null
+    file_format: "html"
+    content_summary: "Public healthcare tariffs for ICS / CatSalut: hospital stays, primary care visits, specialized radiology, magnetic resonance, and diagnostic fees."
+    table_locations:
+      - section: "Annex"
+        description: "Tarifes dels preus públics de serveis assistencials de l'ICS"
+
+  - id: "val-2023-tasas"
+    ccaa: "Comunitat Valenciana"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Ley 7/2023, de 26 de diciembre, de medidas fiscales, de gestión administrativa y financiera, y de organización de la Generalitat"
+    gazette: "Diari Oficial de la Generalitat Valenciana (DOGV)"
+    publication_date: "2023-12-30"
+    year: 2023
+    page_start: 20
+    page_end: 22
+    url_gazette: "https://dogv.gva.es/es/eli/es-vc/l/2017/12/28/20/"
+    url_pdf: "https://dogv.gva.es/datos/2023/12/30/pdf/2023_13136.pdf"
+    file_format: "pdf"
+    content_summary: "Statutory healthcare fees: hospitalization, emergency services, nuclear medicine, blood transfusion center services, and diagnostic procedures."
+    table_locations:
+      - section: "Artículo 29.1-10"
+        description: "Cuota íntegra por procedimientos diagnósticos, terapéuticos y asistenciales"
+
+  - id: "ext-2024-precios"
+    ccaa: "Extremadura"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Resolución de 9 de febrero de 2024, de la Consejera, por la que se publican las tarifas actualizadas de las tasas y precios públicos de la Comunidad Autónoma de Extremadura en virtud de lo dispuesto en la Ley de Presupuestos Generales de la Comunidad Autónoma de Extremadura para 2024"
+    gazette: "Diario Oficial de Extremadura (DOE)"
+    publication_date: "2024-02-19"
+    year: 2024
+    page_start: 98
+    page_end: 185
+    url_gazette: "https://doe.juntaex.es/pdfs/doe/2024/350o/24060577.pdf"
+    url_pdf: "https://doe.juntaex.es/pdfs/doe/2024/350o/24060577.pdf"
+    file_format: "pdf"
+    content_summary: "Public prices of the Extremadura Health Service (SES): hospital stays, major ambulatory surgery, hemodialysis, and emergency attendance."
+    table_locations:
+      - section: "Anexo"
+        description: "Cuadro tarifario actualizado de asistencia sanitaria del SES"
+
+  - id: "gal-2014-precios"
+    ccaa: "Galicia"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Decreto 56/2014, do 30 de abril, polo que se establecen as tarifas dos servizos sanitarios prestados nos centros dependentes do Servizo Galego de Saúde e nas fundacións públicas sanitarias"
+    gazette: "Diario Oficial de Galicia (DOG)"
+    gazette_number: 96
+    publication_date: "2014-05-21"
+    year: 2014
+    url_gazette: "https://www.xunta.gal/dog/Publicados/2014/20140521/AnuncioC3K1-140514-0001_es.html"
+    url_pdf: "https://www.xunta.gal/dog/Publicados/2014/20140521/AnuncioC3K1-140514-0001_es.pdf"
+    file_format: "pdf"
+    content_summary: "SERGAS healthcare tariffs: hospitalization, intensive care, day hospital, psychiatric units, and specialized diagnostic tests."
+    table_locations:
+      - section: "Anexo Tarifas"
+        description: "Tarifas dos servizos sanitarios en centros do SERGAS"
+
+  - id: "rio-2023-precios"
+    ccaa: "La Rioja"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Orden HAP/11/2023, de 14 de marzo, por la que se establece y regula el precio público de los servicios sanitarios prestados en los centros del Servicio Riojano de Salud de la Comunidad Autónoma de La Rioja"
+    gazette: "Boletín Oficial de La Rioja (BOR)"
+    publication_date: "2023-03-14"
+    year: 2023
+    url_gazette: "https://ias1.larioja.org/cex/sistemas/GenericoServlet?servlet=cex.sistemas.dyn.portal.ImgServletSis&code=oumCvWIgBUF6lChv9ZDgP_hXhSM_FmcH4KakC5c0ZFrApHyqPVxRsoD-HW0E2YV6LEXZYSr1AOFS%0A60tgo3OSmeOB3JKn500lS13w34QVisg%3D"
+    url_pdf: "https://ias1.larioja.org/cex/sistemas/GenericoServlet?servlet=cex.sistemas.dyn.portal.ImgServletSis&code=oumCvWIgBUF6lChv9ZDgP_hXhSM_FmcH4KakC5c0ZFrApHyqPVxRsoD-HW0E2YV6LEXZYSr1AOFS%0A60tgo3OSmeOB3JKn500lS13w34QVisg%3D"
+    file_format: "pdf"
+    content_summary: "SERIS public healthcare prices: inpatient care, ICU, emergency medical acts, specialist consultations, and diagnostic tests."
+    table_locations:
+      - section: "Anexo I"
+        description: "Tarifas de los servicios prestados por el Servicio Riojano de Salud"
+
+  - id: "mad-2023-precios"
+    ccaa: "Comunidad de Madrid"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Orden 1975/2023, de 29 de diciembre, de la Consejera de Sanidad, por la que se fijan los precios públicos por la prestación de los servicios y actividades de naturaleza sanitaria de la Comunidad de Madrid"
+    gazette: "Boletín Oficial de la Comunidad de Madrid (BOCM) / Base de Datos de Legislación CAM"
+    publication_date: "2023-12-29"
+    year: 2023
+    url_gazette: "https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13510&eli=true#no-back-button"
+    url_pdf: null
+    file_format: "html"
+    content_summary: "SERMAS public prices: hospital stays categorized by DRG/complexity, ICU days, emergency triage, consultations, and special healthcare agreements."
+    table_locations:
+      - section: "Anexo de Precios Públicos"
+        description: "Tarifas de asistencia hospitalaria y extrahospitalaria del SERMAS"
+
+  - id: "mur-2024-precios"
+    ccaa: "Región de Murcia"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Orden de 9 de febrero de 2024 de la Consejería de Economía, Hacienda y Empresa por la que se publican las tarifas de las tasas y precios públicos aplicables en el año 2024"
+    gazette: "Boletín Oficial de la Región de Murcia (BORM)"
+    publication_date: "2024-02-14"
+    year: 2024
+    page_start: 93
+    page_end: 131
+    url_gazette: "https://www.borm.es/services/anuncio/ano/2024/numero/745/pdf?id=824668"
+    url_pdf: "https://www.borm.es/services/anuncio/ano/2024/numero/745/pdf?id=824668"
+    file_format: "pdf"
+    content_summary: "Public healthcare tariffs for SMS facilities: hospitalization, surgical episodes, laboratory determinations, and diagnostic imaging."
+    table_locations:
+      - section: "Anexo Tarifario"
+        description: "Precios públicos del Servicio Murciano de Salud"
+
+  - id: "nav-2018-precios"
+    ccaa: "Navarra"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Resolución 1564/2018, de 20 de diciembre, del Director Gerente del Servicio Navarro de Salud-Osasunbidea, por la que se establecen las tarifas por los servicios prestados por el Servicio Navarro de Salud Osasunbidea"
+    gazette: "Boletín Oficial de Navarra (BON)"
+    gazette_number: 14
+    publication_date: "2019-01-22"
+    year: 2018
+    url_gazette: "https://bon.navarra.es/es/anuncio/-/texto/2019/14/5"
+    url_pdf: "https://bon.navarra.es/es/anuncio/-/texto/2019/14/5"
+    file_format: "html"
+    content_summary: "Comprehensive DRG-based hospital tariffs, outpatient care, emergency visits, MRI, CT, and specialized surgical procedures billed to third parties."
+    table_locations:
+      - section: "Anexo Tarifas"
+        description: "Tarifas por los servicios prestados por el Servicio Navarro de Salud-Osasunbidea"
+
+  - id: "pvas-2024-precios"
+    ccaa: "País Vasco"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Acuerdo de 19 de diciembre de 2023, del Consejo de Administración del Ente Público Osakidetza-Servicio vasco de salud, por el que se aprueban las tarifas por prestación de servicios sanitarios y docentes a terceros obligados al pago, durante el ejercicio 2024"
+    gazette: "Boletín Oficial del País Vasco (BOPV)"
+    gazette_number: 7
+    publication_date: "2024-01-10"
+    year: 2024
+    url_gazette: "https://www.euskadi.eus/web01-bopv/es/bopv2/datos/2024/01/2400117a.pdf"
+    url_pdf: "https://www.euskadi.eus/web01-bopv/es/bopv2/datos/2024/01/2400117a.pdf"
+    url_data: "https://www.osakidetza.euskadi.eus/contenidos/informacion/osk_servic_para_empresas/es_def/adjuntos/Libro_de_Tarifas_2022_CAS.pdf"
+    file_format: "pdf"
+    content_summary: "Public prices for Osakidetza: hospital stays, high-resolution consultations, home hospitalization, oncology treatments, and diagnostics."
+    table_locations:
+      - section: "Anexo de Tarifas"
+        description: "Cuadro de precios de los servicios de Osakidetza"
+
+  - id: "ing-2013-precios"
+    ccaa: "INGESA (Ceuta y Melilla)"
+    scope: "regional"
+    category: "Precios Públicos / Tasas por Asistencia Sanitaria"
+    legal_title: "Resolución de 19 de julio de 2013, del Instituto Nacional de Gestión Sanitaria, por la que se fijan los precios públicos que han de regir en los centros del INGESA"
+    gazette: "Boletín Oficial del Estado (BOE)"
+    gazette_number: 182
+    publication_date: "2013-07-29"
+    year: 2013
+    url_gazette: "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2013-8240"
+    url_pdf: "https://www.boe.es/boe/dias/2013/07/29/pdfs/BOE-A-2013-8240.pdf"
+    file_format: "pdf"
+    content_summary: "Public healthcare tariffs for INGESA hospitals and primary centers in Ceuta and Melilla, including modifications under BOE-A-2018-1682."
+    table_locations:
+      - section: "Anexo I y II"
+        description: "Tarifas de estancias hospitalarias, consultas de atención primaria y especializada"
+
+  - id: "sns-2023-grd"
+    ccaa: "Nacional"
+    scope: "national"
+    category: "Costes GRD (RAE-CMBD)"
+    legal_title: "Pesos relativos y costes medios de los GRD del Sistema Nacional de Salud (RAE-CMBD / SIC-SNS)"
+    gazette: "Ministerio de Sanidad - Portal Estadístico del SNS"
+    publication_date: "2024-06-15"
+    year: 2023
+    url_gazette: "https://www.sanidad.gob.es/estadEstudios/estadisticas/cmbd.htm"
+    url_pdf: null
+    url_data: "https://www.sanidad.gob.es/estadEstudios/estadisticas/docs/CMBD/2024/Resultados_version_40_APR_GRD.xlsx"
+    file_format: "xlsx"
+    content_summary: "Official Casemix relative weights, mean accounting costs, average length of stay (ALOS), and cost breakdowns across APR-DRG categories in SNS hospitals."
+    table_locations:
+      - section: "Tabla_Costes_APR_GRD"
+        description: "Pesos relativos y coste medio por GRD para hospitalización y CMA"
+
+  - id: "sns-2026-nomenclator"
+    ccaa: "Nacional"
+    scope: "national"
+    category: "Nomenclátor Oficial Farmacéutico"
+    legal_title: "Nomenclátor Oficial de la Prestación Farmacéutica del Sistema Nacional de Salud"
+    gazette: "Ministerio de Sanidad - Dirección General de Cartera Común de Servicios del SNS y Farmacia"
+    publication_date: "2026-02-01"
+    year: 2026
+    url_gazette: "https://www.sanidad.gob.es/profesionales/nomenclator.do"
+    url_pdf: null
+    url_data: "https://www.sanidad.gob.es/areas/saludDigital/semanticaClinica/factoriaRecursos/nomenPresc.htm"
+    file_format: "html"
+    content_summary: "Monthly registry of reimbursed pharmaceuticals, active ingredients, National Codes, PVL, PVP, and statutory deductions under RDL 8/2010."
+    table_locations:
+      - section: "Nomenclátor de Facturación y Prescripción"
+        description: "Bases de datos de medicamentos, precios industriales máximos y deducciones"
+
+  - id: "sns-2024-siap"
+    ccaa: "Nacional"
+    scope: "national"
+    category: "Costes y Actividad de Atención Primaria (SIAP)"
+    legal_title: "Sistema de Información de Atención Primaria (SIAP): Población Asignada, Recursos y Actividad Asistencial"
+    gazette: "Ministerio de Sanidad - Portal Estadístico del SNS"
+    publication_date: "2024-11-20"
+    year: 2024
+    url_gazette: "https://pestadistico.inteligenciadegestion.sanidad.gob.es/publicoSNS/S/sistema-de-informacion-de-atencion-primaria-siap"
+    url_pdf: "https://www.sanidad.gob.es/estadEstudios/estadisticas/docs/siap/Glosario_de_terminos_2010.pdf"
+    url_data: "https://pestadistico.inteligenciadegestion.sanidad.gob.es/publicoSNS/C/sistema-de-informacion-de-atencion-primaria-siap/actividad/ordinaria"
+    file_format: "pdf"
+    table_locations:
+      - section: "Actividad Ordinaria y Urgencias 112/061"
+        description: "Matriz interactiva de consultas y personas atendidas por Área de Salud"
+
+  - id: "ine-ipc-medicina"
+    ccaa: "Nacional"
+    scope: "national"
+    category: "IPC Subgrupo Medicina (ECOICOP 06)"
+    legal_title: "Índice de Precios de Consumo (IPC). Base 2021. Subgrupo 06: Medicina (Servicios médicos, ambulatorios y hospitalarios)"
+    gazette: "Instituto Nacional de Estadística (INE)"
+    publication_date: "2026-02-15"
+    year: 2026
+    url_gazette: "https://www.ine.es/jaxiT3/Tabla.htm?t=50913"
+    url_pdf: null
+    url_data: "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50913"
+    file_format: "json"
+    content_summary: "Official historical index time series for healthcare, pharmaceutical products, outpatient services, and hospital services for HEOR deflator modeling."
+    table_locations:
+      - section: "Tabla 50913"
+        description: "Índices mensuales y variaciones anuales de subclases ECOICOP 06"
