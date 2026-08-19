@@ -19,7 +19,7 @@ test_that("compute_hospitalization_cohorts collapses overlaps, contiguous visits
     visit_start_date = as.Date(c(
       "2020-01-01", "2020-01-05", "2020-01-20", # Person 1: overlap (1-7 & 5-10), then gap (20-25) -> readmission
       "2020-02-01", "2020-02-10", "2020-03-01", # Person 2: bad end date, NA end date, normal
-      "2020-01-01", "2020-03-01"                # Person 3: > 30 days gap -> no readmission
+      "2020-01-01", "2020-03-01" # Person 3: > 30 days gap -> no readmission
     )),
     visit_end_date = as.Date(c(
       "2020-01-07", "2020-01-10", "2020-01-25",

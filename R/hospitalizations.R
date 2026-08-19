@@ -85,8 +85,8 @@ compute_hospitalization_cohorts <- function(
     dplyr::ungroup() |>
     dplyr::filter(
       !is.na(.data$prev_discharge) &
-      .data$cohort_start_date <= .data$prev_discharge + .env$readmission_window &
-      .data$cohort_start_date > .data$prev_discharge
+        .data$cohort_start_date <= .data$prev_discharge + .env$readmission_window &
+        .data$cohort_start_date > .data$prev_discharge
     ) |>
     dplyr::mutate(cohort_definition_id = 2L) |>
     dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date")
@@ -116,17 +116,23 @@ compute_hospitalization_cohorts <- function(
 }
 
 #' @rdname compute_hospitalization_cohorts
+#' @param icuConceptIds Integer vector of OMOP ICU visit concept IDs. Default: `32037L`.
+#' @param readmissionWindow Maximum days between previous discharge and next admission. Default: 30.
 #' @export
 computeHospitalizationCohorts <- function(
   cdm,
   name,
-  visitConceptIds = c(9201L, 262L, 32037L, 581379L),
-  readmission_window = 30L
+  visitConceptIds = c(9201L, 262L, 581379L),
+  icuConceptIds = 32037L,
+  readmissionWindow = 30L,
+  readmission_window = NULL
 ) {
+  win <- if (!is.null(readmission_window)) readmission_window else readmissionWindow
+  all_concepts <- unique(c(visitConceptIds, icuConceptIds))
   compute_hospitalization_cohorts(
     cdm = cdm,
     name = name,
-    visit_concept_ids = visitConceptIds,
-    readmission_window = readmission_window
+    visit_concept_ids = all_concepts,
+    readmission_window = win
   )
 }

@@ -137,14 +137,14 @@ test_that("T014 [US3] extract_hcru extracts pharmacotherapy, diagnostics, and po
   expect_true(is.data.frame(hcru_out$hcru$pharmacotherapy))
   expect_true(all(c("subject_id", "window", "prescription_fills", "total_days_supply", "pdc") %in% colnames(hcru_out$hcru$pharmacotherapy)))
 
-  # Patient 1 has 1 drug in baseline (2009-08-01, 30 days) and 1 drug in followup (2010-01-15, 30 days)
+  # Patient 1 has 1 drug in baseline (2009-08-01, 30 days) and 2 drugs in followup (2010-01-15, 30 days + 2010-03-01, 1 day)
   p1_pharma_base <- hcru_out$hcru$pharmacotherapy |> dplyr::filter(subject_id == 1L, window == "baseline")
   expect_equal(p1_pharma_base$prescription_fills, 1)
   expect_equal(p1_pharma_base$total_days_supply, 30)
 
   p1_pharma_foll <- hcru_out$hcru$pharmacotherapy |> dplyr::filter(subject_id == 1L, window == "followup")
-  expect_equal(p1_pharma_foll$prescription_fills, 1)
-  expect_equal(p1_pharma_foll$total_days_supply, 30)
+  expect_equal(p1_pharma_foll$prescription_fills, 2)
+  expect_equal(p1_pharma_foll$total_days_supply, 31)
   expect_true(!is.na(p1_pharma_foll$pdc))
 
   # Check procedures & diagnostics table

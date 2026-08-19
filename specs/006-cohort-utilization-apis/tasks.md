@@ -20,8 +20,8 @@
 
 **Purpose**: Provide CDM test fixtures and shared validation utilities mirroring `PatientProfiles` and `CohortConstructor`.
 
-- [ ] T001 Update synthetic test CDM generators with complete visit, provider, drug, measurement, procedure, and cost tables in `tests/testthat/helper-eunomia.R`
-- [ ] T002 [P] Implement shared validation helpers (`validateWindowArgument`, `validateNameStyle`, `validateCdmTables`) in `R/utilities.R`
+- [X] T001 Update synthetic test CDM generators with complete visit, provider, drug, measurement, procedure, and cost tables in `tests/testthat/helper-eunomia.R`
+- [X] T002 [P] Implement shared validation helpers (`validateWindowArgument`, `validateNameStyle`, `validateCdmTables`) in `R/utilities.R`
 
 ---
 
@@ -29,8 +29,8 @@
 
 **Purpose**: Provide core `dbplyr` windowing, column name generation, and table cleanup routines shared across enrichers.
 
-- [ ] T003 Implement in-database window expansion and date interval query builder in `R/utilities.R`
-- [ ] T004 [P] Implement temporary table naming and cleanup lifecycle helpers (`tmpPrefix`, `uniqueTableName`, `dropSourceTable`) in `R/utilities.R`
+- [X] T003 Implement in-database window expansion and date interval query builder in `R/utilities.R`
+- [X] T004 [P] Implement temporary table naming and cleanup lifecycle helpers (`tmpPrefix`, `uniqueTableName`, `dropSourceTable`) in `R/utilities.R`
 
 ---
 
@@ -42,19 +42,19 @@
 
 ### Tests for User Story 1 (TDD)
 
-- [ ] T005 [P] [US1] Write unit tests for `addHospitalizations()` (admissions, LOS, ICU, readmissions) in `tests/testthat/test-add-hospitalizations.R`
-- [ ] T006 [P] [US1] Write unit tests for `addOutpatientVisits()` (GP, Specialist, ED stratification) in `tests/testthat/test-add-outpatient.R`
-- [ ] T007 [P] [US1] Write unit tests for `addPrescriptions()` (fills, days supply, PDC, infusions) in `tests/testthat/test-add-prescriptions.R`
-- [ ] T008 [P] [US1] Write unit tests for `addProcedures()` (lab measurements, imaging, procedures) in `tests/testthat/test-add-procedures.R`
-- [ ] T009 [P] [US1] Write unit tests for `addCosts()` (inpatient, outpatient, drug, procedure, total costs) in `tests/testthat/test-add-costs.R`
+- [X] T005 [P] [US1] Write unit tests for `addHospitalizations()` (admissions, LOS, ICU, readmissions) in `tests/testthat/test-add-hospitalizations.R`
+- [X] T006 [P] [US1] Write unit tests for `addOutpatientVisits()` (GP, Specialist, ED stratification) in `tests/testthat/test-add-outpatient.R`
+- [X] T007 [P] [US1] Write unit tests for `addPrescriptions()` (fills, days supply, PDC, infusions) in `tests/testthat/test-add-prescriptions.R`
+- [X] T008 [P] [US1] Write unit tests for `addProcedures()` (lab measurements, imaging, procedures) in `tests/testthat/test-add-procedures.R`
+- [X] T009 [P] [US1] Write unit tests for `addCosts()` (inpatient, outpatient, drug, procedure, total costs) in `tests/testthat/test-add-costs.R`
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Implement `addHospitalizations()` with inpatient/ICU visit concepts, LOS calculation, and optional readmissions in `R/addHospitalizations.R`
-- [ ] T011 [US1] Implement `addOutpatientVisits()` with provider specialty join and GP/Specialist/ED classification in `R/addOutpatientVisits.R`
-- [ ] T012 [US1] Implement `addPrescriptions()` with `drug_exposure` aggregation, days supply, PDC calculation, and infusion route filtering in `R/addPrescriptions.R`
-- [ ] T013 [US1] Implement `addProcedures()` with `measurement` and `procedure_occurrence` filtering for labs, imaging, and procedures in `R/addProcedures.R`
-- [ ] T014 [US1] Implement `addCosts()` with polymorphic OMOP `cost` table linkage by domain and event ID in `R/addCosts.R`
+- [X] T010 [US1] Implement `addHospitalizations()` with inpatient/ICU visit concepts, LOS calculation, and optional readmissions in `R/addHospitalizations.R`
+- [X] T011 [US1] Implement `addOutpatientVisits()` with provider specialty join and GP/Specialist/ED classification in `R/addOutpatientVisits.R`
+- [X] T012 [US1] Implement `addPrescriptions()` with `drug_exposure` aggregation, days supply, PDC calculation, and infusion route filtering in `R/addPrescriptions.R`
+- [X] T013 [US1] Implement `addProcedures()` with `measurement` and `procedure_occurrence` filtering for labs, imaging, and procedures in `R/addProcedures.R`
+- [X] T014 [US1] Implement `addCosts()` with polymorphic OMOP `cost` table linkage by domain and event ID in `R/addCosts.R`
 
 **Checkpoint**: User Story 1 complete and independently testable via `devtools::test(filter = 'add-')`.
 
@@ -68,12 +68,12 @@
 
 ### Tests for User Story 2 (TDD)
 
-- [ ] T015 [P] [US2] Write unit tests for `computeHospitalizationCohorts()` and `computeInfusionCohorts()` in `tests/testthat/test-compute-episodes.R`
+- [X] T015 [P] [US2] Write unit tests for `computeHospitalizationCohorts()` and `computeInfusionCohorts()` in `tests/testthat/test-compute-episodes.R`
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Refactor and align `computeHospitalizationCohorts()` with DARWIN EU standards and camelCase arguments in `R/hospitalizations.R`
-- [ ] T017 [US2] Implement `computeInfusionCohorts()` delegating to `CohortConstructor::conceptCohort()` with parenteral route filtering in `R/computeInfusionCohorts.R`
+- [X] T016 [US2] Refactor and align `computeHospitalizationCohorts()` with DARWIN EU standards and camelCase arguments in `R/hospitalizations.R`
+- [X] T017 [US2] Implement `computeInfusionCohorts()` delegating to `CohortConstructor::conceptCohort()` with parenteral route filtering in `R/computeInfusionCohorts.R`
 
 **Checkpoint**: User Story 2 complete and independently testable via `devtools::test(filter = 'compute-episodes')`.
 
@@ -87,12 +87,12 @@
 
 ### Tests for User Story 3 (TDD)
 
-- [ ] T018 [P] [US3] Write unit tests for `summariseUtilization()`, `summariseCosts()`, and table/plot rendering in `tests/testthat/test-summarise-utilization.R`
+- [X] T018 [P] [US3] Write unit tests for `summariseUtilization()`, `summariseCosts()`, and table/plot rendering in `tests/testthat/test-summarise-utilization.R`
 
 ### Implementation for User Story 3
 
-- [ ] T019 [US3] Implement `summariseUtilization()` and `summariseCosts()` returning `omopgenerics::summarised_result` in `R/summariseUtilization.R`
-- [ ] T020 [US3] Implement `tableUtilization()`, `tableCosts()`, `plotUtilization()`, and `plotCosts()` delegating to `visOmopResults` in `R/tableUtilization.R`
+- [X] T019 [US3] Implement `summariseUtilization()` and `summariseCosts()` returning `omopgenerics::summarised_result` in `R/summariseUtilization.R`
+- [X] T020 [US3] Implement `tableUtilization()`, `tableCosts()`, `plotUtilization()`, and `plotCosts()` delegating to `visOmopResults` in `R/tableUtilization.R`
 
 **Checkpoint**: User Story 3 complete and independently testable via `devtools::test(filter = 'summarise-utilization')`.
 
@@ -102,11 +102,11 @@
 
 **Purpose**: Refactor legacy wrapper `extract_hcru()`, verify full pipeline regression, document functions, and enforce DARWIN EU style compliance.
 
-- [ ] T021 Refactor `extract_hcru()` in `R/hcru.R` to compose the new modular `add*` verbs while maintaining backward compatibility
-- [ ] T022 Update end-to-end integration test `tests/testthat/test-e2e.R` verifying 6-stage pipeline execution with modular enrichers
-- [ ] T023 [P] Generate package documentation and NAMESPACE exports via `devtools::document()`
-- [ ] T024 [P] Execute full test suite via `devtools::test()` ensuring 100% test pass rate
-- [ ] T025 [P] Run `styler::style_dir()` and `lintr::lint_package(".", linters = lintr::linters_with_defaults(lintr::object_name_linter(styles = "camelCase")))`
+- [X] T021 Refactor `extract_hcru()` in `R/hcru.R` to compose the new modular `add*` verbs while maintaining backward compatibility
+- [X] T022 Update end-to-end integration test `tests/testthat/test-e2e.R` verifying 6-stage pipeline execution with modular enrichers
+- [X] T023 [P] Generate package documentation and NAMESPACE exports via `devtools::document()`
+- [X] T024 [P] Execute full test suite via `devtools::test()` ensuring 100% test pass rate
+- [X] T025 [P] Run `styler::style_dir()` and `lintr::lint_package(".", linters = lintr::linters_with_defaults(lintr::object_name_linter(styles = "camelCase")))`
 
 ---
 

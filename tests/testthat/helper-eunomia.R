@@ -74,14 +74,15 @@ hermes_test_cdm <- function(env = parent.frame()) {
     provider_id = c(1L, 1L, 1L, 1L, 1L, 2L, 1L, 1L)
   )
   drug_exposure <- tibble::tibble(
-    drug_exposure_id = c(1L, 2L, 3L),
-    person_id = c(1L, 1L, 2L),
-    drug_concept_id = c(1124300L, 1118084L, 1124300L),
-    drug_exposure_start_date = as.Date(c("2010-01-15", "2009-08-01", "2010-02-01")),
-    drug_exposure_end_date = as.Date(c("2010-02-14", "2009-08-31", "2010-03-02")),
-    drug_type_concept_id = rep(38000177L, 3),
-    days_supply = c(30L, 30L, 30L),
-    quantity = c(30, 30, 30)
+    drug_exposure_id = c(1L, 2L, 3L, 4L),
+    person_id = c(1L, 1L, 2L, 1L),
+    drug_concept_id = c(1124300L, 1118084L, 1124300L, 19078461L),
+    drug_exposure_start_date = as.Date(c("2010-01-15", "2009-08-01", "2010-02-01", "2010-03-01")),
+    drug_exposure_end_date = as.Date(c("2010-02-14", "2009-08-31", "2010-03-02", "2010-03-01")),
+    drug_type_concept_id = rep(38000177L, 4),
+    route_concept_id = c(4132161L, 4132161L, 4132161L, 4171047L), # 4171047 = Intravenous
+    days_supply = c(30L, 30L, 30L, 1L),
+    quantity = c(30, 30, 30, 1)
   )
   procedure_occurrence <- tibble::tibble(
     procedure_occurrence_id = c(1L, 2L),
@@ -120,6 +121,32 @@ hermes_test_cdm <- function(env = parent.frame()) {
   DBI::dbWriteTable(con, "cost", cost)
 
   cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+
+  target <- tibble::tibble(
+    cohort_definition_id = 1L,
+    subject_id = c(1L, 2L),
+    cohort_start_date = as.Date(c("2010-01-01", "2010-01-01")),
+    cohort_end_date = as.Date(c("2010-12-31", "2010-12-31"))
+  )
+  comparator <- tibble::tibble(
+    cohort_definition_id = 1L,
+    subject_id = 3L,
+    cohort_start_date = as.Date("2010-01-01"),
+    cohort_end_date = as.Date("2010-12-31")
+  )
+  outcome <- tibble::tibble(
+    cohort_definition_id = 1L,
+    subject_id = 1L,
+    cohort_start_date = as.Date("2010-06-01"),
+    cohort_end_date = as.Date("2010-06-01")
+  )
+
+  cdm <- omopgenerics::insertTable(cdm, name = "target_cohort", table = target)
+  cdm$target_cohort <- newCohortTable(cdm$target_cohort)
+  cdm <- omopgenerics::insertTable(cdm, name = "comparator_cohort", table = comparator)
+  cdm$comparator_cohort <- newCohortTable(cdm$comparator_cohort)
+  cdm <- omopgenerics::insertTable(cdm, name = "outcome_cohort", table = outcome)
+  cdm$outcome_cohort <- newCohortTable(cdm$outcome_cohort)
 
   return(cdm)
 }
