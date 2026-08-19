@@ -125,7 +125,12 @@ bench_defs = [
     {
         'id': 'BENCH-05',
         'name': 'Emergency Department Episode',
-        'filter': (costs_df['setting'] == 'Emergency') & (costs_df['unit_type'] == 'per_visit')
+        'filter': (
+            (costs_df['setting'] == 'Emergency') &
+            (costs_df['unit_type'] == 'per_visit') &
+            (costs_df['description'].str.contains(r'\b(?:urgencia|urgencias)\b', case=False, na=False)) &
+            (~costs_df['description'].str.contains(r'ambulancia|uvi|móvil|movil|traslado|transporte|helicóptero|helicoptero|técnico|tecnico|guardia|analítica|analitica|laboratorio', case=False, na=False))
+        )
     },
     {
         'id': 'BENCH-06',

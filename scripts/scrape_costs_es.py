@@ -258,7 +258,66 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             return "Procedures"
         return "Inpatient"
 
-    # Precedence 2: Consultations & Outpatient visits (including specialized consultations)
+    # Guard 1: Casemix / Neonatal / Inpatient severity patterns without APR-GRD prefix
+    if any(
+        k in d
+        for k in [
+            "neonato",
+            "peso al nacer",
+            "anomalía mayor",
+            "anomalia mayor",
+            "sin intervención de soporte vital",
+            "sin intervencion de soporte vital",
+            "severidad 1",
+            "severidad 2",
+            "severidad 3",
+            "severidad 4",
+        ]
+    ):
+        return "Inpatient"
+
+    # Precedence 2: Diagnostics, Imaging, and Clinical Laboratory (including stat tests with [URGENCIAS] / (URGENCIAS))
+    is_explicit_visit = bool(
+        re.search(
+            r"\b(?:visita de urgencias|urgencias hospitalarias|urgencias no ingresadas|atenci[oó]n en urgencias|urgencia general|urgencia pedi[aá]trica|urgencia gineco|urgencia traumatol[oó]gica|asistencia ambulatoria.*urgencia|estancia.*cama.*observaci[oó]n.*urgencias)\b",
+            d,
+        )
+    )
+
+    if (
+        code_std.startswith(("REGIONAL:LQ", "REGIONAL:E03.1.6"))
+        or bool(re.search(r"\[urgencias?\]|\(urgencias?\)", d))
+    ) and not is_explicit_visit:
+        return "Diagnostics"
+
+    if (
+        re.search(
+            r"\b(?:resonancia|tac|tc|tomograf[ií]a|radiolog[ií]a|radiograf[ií]a|ecograf[ií]a|ecocardiograf[ií]a|gammagraf[ií]a|spect|pet-tac|pet|endoscop|mamograf[ií]a|electrocardiograma|ecg|eeg|electromiograf|espirometr|audiometr|campimetr|densitometr|ergometr|holter|polisomnograf|alergia|provocaci|analitica|analítica|laboratorio|biopsia|determinaci|estudio genetico|serolog|cultivo|citolog|perfil|tinci|microbiolog|ige|igg|igm|suero|plasma|orina|lcr|l[ií]quido|bioqu[ií]mica|hematimetr|hemograma|frotis|ant[ií]geno|anticuerpo|inmunoglobulina|pcr|genotipado|cariotipo|secuenciaci|[aá]cido|amilasa|alb[uú]mina|fosfatasa|glucosa|creatinina|creatininio|colesterol|triglic[eé]ridos|transaminasas|bilirrubina|urea|urato|troponina|tiroxina|tsh|ferritina|hierro|potasio|sodio|calcio|gasometr|coagulaci|hemostasia|d-d[ií]mero|hla-|cyp|adamts|clostridium|mononucleosis|hepatitis|streptococcus|toxoplasma|treponema|varicela|sarampi[oó]n|metotrexato|procalcitonina|vancomicina|teofilina|digoxina|etanol|cannabinoides|opi[aá]ceos|coca[ií]na|anfetaminas|barbituratos|benzodiacepinas|dengue|entero|influenza|legionella|marsa|micobacterias|par[aá]sitos|plasmodium|rubeola|citomegalovirus)\b",
+            d,
+        )
+        or code_std.startswith(("REGIONAL:LQ", "REGIONAL:E03.1.6"))
+    ) and not is_explicit_visit and not re.search(r"\b(?:visita|consulta)\b", d):
+        return "Diagnostics"
+
+    # Precedence 3: ICU / Critical Care (hardened against substring matches like 'resolución', 'sustitución')
+    if (
+        re.search(r"\b(?:uci|uvi|cuidados intensivos|vigilancia intensiva|cr[ií]ticos|críticos|quemados)\b", d)
+        or (re.search(r"\breanimaci[oó]n\b", d) and "consulta" not in d)
+    ) and not re.search(r"\b(?:m[oó]vil|ambulancia|transporte)\b", d):
+        return "ICU"
+
+    # Precedence 4: Emergency Care & Urgent Medical Transport
+    if (
+        re.search(
+            r"\b(?:urgencia|urgencias|emergencia|emergencias|atenci[oó]n continuada|atencion continuada|guardia m[eé]dica|ambulancia medicalizada|interurbano|traslado urgente)\b",
+            d,
+        )
+        or (re.search(r"\bsoporte vital\b", d) and not re.search(r"sin intervenci[oó]n de|anomal[ií]a", d))
+        or re.search(r"(?<![\d.,])(?:112|061)(?![\d.,])", d)
+    ):
+        return "Emergency"
+
+    # Precedence 5: Consultations & Outpatient visits (including specialized consultations)
     if re.search(r"\b(?:consulta|consultas|visita|visitas|interconsulta|interconsultas|revisi[oó]n|revisiones)\b", d):
         if any(
             k in d
@@ -279,21 +338,7 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             return "Primary Care"
         return "Outpatient"
 
-    # Precedence 3: ICU / Critical Care (hardened against substring matches like 'resolución', 'sustitución')
-    if (
-        re.search(r"\b(?:uci|uvi|cuidados intensivos|vigilancia intensiva|cr[ií]ticos|críticos|quemados)\b", d)
-        or (re.search(r"\breanimaci[oó]n\b", d) and "consulta" not in d)
-    ) and not re.search(r"\b(?:m[oó]vil|ambulancia|transporte)\b", d):
-        return "ICU"
-
-    # Precedence 4: Emergency Care & Urgent Medical Transport
-    if re.search(
-        r"\b(?:urgencia|urgencias|emergencia|emergencias|112|061|atenci[oó]n continuada|atencion continuada|guardia m[eé]dica|soporte vital|ambulancia medicalizada|interurbano|traslado urgente)\b",
-        d,
-    ):
-        return "Emergency"
-
-    # Precedence 5: Primary Care / Oral Health Programs
+    # Precedence 6: Primary Care / Oral Health Programs
     if any(
         k in d
         for k in [
@@ -318,22 +363,12 @@ def infer_setting(desc: str, code_std: str = "") -> str:
     ):
         return "Primary Care"
 
-    # Precedence 6: Inpatient Hospitalization
+    # Precedence 7: Inpatient Hospitalization
     if re.search(
         r"\b(?:hospitaliz|estancia|ingreso|cama ocupada|internamiento|convalecencia|craneotom|trasplante|traqueostom|infarto|neumon[ií]a|sepsis)\b",
         d,
     ):
         return "Inpatient"
-
-    # Precedence 7: Diagnostics, Imaging, and Clinical Laboratory
-    if (
-        re.search(
-            r"\b(?:resonancia|tac|tc|tomograf[ií]a|radiolog[ií]a|radiograf[ií]a|ecograf[ií]a|ecocardiograf[ií]a|gammagraf[ií]a|spect|pet-tac|pet|endoscop|mamograf[ií]a|electrocardiograma|ecg|eeg|electromiograf|espirometr|audiometr|campimetr|densitometr|ergometr|holter|polisomnograf|alergia|provocaci|analitica|analítica|laboratorio|biopsia|determinaci|estudio genetico|serolog|cultivo|citolog|perfil|tinci|microbiolog|ige|igg|igm|suero|plasma|orina|lcr|l[ií]quido|bioqu[ií]mica|hematimetr|hemograma|frotis|ant[ií]geno|anticuerpo|inmunoglobulina|pcr|genotipado|cariotipo|secuenciaci|[aá]cido|amilasa|alb[uú]mina|fosfatasa|glucosa|creatinina|colesterol|triglic[eé]ridos|transaminasas|bilirrubina|urea|troponina|tiroxina|tsh|ferritina|hierro|potasio|sodio|calcio|gasometr|coagulaci|hemostasia|d-d[ií]mero|hla-|cyp)\b",
-            d,
-        )
-        or code_std.startswith(("REGIONAL:LQ", "REGIONAL:E03.1.6"))
-    ):
-        return "Diagnostics"
 
     # Precedence 8: Procedures, CMA, Interventions, Surgeries
     if (
@@ -351,8 +386,27 @@ def infer_setting(desc: str, code_std: str = "") -> str:
 
 def infer_unit_type(setting: str, desc: str) -> str:
     d = desc.lower()
-    if any(k in d for k in ["por km", "cada km", "por cada km", "porkm", "/km"]):
+    if any(k in d for k in ["por km", "cada km", "por cada km", "porkm", "/km", "€/km"]):
         return "per_km"
+    if any(
+        k in d
+        for k in [
+            "ambulancia",
+            "traslado",
+            "transporte",
+            "uvi móvil",
+            "uvi movil",
+            "helicóptero",
+            "helicoptero",
+            "aéreo",
+            "aereo",
+            "por servicio",
+            "por salida",
+            "por traslado",
+            "por lesionado",
+        ]
+    ):
+        return "per_transfer"
     if any(
         k in d
         for k in [
@@ -363,6 +417,13 @@ def infer_unit_type(setting: str, desc: str) -> str:
             "hemodiálisis",
             "fisioterapia",
             "rehabilitaci",
+            "jornada",
+            "por hora",
+            "por cada hora",
+            "coordinador de emergencias",
+            "técnico de emergencias",
+            "tecnico de emergencias",
+            "guardia",
         ]
     ):
         return "per_session"

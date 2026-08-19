@@ -31,7 +31,17 @@ def df_to_markdown(df, float_cols=None, float_fmt="{:,.2f}"):
         float_cols = [c for c in res.columns if res[c].dtype in ['float64', 'float32']]
     for c in float_cols:
         res[c] = res[c].apply(lambda x: float_fmt.format(x) if pd.notnull(x) else "-")
-    return res.to_markdown(index=False)
+    try:
+        return res.to_markdown(index=False)
+    except Exception:
+        # ponytail: simple markdown table generator when tabulate is absent
+        headers = [str(c) for c in res.columns]
+        rows = [[str(v) for v in row] for row in res.values]
+        col_widths = [max(len(h), max((len(r[i]) for r in rows), default=0)) for i, h in enumerate(headers)]
+        header_line = "| " + " | ".join(h.ljust(w) for h, w in zip(headers, col_widths)) + " |"
+        sep_line = "| " + " | ".join("-" * w for w in col_widths) + " |"
+        data_lines = ["| " + " | ".join(r[i].ljust(col_widths[i]) for i in range(len(headers))) + " |" for r in rows]
+        return "\n".join([header_line, sep_line] + data_lines)
 
 # ==========================================
 # 1. CCAA Breakdown
@@ -207,17 +217,22 @@ bench_defs = [
     {
         'benchmark_id': 'BENCH-05',
         'name': 'Emergency Department Episode (Urgencia Hospitalaria)',
-        'filter': (costs_df['setting'] == 'Emergency') & (costs_df['unit_type'] == 'per_visit')
+        'filter': (
+            (costs_df['setting'] == 'Emergency') &
+            (costs_df['unit_type'] == 'per_visit') &
+            (costs_df['description'].str.contains(r'\b(?:urgencia|urgencias)\b', case=False, na=False)) &
+            (~costs_df['description'].str.contains(r'ambulancia|uvi|móvil|movil|traslado|transporte|helicóptero|helicoptero|técnico|tecnico|guardia|analítica|analitica|laboratorio', case=False, na=False))
+        )
     },
     {
         'benchmark_id': 'BENCH-06',
         'name': 'Brain / Cranial MRI (Resonancia Magnética Craneal)',
-        'filter': costs_df['description'].str.contains('resonancia.*(cráneo|cerebr|encef|cabeza|craneal)|rmn.*cráne|rm.*cráne', case=False, na=False)
+        'filter': costs_df['description'].str.contains(r'resonancia.*(?:cráneo|cerebr|encef|cabeza|craneal)|rmn.*cráne|rm.*cráne', case=False, na=False)
     },
     {
         'benchmark_id': 'BENCH-07',
         'name': 'Chest CT Scan (TAC / TC Torácico)',
-        'filter': costs_df['description'].str.contains('tomograf.*(tórax|torác)|tac.*tórax|tc.*tórax', case=False, na=False)
+        'filter': costs_df['description'].str.contains(r'tomograf.*(?:tórax|torác)|tac.*tórax|tc.*tórax', case=False, na=False)
     },
     {
         'benchmark_id': 'BENCH-08',

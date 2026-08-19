@@ -142,6 +142,50 @@ class TestScrapeCostsEs(unittest.TestCase):
         self.assertEqual(infer_omop_domain("Primary Care"), "Visit")
         self.assertEqual(infer_unit_type("Primary Care", "CONSULTA"), "per_visit")
 
+        # Emergency setting guards & laboratory stat tests
+        self.assertEqual(
+            infer_setting("G CON ANOMALÍA MAYOR O SIN INTERVENCIÓN DE SOPORTE VITAL (SEVERIDAD 1)"),
+            "Inpatient",
+        )
+        self.assertEqual(infer_setting("BILIRRUBINA [URGENCIAS]", code_std="REGIONAL:LQ08543U"), "Diagnostics")
+        self.assertEqual(infer_unit_type("Diagnostics", "BILIRRUBINA [URGENCIAS]"), "per_test")
+        self.assertEqual(infer_setting("URGENCIAS HOSPITALARIAS B2 2 5 1 URGENCIAS NO INGRESADAS"), "Emergency")
+        self.assertEqual(
+            infer_unit_type("Emergency", "TRANSPORTE DE EMERGENCIA ASISTENCIA UVI MÓVIL TERRESTRE"),
+            "per_transfer",
+        )
+        self.assertEqual(
+            infer_unit_type("Emergency", "TÉCNICO DE EMERGENCIAS JORNADA ORDINARIA"),
+            "per_session",
+        )
+
+    def test_bench_05_emergency_dispersion(self):
+        """Verify BENCH-05 Emergency Department Episode has CV < 0.80 and realistic ranges."""
+        df = pd.read_parquet("data/costs_spain.parquet")
+        b5_filter = (
+            (df["setting"] == "Emergency")
+            & (df["unit_type"] == "per_visit")
+            & (df["description"].str.contains(r"\b(?:urgencia|urgencias)\b", case=False, na=False))
+            & (
+                ~df["description"].str.contains(
+                    r"ambulancia|uvi|móvil|movil|traslado|transporte|helicóptero|helicoptero|técnico|tecnico|guardia|analítica|analitica|laboratorio",
+                    case=False,
+                    na=False,
+                )
+            )
+        )
+        b5_df = df[b5_filter]
+        self.assertGreater(len(b5_df), 30)
+        cv = b5_df["cost_updated"].std() / b5_df["cost_updated"].mean()
+        self.assertLess(cv, 0.80)
+        self.assertGreater(b5_df["cost_updated"].mean(), 100.0)
+        self.assertLess(b5_df["cost_updated"].mean(), 400.0)
+
+        # Verify Andalusia values
+        and_b5 = b5_df[b5_df["ccaa"] == "Andalucía"]
+        self.assertGreaterEqual(len(and_b5), 2)
+        self.assertLess(and_b5["cost_updated"].max(), 600.0)
+
     def test_canonical_catalog_invariants(self):
         """Verify canonical parquet output satisfies all production quality invariants."""
         parquet_path = "data/costs_spain.parquet"
