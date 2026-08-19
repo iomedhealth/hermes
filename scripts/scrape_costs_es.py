@@ -256,6 +256,32 @@ def is_noise_text(text: str) -> bool:
         r"^\s*KM\.?\s*$",
         r"^\s*RECORRIDO\)?\s*$",
         r"^\s*,\d+\s*$",
+        r"\bCVE:[-\sA-Z0-9\/]+",
+        r"\bNPE:[-\sA-Z0-9\/]+",
+        r"\bDEPÓSITO\s+LEGAL\b",
+        r"\bISSN:[-\s0-9X]+",
+        r"\bES\s+COPIA\s+AUTÉNTICA\b",
+        r"\bFIRMADO\s+POR\b",
+        r"\bVERIFICACIÓN\s+[A-Za-z0-9]+",
+        r"\bDIRECCIÓN\s+GENERAL\s+C\/\s+ÁLAVA\b",
+        r"\bZUZENDARITZA\s+NAGUSIA\b",
+        r"\bTFNO\.\s*\d+",
+        r"\bEQUIPO\s+PROFESIONAL\s+ASIGNADO\b",
+        r"\bEL\s+NÚMERO\s+DE\s+PLAZAS\s+MÍNIMO\b",
+        r"\bPERSONAL:\s+EL\s+EQUIPO\b",
+        r"\bRELACIÓN\s+NO\s+EXHAUSTIVA\b",
+        r"\bEN\s+EL\s+SUPUESTO\s+DE\s+ESTANCIAS\b",
+        r"\bADEMÁS\s+DEL\s+PRECIO\s+ESTABLECIDO\b",
+        r"\bEXPRESIÓN:\s*PRECIO\b",
+        r"\bPRECIOS?\s+SE\s+ESPECIFICAN\b",
+        r"\bPRECIOS?\s+SERÁ\s+EL\s+ESTABLECIDO\b",
+        r"\bPRECIOS?\s+SON\s+LOS\s+ESTABLECIDOS\b",
+        r"\bSE\s+DETALLAN\s+EN\s+EL\s+ANEXO\b",
+        r"\bRETRIBUCIÓN\s+DE\s+ACTIVIDADES\b",
+        r"\bFORMACIÓN\s+(?:PROGRAMADA|NO\s+PROGRAMADA)\b",
+        r"\bDISEÑO\s+ACTIVIDAD\s+TIPO\b",
+        r"^\s*(?:TRAMO|NÚMERO|SUCESIVAS|EN\s+URGENCIAS|AMBULANTE\s+\d+|DE\s+ENFERMERÍA|COLGAJO|ALFA|SISTEMÁTICO|PORKM)\s*$",
+        r"^[A-Z]\*{3,5}$",
     ]
     for pat in noise_patterns:
         if re.search(pat, t, re.I):
@@ -268,6 +294,62 @@ def is_noise_text(text: str) -> bool:
     return False
 
 
+def clean_description_text(desc: str) -> str:
+    """Sanitize description by stripping headers, gazette footers, asterisks, and trailing punctuation."""
+    if not desc:
+        return ""
+    t = desc.strip()
+
+    # Gazette footers/headers
+    t = re.sub(r"https?://\S+", "", t, flags=re.I)
+    t = re.sub(r"www\.\S+", "", t, flags=re.I)
+    t = re.sub(r"\b(?:BOC|BOCYL|BOJA|BOPV|BORM|DOGV|DOGC|DOE|BOE|BOPA|BOR|BON)[-\sA-Z0-9\/]+", "", t, flags=re.I)
+    t = re.sub(r"\bCVE:[-\sA-Z0-9\/]+", "", t, flags=re.I)
+    t = re.sub(r"\bNPE:[-\sA-Z0-9\/]+", "", t, flags=re.I)
+    t = re.sub(r"\bDEP[ÓO]SITO\s+LEGAL:[-\sA-Z0-9\/]+", "", t, flags=re.I)
+    t = re.sub(r"\bISSN:[-\s0-9X]+", "", t, flags=re.I)
+    t = re.sub(r"\bES\s+COPIA\s+AUT[ÉE]NTICA\b.*", "", t, flags=re.I)
+    t = re.sub(r"\bFIRMADO\s+POR\b.*", "", t, flags=re.I)
+    t = re.sub(r"\bVERIFICACI[ÓO]N\b.*", "", t, flags=re.I)
+    t = re.sub(r"\bN[ÚU]M\.\s+\d+\s+DE\s+[\d\-IVXLCDM]+\s+\d+\/?", "", t, flags=re.I)
+    t = re.sub(r"\bC[ÓO]D\.\s+\d{4}-?", "", t, flags=re.I)
+
+    # Leading section / table artifacts
+    t = re.sub(r"^(?:DESCRIPCI[ÓO]N\s+(?:PROCEDIMIENTOS\s+)?PRECIO\s+M[ÁA]X\.?\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:(?:C[ÓO]DIGO\s+)?(?:CONCEPTO|DENOMINACI[ÓO]N|PRESTACI[ÓO]N|PROCEDIMIENTO)\s+(?:PRECIO|IMPORTE|EUROS?|\/|\(€\)|€)*\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:[A-ZÁÉÍÓÚÑ\s]+\s+)?CÓDIGO\s+CONCEPTO\s+PRECIO\s*\(€\)\s*(?:[A-Z]\.\d+(?:\.[0-9]+)*\s*)?", "", t, flags=re.I)
+    t = re.sub(r"^(?:ASISTENCIA\s+AMBULATORIA\s+IMPORTES\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:FACTURABLES\s+TARIFA\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:DENOMINACI[ÓO]N\s+IMPORTE\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:PRECIO\s*\(€\)\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:HOSPITALES\s+)", "", t, flags=re.I)
+    t = re.sub(r"^(?:B\d(?:\s+\d+)+\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:E\s*03(?:\.[0-9]+)+\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:317\.\d(?:\.[0-9]+)+\s*)", "", t, flags=re.I)
+    t = re.sub(r"^(?:(?:CIE\.?9(?:\.MC)?\.[0-9A-Z\.]+|\d{2}\.\d{1,2}[A-Za-z]?|[0-9A-Z]{7})\s+)", "", t, flags=re.I)
+    t = re.sub(r"^(?:GRD\s*\d{1,4}(?:\.\d{1,2})?\s*[-–]?\s*)", "", t, flags=re.I)
+
+    # Footnotes & artifacts
+    t = re.sub(r"_SEV_(\d)", r" (SEVERIDAD \1)", t, flags=re.I)
+    t = re.sub(r"_Sev_(\d)", r" (SEVERIDAD \1)", t)
+    t = re.sub(r"\(\s*[*]+\s*\)", "", t)
+    t = re.sub(r"(?<![A-Z0-9])\*(?![0-9])", "", t)
+    t = re.sub(r"\s*\(\s*\d+\s*\)$", "", t)
+    t = re.sub(r"\s*\[\s*\d+\s*\]$", "", t)
+    t = re.sub(r"\s*\(\s*#\s*\)$", "", t)
+    t = re.sub(r"\s*\*{1,4}$", "", t)
+
+    # Leading list numbering
+    t = re.sub(r"^(?:[0-9]+(?:\.[0-9]+)*|[A-Z]\.(?:[0-9]+(?:\.[0-9]+)*)?)\s*[\.\-\)]?\s*", "", t).strip()
+
+    # Casing and whitespace
+    t = re.sub(r"\s+", " ", t).strip().upper()
+
+    # Trailing punctuation
+    t = re.sub(r"[.,\-_:;/\\+]+$", "", t).strip()
+    return t
+
+
 def infer_setting(desc: str, code_std: str = "") -> str:
     """Infer clinical setting with APR-GRD precedence and expanded keywords."""
     d = desc.lower()
@@ -278,7 +360,7 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             return "Procedures"
         return "Inpatient"
 
-    if any(k in d for k in ["uci", "intensivos", "reanimaci", "cuidados intensivos", "criticos"]):
+    if any(k in d for k in ["uci", "intensivos", "reanimaci", "cuidados intensivos", "criticos", "críticos", "quemados"]) and not any(k in d for k in ["movil", "móvil", "ambulancia", "transporte"]):
         return "ICU"
     if any(
         k in d
@@ -289,6 +371,12 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             "061",
             "atención continuada",
             "atencion continuada",
+            "guardia médica",
+            "uvi móvil",
+            "soporte vital",
+            "ambulancia medicalizada",
+            "interurbano",
+            "traslado urgente",
         ]
     ):
         return "Emergency"
@@ -308,6 +396,10 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             "consulta ap",
             "atención médica no urgente en centro salud",
             "atención enfermera no urgente",
+            "salud bucodental",
+            "médica ap",
+            "asistencia bucodental infantil",
+            "dental",
         ]
     ):
         return "Primary Care"
@@ -317,6 +409,7 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             "hospitaliz",
             "estancia",
             "ingreso",
+            "cama ocupada",
             "cama",
             "convalecencia",
             "internamiento",
@@ -336,76 +429,175 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             "tac",
             "tomograf",
             "radiolog",
+            "radiografía",
+            "radiografia",
             "ecograf",
-            "analitica",
-            "laboratorio",
-            "biopsia",
-            "pet-tac",
+            "ecocardiograf",
             "gammagraf",
+            "spect",
+            "pet-tac",
+            "pet",
             "endoscop",
             "mamograf",
             "electrocardiograma",
             "ecg",
-            "radiografia",
+            "eeg",
+            "electromiograf",
+            "espirometria",
+            "espirometría",
+            "audiometria",
+            "audiometría",
+            "campimetria",
+            "campimetría",
+            "densitometria",
+            "densitometría",
+            "ergometria",
+            "ergometría",
+            "holter",
+            "polisomnograf",
+            "alergia",
+            "provocacion",
+            "analitica",
+            "analítica",
+            "laboratorio",
+            "biopsia",
             "determinacion",
+            "determinación",
             "estudio genetico",
             "serologia",
+            "serología",
             "cultivo",
             "citologia",
+            "citología",
             "perfil",
             "tincion",
+            "tinción",
             "microbiolog",
-            "espirometria",
-            "alergia",
-            "audiometria",
             "ige",
             "igg",
             "igm",
             "suero",
             "plasma",
             "orina",
+            "lcr",
+            "líquido",
+            "bioquímica",
+            "hematimetría",
+            "hemograma",
+            "frotis",
+            "antígeno",
+            "anticuerpo",
+            "inmunoglobulina",
+            "pcr",
+            "genotipado",
+            "cariotipo",
+            "secuenciacion",
+            "ácido",
+            "amilasa",
+            "albúmina",
+            "fosfatasa",
+            "glucosa",
+            "creatinina",
+            "colesterol",
+            "triglicéridos",
+            "transaminasas",
+            "bilirrubina",
+            "urea",
+            "troponina",
+            "tiroxina",
+            "tsh",
+            "ferritina",
+            "hierro",
+            "potasio",
+            "sodio",
+            "calcio",
+            "gasometría",
+            "coagulación",
+            "hemostasia",
+            "d-dímero",
+            "hla-",
+            "cyp",
         ]
-    ):
+    ) or code_std.startswith(("REGIONAL:LQ", "REGIONAL:E03.1.6")):
         return "Diagnostics"
     if any(
         k in d
         for k in [
             "quirurg",
+            "quirúrg",
             "cirugia",
+            "cirugía",
             "intervencion",
+            "intervención",
             "artroscopia",
             "escision",
+            "escisión",
             "reparacion",
+            "reparación",
             "injerto",
             "sustitucion",
+            "sustitución",
             "osteotomia",
+            "osteotomía",
             "amigdalectomia",
+            "amigdalectomía",
             "catarata",
             "safenectomia",
+            "safenectomía",
             "fistul",
+            "fístul",
             "gastrectom",
             "implante",
             "protesis",
+            "prótesis",
             "endarterectomia",
             "facoemulsificacion",
+            "facoemulsificación",
             "tiroidectomia",
+            "tiroidectomía",
             "mastectomia",
+            "mastectomía",
             "colecistectomia",
+            "colecistectomía",
             "hernioplastia",
             "apendicectomia",
+            "apendicectomía",
             "amputacion",
+            "amputación",
             "hemodialisis",
+            "hemodiálisis",
             "litotricia",
             "cateterismo",
             "angioplastia",
             "embolizacion",
+            "embolización",
             "drenaje",
             "cma",
             "legrado",
             "cesárea",
             "parto",
+            "ablacion",
+            "ablación",
+            "infiltracion",
+            "infiltración",
+            "paracentesis",
+            "toracocentesis",
+            "artrocentesis",
+            "bloqueo",
+            "traqueostomia",
+            "marcapasos",
+            "endoprótesis",
+            "stent",
+            "desfibrilador",
+            "valvuloplastia",
+            "extirpacion",
+            "extirpación",
+            "reseccion",
+            "resección",
+            "liberacion",
+            "liberación",
         ]
-    ):
+    ) or code_std.startswith(("ICD-9-CM:", "ICD-10-PCS:", "REGIONAL:CMA")):
         return "Procedures"
     if any(
         k in d
@@ -413,10 +605,19 @@ def infer_setting(desc: str, code_std: str = "") -> str:
             "consulta",
             "visita",
             "revision",
+            "revisión",
             "rehabilitacion",
+            "rehabilitación",
             "fisioterapia",
             "psicoterapia",
             "logopedia",
+            "terapia ocupacional",
+            "hospital de día",
+            "hospital dia",
+            "ambulanci",
+            "transporte sanitario",
+            "sesión",
+            "sesion",
         ]
     ):
         return "Outpatient"
@@ -457,29 +658,123 @@ def infer_omop_domain(setting: str) -> str:
 def infer_specialty(desc: str) -> str:
     d = desc.lower()
     mapping = [
-        ("trauma", "Traumatología"),
-        ("oftalm", "Oftalmología"),
-        ("dermat", "Dermatología"),
-        ("cardio", "Cardiología"),
-        ("neuro", "Neurología"),
-        ("digest", "Aparato Digestivo"),
-        ("ginec", "Ginecología"),
-        ("urolog", "Urología"),
-        ("otorrino", "Otorrinolaringología"),
-        ("radiolog", "Radiología"),
-        ("rehab", "Rehabilitación"),
-        ("psiquiat", "Psiquiatría"),
-        ("anest", "Anestesiología"),
+        ("maxilofacial", "Cirugía Maxilofacial"),
+        ("estomatol", "Odontología y Estomatología"),
+        ("dental", "Odontología y Estomatología"),
+        ("bucodental", "Odontología y Estomatología"),
+        ("plástica", "Cirugía Plástica"),
+        ("plastica", "Cirugía Plástica"),
+        ("cardiovascular", "Cirugía Cardiovascular"),
+        ("vascular", "Cirugía Vascular"),
+        ("torácic", "Cirugía Torácica"),
+        ("toracic", "Cirugía Torácica"),
+        ("neurocirug", "Neurocirugía"),
         ("pediatr", "Pediatría"),
+        ("neonat", "Pediatría"),
+        ("trauma", "Traumatología"),
+        ("ortopéd", "Traumatología"),
+        ("ortoped", "Traumatología"),
+        ("artroscop", "Traumatología"),
+        ("cadera", "Traumatología"),
+        ("rodilla", "Traumatología"),
+        ("fractura", "Traumatología"),
+        ("oftalm", "Oftalmología"),
+        ("catarata", "Oftalmología"),
+        ("ocular", "Oftalmología"),
+        ("ojo", "Oftalmología"),
+        ("córnea", "Oftalmología"),
+        ("cornea", "Oftalmología"),
+        ("retina", "Oftalmología"),
+        ("dermat", "Dermatología"),
+        ("cutáne", "Dermatología"),
+        ("piel", "Dermatología"),
+        ("cardio", "Cardiología"),
+        ("coronar", "Cardiología"),
+        ("miocard", "Cardiología"),
+        ("arritmi", "Cardiología"),
+        ("neuro", "Neurología"),
+        ("cerebr", "Neurología"),
+        ("crane", "Neurología"),
+        ("digest", "Aparato Digestivo"),
+        ("gastroc", "Aparato Digestivo"),
+        ("endoscop", "Aparato Digestivo"),
+        ("colon", "Aparato Digestivo"),
+        ("gástric", "Aparato Digestivo"),
+        ("ginec", "Ginecología"),
+        ("obstetr", "Ginecología"),
+        ("parto", "Ginecología"),
+        ("cesárea", "Ginecología"),
+        ("uterin", "Ginecología"),
+        ("mama", "Ginecología"),
+        ("urolog", "Urología"),
+        ("renal", "Nefrología"),
         ("nefrolog", "Nefrología"),
+        ("dialisis", "Nefrología"),
+        ("diálisis", "Nefrología"),
+        ("riñón", "Nefrología"),
+        ("rinon", "Nefrología"),
+        ("otorrino", "Otorrinolaringología"),
+        ("amigdal", "Otorrinolaringología"),
+        ("oído", "Otorrinolaringología"),
+        ("laring", "Otorrinolaringología"),
+        ("nasal", "Otorrinolaringología"),
+        ("sinus", "Otorrinolaringología"),
+        ("nuclear", "Medicina Nuclear"),
+        ("gammagraf", "Medicina Nuclear"),
+        ("spect", "Medicina Nuclear"),
+        ("pet", "Medicina Nuclear"),
+        ("radiolog", "Radiología"),
+        ("radiodiagn", "Radiología"),
+        ("resonancia", "Radiología"),
+        ("tomograf", "Radiología"),
+        ("ecograf", "Radiología"),
+        ("radiograf", "Radiología"),
+        ("rehab", "Rehabilitación"),
+        ("fisioter", "Rehabilitación"),
+        ("logoped", "Rehabilitación"),
+        ("psiquiat", "Psiquiatría"),
+        ("psicol", "Psiquiatría"),
+        ("salud mental", "Psiquiatría"),
+        ("anest", "Anestesiología"),
+        ("reanim", "Anestesiología"),
+        ("dolor", "Anestesiología"),
+        ("radioter", "Oncología Radioterápica"),
         ("oncolog", "Oncología"),
+        ("neoplasi", "Oncología"),
+        ("tumor", "Oncología"),
         ("hematol", "Hematología"),
+        ("sangre", "Hematología"),
+        ("transfus", "Hematología"),
+        ("plaqueta", "Hematología"),
         ("respirat", "Neumología"),
         ("pulmon", "Neumología"),
+        ("asma", "Neumología"),
+        ("bronco", "Neumología"),
+        ("tórax", "Neumología"),
+        ("torax", "Neumología"),
         ("hepatic", "Hepatología"),
+        ("hígado", "Hepatología"),
+        ("higado", "Hepatología"),
+        ("alerg", "Alergología"),
+        ("inmuno", "Inmunología"),
+        ("patológ", "Anatomía Patológica"),
+        ("patolog", "Anatomía Patológica"),
+        ("biopsia", "Anatomía Patológica"),
+        ("autopsia", "Anatomía Patológica"),
+        ("citolog", "Anatomía Patológica"),
+        ("genétic", "Genética"),
+        ("genetic", "Genética"),
+        ("bioquím", "Bioquímica Clínica"),
+        ("bioquim", "Bioquímica Clínica"),
+        ("microbiol", "Microbiología"),
+        ("infecc", "Enfermedades Infecciosas"),
+        ("endocrin", "Endocrinología"),
+        ("reumat", "Reumatología"),
+        ("geriatr", "Geriatría"),
         ("atención primaria", "Atención Primaria"),
         ("centro salud", "Atención Primaria"),
         ("médico de familia", "Atención Primaria"),
+        ("médica ap", "Atención Primaria"),
     ]
     for k, v in mapping:
         if k in d:
@@ -526,64 +821,67 @@ def format_code_std(raw_code: Any, context: str = "") -> str:
     if re.match(r"^(?:B\d|DOG|\d+\.-|PARA|OBLIGADOS|SOBRE|PERFIL)$", c, re.I):
         return ""
 
-    # Check APR-GRD (e.g. GRD 001, APR-GRD 123-1, 1 G 1, 1G1)
-    m_grd = re.match(r"^(?:APR[-_ ]?GRD|GRD)\s*[:\-]?\s*(\d{1,4})(?:-(\d))?$", c, re.I)
+    # APR-GRD formats
+    m_grd = re.match(r"^(?:APR[-_ ]?GRD|GRD)\s*[:\-]?\s*(\d{1,4})(?:[-–\.](\d{1,2}))?$", c, re.I)
     if m_grd:
         grd_num = m_grd.group(1).zfill(3)
         sev = m_grd.group(2)
-        return f"APR-GRD:{grd_num}-{sev}" if sev else f"APR-GRD:{grd_num}"
+        if sev:
+            sev_clean = str(int(sev)) if sev.isdigit() else sev
+            return f"APR-GRD:{grd_num}-{sev_clean}"
+        return f"APR-GRD:{grd_num}"
 
     m_g = re.match(r"^(\d{1,4})\s*G\s*(\d+)$", c, re.I)
     if m_g:
         return f"APR-GRD:{m_g.group(1).zfill(3)}-{m_g.group(2)}"
 
-    # Check ICD-9-CM (e.g. 04.43, 13.41, 43.11, 08.20, 89.54, or CIE.9.MC.11.3X)
+    # ICD-9-CM
     m_cie = re.match(r"^CIE\.?9(?:\.MC)?\.([0-9A-Z\.]+)$", c, re.I)
     if m_cie:
         return f"ICD-9-CM:{m_cie.group(1)}"
-    if re.match(r"^\d{2}\.\d{1,2}[A-Z]?$", c):
-        return f"ICD-9-CM:{c}"
+    if re.match(r"^\d{2}\.(?:\d{1,2}[A-Za-z]?|[Xx]{1,2})$", c):
+        return f"ICD-9-CM:{c.upper()}"
 
-    # Check SAP code (7-digit number starting with 7 or 10 or in sap context)
-    if re.match(r"^\d{7}$", c) and (c.startswith(("7", "10")) or "sap" in context.lower()):
+    # SAP code (7-8 digits starting with 7 or 10 or in sap context)
+    if re.match(r"^\d{7,8}$", c) and (c.startswith(("7", "10")) or "sap" in context.lower()):
         return f"SAP:{c}"
 
-    # Check authentic ICD-10-PCS (7 chars, valid section prefix 0-9, B-D, F-H, X)
+    # ICD-10-PCS (7 chars)
     if (
         re.match(r"^[0-9A-HJ-NP-Z]{7}$", c, re.I)
         and c.upper() not in SPANISH_WORDS_7
-        and not re.match(r"^(?:PD|TR|RA|MN|LQ)\d{5}$", c, re.I)
+        and not re.match(r"^(?:PD|TR|RA|MN|LQ|V0|AM|TS)\d{5}$", c, re.I)
         and c[0].upper() in "0123456789BCDFGHX"
     ):
         c_up = c.upper()
         if not (c_up.isalpha() and not (c_up.endswith("ZZ") or c_up.endswith("ZX") or c_up.endswith("KZ"))):
             return f"ICD-10-PCS:{c_up}"
 
-    # Check National Drug Code (6 digits)
+    # National Drug Code (6 digits)
     if re.match(r"^\d{6}$", c) and any(
         k in context.lower() for k in ["farmac", "medicamento", "cn", "nomenclator"]
     ):
         return f"CN:{c}"
 
-    # Check SAP code (7 digits)
-    if re.match(r"^\d{7}$", c):
-        return f"SAP:{c}"
-
-    # Authentic regional codes
+    # Regional codes
     if (
         re.match(r"^(?:AM|TS)\d{4}$", c, re.I)
         or re.match(r"^CMA\d{3}$", c, re.I)
         or re.match(r"^V03[A-Z0-9]+$", c, re.I)
         or re.match(r"^LQ\d{5}[A-Z]?$", c, re.I)
         or re.match(r"^(?:PD|TR|RA|MN)\d{5}$", c, re.I)
+        or re.match(r"^E\s*03\.[0-9\.]+$", c)
         or re.match(r"^E03\.[0-9\.]+$", c)
         or re.match(r"^[A-D]\.\d+(?:\.[A-Z0-9]+)*$", c)
+        or re.match(r"^\d{2}\.\d+[A-Za-z]+$", c)
+        or re.match(r"^70\d{4}$", c)
         or re.match(r"^C\.A\.[A-Z0-9\.]+$", c)
-        or re.match(r"^D\.\d+$", c)
+        or re.match(r"^C\.\d+$", c)
         or re.match(r"^317\.\d(?:\.[0-9]+)+$", c)
         or re.match(r"^\d+\.\d+(?:\.\d+)+$", c)
     ):
-        return f"REGIONAL:{c}"
+        clean_reg = c.replace(" ", "")
+        return f"REGIONAL:{clean_reg}"
 
     return ""
 
@@ -673,13 +971,16 @@ def extract_grd_excel(
         if not grd_code or not desc or not coste or float(coste) <= 0:
             continue
 
+        clean_desc = clean_description_text(desc)
+        if not clean_desc or is_noise_text(clean_desc):
+            continue
+
         setting = "Procedures" if "quirúrg" in tipo.lower() else "Inpatient"
         omop_domain = "Procedure" if setting == "Procedures" else "Visit"
         unit_type = "per_procedure" if setting == "Procedures" else "per_episode"
-        specialty = infer_specialty(desc)
+        specialty = infer_specialty(clean_desc)
         cost_orig = round(float(coste), 2)
         cost_upd = round(cost_orig * factor, 2)
-        clean_desc = re.sub(r"\s+", " ", desc).strip().upper()
 
         records.append(
             CostRecord(
@@ -730,7 +1031,7 @@ def extract_html_catalog(
 
     for table in tables:
         for row in table.find_all("tr"):
-            cells = [c.get_text(strip=True) for c in row.find_all(["td", "th"])]
+            cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
             if len(cells) < 2:
                 continue
 
@@ -749,23 +1050,70 @@ def extract_html_catalog(
                 desc = cells[3]
                 price = parse_price(cells[4])
 
-            # Layout 2: Madrid 5-column [Epígrafe, GRD APR, Gravedad, Descripción, Importe]
+            # Layout 2: Madrid 5/6-column [Epígrafe, GRD APR, Gravedad, ..., Descripción, Importe]
             elif (
                 len(cells) >= 5
-                and not any("epígrafe" in c.lower() for c in cells[:2])
-                and parse_price(cells[4])
+                and any("E 03" in c or "E03" in c for c in cells[:2])
+                and parse_price(cells[-1])
             ):
-                epigrafe = cells[0]
-                grd = cells[1]
-                gravedad = cells[2]
-                desc = cells[3]
-                price = parse_price(cells[4])
-                if grd and gravedad and (grd.isdigit() or "G" in grd):
-                    code_raw = f"APR-GRD:{grd.zfill(3)}-{gravedad}"
-                elif epigrafe and re.match(r"^E03\.[0-9\.]+$", epigrafe):
+                price = parse_price(cells[-1])
+                epigrafe = cells[0].replace(" ", "")
+                if len(cells) >= 6 and cells[1].isdigit() and cells[2].isdigit():
+                    code_raw = f"APR-GRD:{cells[1].zfill(3)}-{cells[2]}"
+                    desc = cells[4]
+                elif len(cells) >= 5 and cells[1].isdigit() and cells[2].isdigit():
+                    code_raw = f"APR-GRD:{cells[1].zfill(3)}-{cells[2]}"
+                    desc = cells[3]
+                else:
                     code_raw = f"REGIONAL:{epigrafe}"
+                    # Find first text column after epigrafe
+                    for col_idx in range(1, len(cells) - 1):
+                        if len(cells[col_idx]) > 3 and not parse_price(cells[col_idx]):
+                            desc = cells[col_idx]
+                            break
+                    if not desc:
+                        desc = cells[-2]
 
-            # Layout 3: Standard [Code, Desc, Price] or [Code, Desc, Weight, Price]
+            # Layout 3: Cataluña GRD table [Regional Code, Description with GRD xxx.xx, Price]
+            elif (
+                len(cells) >= 3
+                and re.match(r"^V03[HM]\d+", cells[0], re.I)
+                and parse_price(cells[-1])
+            ):
+                price = parse_price(cells[-1])
+                raw_d = cells[1]
+                m_grd = re.search(r"GRD\s*(\d{1,4})\.0?(\d)", raw_d, re.I)
+                if m_grd:
+                    code_raw = f"APR-GRD:{m_grd.group(1).zfill(3)}-{m_grd.group(2)}"
+                    desc = re.sub(r"^GRD\s*\d{1,4}\.0?\d\s*", "", raw_d, flags=re.I).strip()
+                else:
+                    code_raw = cells[0]
+                    desc = raw_d
+
+            # Layout 4: Baleares 3-column [Description, Price, SAP]
+            elif (
+                len(cells) == 3
+                and parse_price(cells[1])
+                and re.match(r"^\d{7}$", cells[2].strip())
+            ):
+                desc = cells[0]
+                price = parse_price(cells[1])
+                code_raw = f"SAP:{cells[2].strip()}"
+
+            # Layout 5: Navarra 4-column tables
+            elif len(cells) == 4 and parse_price(cells[3]):
+                price = parse_price(cells[3])
+                if re.match(r"^\d+\s*G\s*\d+$", cells[0].strip(), re.I):
+                    code_raw = cells[0].replace(" ", "")
+                    desc = cells[1]
+                elif re.match(r"^[0-9A-Z\*]{3,7}$", cells[1].strip()):
+                    code_raw = cells[1].strip()
+                    desc = cells[2]
+                else:
+                    code_raw = cells[0]
+                    desc = cells[1] if len(cells[1]) > len(cells[2]) else cells[2]
+
+            # Layout 6: Standard [Code, Desc, Price] or [Code, Desc, Weight, Price]
             elif len(cells) >= 3 and parse_price(cells[-1]):
                 price = parse_price(cells[-1])
                 code_raw = cells[0]
@@ -788,16 +1136,8 @@ def extract_html_catalog(
             if not price or not desc or len(desc) < 3 or price <= 0:
                 continue
 
-            # Strip section numbers, index leader dots, and clean text
-            clean_desc = re.sub(r"\.{3,}", "", desc)
-            clean_desc = re.sub(
-                r"^(?:[0-9]+(?:\.[0-9]+)*|[A-Z]\.(?:[0-9]+(?:\.[0-9]+)*)?)\s*[\.\-\)]?\s*",
-                "",
-                clean_desc,
-            ).strip()
-            clean_desc = re.sub(r"\s+", " ", clean_desc).strip().upper()
-
-            if is_noise_text(clean_desc):
+            clean_desc = clean_description_text(desc)
+            if not clean_desc or len(clean_desc) < 3 or is_noise_text(clean_desc):
                 continue
 
             code_std = format_code_std(code_raw, context=clean_desc)
@@ -892,24 +1232,22 @@ def extract_valencia_pdf(
             price_str = m_price.group(1).replace(".", "").replace(",", ".")
             price = float(price_str)
 
-        desc = re.sub(r"\(\*+\)", "", raw_desc)
-        desc = re.sub(r"Artículo \d+.*", "", desc)
-        desc = re.sub(r"\s+", " ", desc).strip().upper()
-        if not desc or price <= 0 or code in seen:
+        clean_desc = clean_description_text(raw_desc)
+        if not clean_desc or price <= 0 or code in seen or is_noise_text(clean_desc):
             continue
         seen.add(code)
 
-        code_std = f"REGIONAL:{code}"
-        setting = infer_setting(desc, code_std=code_std)
-        unit_type = infer_unit_type(setting, desc)
+        code_std = format_code_std(code, context=clean_desc)
+        setting = infer_setting(clean_desc, code_std=code_std)
+        unit_type = infer_unit_type(setting, clean_desc)
         omop_domain = infer_omop_domain(setting)
-        specialty = infer_specialty(desc)
+        specialty = infer_specialty(clean_desc)
         cost_upd = round(price * factor, 2)
 
         records.append(
             CostRecord(
                 cost_id=f"{source_id}-{seq:05d}",
-                description=desc,
+                description=clean_desc,
                 cost_group=category,
                 setting=setting,
                 specialty=specialty,
@@ -980,6 +1318,11 @@ def extract_pdf_catalog(
 
             candidate_line = f"{buffer_line} {line_clean}" if buffer_line else line_clean
 
+            # If line ends in _Sev_1 or similar severity marker, continue buffering
+            if re.search(r"_(?:Sev|SEV)_\d\s*$", candidate_line):
+                buffer_line = candidate_line
+                continue
+
             if not any(ch.isdigit() for ch in candidate_line):
                 buffer_line = line_clean if len(line_clean) < 150 else ""
                 continue
@@ -987,48 +1330,62 @@ def extract_pdf_catalog(
             desc, code_raw, price = None, None, None
 
             # Pattern 1: País Vasco GRD
-            m_pvas = re.search(
+            m_pvas_grd = re.search(
                 r"^(\d+\s*G\s*\d+)\s+(.+?)\s+Gravedad\s+\d+\s+[\d\,]+\s+(\d{1,3}(?:\.\d{3})*|\d+)\s+(\d+)",
                 candidate_line,
             )
-            if m_pvas:
-                code_raw = m_pvas.group(1).replace(" ", "")
-                desc = m_pvas.group(2).strip()
-                price = parse_price(m_pvas.group(3))
+            if m_pvas_grd:
+                code_raw = m_pvas_grd.group(1).replace(" ", "")
+                desc = m_pvas_grd.group(2).strip()
+                price = parse_price(m_pvas_grd.group(3))
             else:
-                m_gen_end = re.search(
-                    r"(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d{1,3}(?:\.\d{3})+|\d{1,6})\s*€?$",
+                # Pattern 2: País Vasco procedures / lab / tests with SAP article ID (100xxxxx)
+                m_pvas_proc = re.search(
+                    r"^([A-ZÁÉÍÓÚÑa-záéíóúñ\s\.\/\-\,\(\)]+?)\s+(?:\d+(?:[,\.]\d+)?\s+)?(\d{1,3}(?:\.\d{3})*|\d+)\s+(?:(?:\d{1,3}(?:\.\d{3})*|\d+)\s+)?(100\d{5})\b",
                     candidate_line,
                 )
-                if m_gen_end:
-                    price = parse_price(m_gen_end.group(1))
-                    raw_desc = candidate_line[: m_gen_end.start()].strip()
-                    m_grd = re.match(
-                        r"^(?:GRD\s*0?(\d{1,4})\s*[-–]?\s*)(.*?)(?:_?SEV[_\s]?(\d))?$",
-                        raw_desc,
-                        re.I,
+                if m_pvas_proc and not is_noise_text(m_pvas_proc.group(1)):
+                    desc = m_pvas_proc.group(1).strip()
+                    price = parse_price(m_pvas_proc.group(2))
+                    code_raw = f"SAP:{m_pvas_proc.group(3)}"
+                else:
+                    # Pattern 3: General decimal or integer price at line end
+                    m_gen_end = re.search(
+                        r"(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d{1,3}(?:\.\d{3})+|\d+\.\d{2}|(?<!_)\b\d{1,6}\b)\s*€?$",
+                        candidate_line,
                     )
-                    if m_grd:
-                        grd_num = m_grd.group(1).zfill(3)
-                        sev_num = m_grd.group(3)
-                        code_raw = f"APR-GRD:{grd_num}-{sev_num}" if sev_num else f"APR-GRD:{grd_num}"
-                        desc = m_grd.group(2).strip()
-                    else:
-                        m_lead = re.match(r"^([A-Za-z0-9\.\-\/]{2,12})\s+(.*)$", raw_desc)
-                        if m_lead and len(m_lead.group(2)) > 2:
-                            code_raw = m_lead.group(1)
-                            desc = m_lead.group(2)
+                    if m_gen_end:
+                        price = parse_price(m_gen_end.group(1))
+                        raw_desc = candidate_line[: m_gen_end.start()].strip()
+
+                        # Check if raw_desc contains embedded GRD (e.g. Andalusia B2 1 1 129 GRD 055 - ...)
+                        m_grd = re.search(
+                            r"GRD\s*0?(\d{1,4})\s*[-–]\s*(.*?)(?:_?SEV[_\s]?(\d))?$",
+                            raw_desc,
+                            re.I,
+                        )
+                        if m_grd:
+                            grd_num = m_grd.group(1).zfill(3)
+                            sev_num = m_grd.group(3)
+                            code_raw = f"APR-GRD:{grd_num}-{sev_num}" if sev_num else f"APR-GRD:{grd_num}"
+                            desc = m_grd.group(2).strip()
                         else:
-                            m_emb = re.search(
-                                r"\b(CIE\.?9(?:\.MC)?\.[A-Z0-9\.]+|GRD\.\d+|[A-D]\.\d+(?:\.[A-Z0-9]+)*|AM\d{4}|TS\d{4})\s*(.*)$",
-                                raw_desc,
-                                re.I,
-                            )
-                            if m_emb:
-                                code_raw = m_emb.group(1).strip()
-                                desc = m_emb.group(2).strip()
+                            # Check leading code or embedded regional codes
+                            m_lead = re.match(r"^([A-Za-z0-9\.\-\/]{2,12})\s+(.*)$", raw_desc)
+                            if m_lead and len(m_lead.group(2)) > 2 and not m_lead.group(1).upper().startswith(("ART", "NUM", "PAG")):
+                                code_raw = m_lead.group(1)
+                                desc = m_lead.group(2)
                             else:
-                                desc = raw_desc
+                                m_emb = re.search(
+                                    r"\b(CIE\.?9(?:\.MC)?\.[A-Z0-9\.]+|GRD\.\d+|[A-D]\.\d+(?:\.[A-Z0-9]+)*|AM\d{4}|TS\d{4}|317\.\d+(?:\.[0-9]+)*|70\d{4}|0[12]\.\d+[A-Z]+)\s*(.*)$",
+                                    raw_desc,
+                                    re.I,
+                                )
+                                if m_emb:
+                                    code_raw = m_emb.group(1).strip()
+                                    desc = m_emb.group(2).strip()
+                                else:
+                                    desc = raw_desc
 
             # If no price found on this line, buffer it as candidate prefix for next line
             if not price or not desc:
@@ -1051,19 +1408,8 @@ def extract_pdf_catalog(
             if re.search(r"\.{4,}", candidate_line) or re.search(r"\.{4,}", desc):
                 continue
 
-            clean_desc = re.sub(r"\.{3,}", "", desc)
-            clean_desc = re.sub(
-                r"^(?:[0-9]+(?:\.[0-9]+)*|[A-Z]\.(?:[0-9]+(?:\.[0-9]+)*)?)\s*[\.\-\)]?\s*",
-                "",
-                clean_desc,
-            ).strip()
-            clean_desc = re.sub(r"^(?:Especialidad\s+Código\s+)?", "", clean_desc, flags=re.I).strip()
-            clean_desc = re.sub(r"^(?:[A-Z0-9\.\/]+\s+)*(?:GRD\s*\d{1,4}\s*[-–]\s*)", "", clean_desc, flags=re.I).strip()
-            clean_desc = re.sub(r"^(?:\d+\s+)+", "", clean_desc).strip()
-            clean_desc = re.sub(r"_SEV_(\d)", r" (SEVERIDAD \1)", clean_desc, flags=re.I).strip()
-            clean_desc = re.sub(r"\s+", " ", clean_desc).strip().upper()
-
-            if is_noise_text(clean_desc):
+            clean_desc = clean_description_text(desc)
+            if not clean_desc or len(clean_desc) < 3 or is_noise_text(clean_desc):
                 continue
 
             code_std = format_code_std(code_raw, context=clean_desc)

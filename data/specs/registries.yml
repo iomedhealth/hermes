@@ -8,6 +8,8 @@ sources:
     gazette_number: 108
     publication_date: "2024-06-05"
     year: 2024
+    page_start: 19
+    page_end: 162
     url_gazette: "https://www.juntadeandalucia.es/eboja/2024/108/BOJA24-108-00163-45904-01_00302853.pdf"
     url_pdf: "https://www.juntadeandalucia.es/eboja/2024/108/BOJA24-108-00163-45904-01_00302853.pdf"
     file_format: "pdf"
