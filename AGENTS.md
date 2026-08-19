@@ -66,4 +66,4 @@ implementations with the 6-stage framework:
 
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-specs/004-fix-e2e-data-flow/plan.md
+specs/005-hcru-domain-extraction/plan.md

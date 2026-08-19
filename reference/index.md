@@ -14,7 +14,7 @@ Descriptive statistics and healthcare resource utilization.
 - [`summarise_baseline()`](summarise_baseline.md) : Summarise baseline
   demographics and comorbidities (Stage 2: Baseline)
 - [`extract_hcru()`](extract_hcru.md) : Extract Healthcare Resource
-  Utilization (HCRU) from the OMOP COST table (Stage 2: HCRU)
+  Utilization (HCRU) from OMOP CDM (Stage 2: HCRU)
 
 ## Stage 3: Propensity Score
 

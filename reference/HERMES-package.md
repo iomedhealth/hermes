@@ -3,4 +3,12 @@
 An R package ecosystem for Real-World Evidence (RWE) and Health
 Economics and Outcomes Research (HEOR) focused on Healthcare Resource
 Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM
-data.
+data. Developed by IOMED.
+
+## See also
+
+Useful links:
+
+- <https://iomed.health>
+
+- <https://github.com/iomedhealth/hermes>
