@@ -12,7 +12,6 @@ import csv
 import json
 import os
 import re
-import ssl
 import sys
 import time
 from dataclasses import asdict, dataclass
@@ -21,52 +20,29 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import openpyxl
 import pandas as pd
 import pypdfium2
-import requests
 import yaml
 from bs4 import BeautifulSoup
 
-# ponytail: bypass legacy SSL checks on public Spanish regional gazette domains
-SSL_CTX = ssl.create_default_context()
-SSL_CTX.check_hostname = False
-SSL_CTX.verify_mode = ssl.CERT_NONE
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+try:
+    from scripts.download_costs_sources import (
+        DEFAULT_SANIDAD_INDICES,
+        TARGET_YEAR,
+        IneIndexRecord,
+        download_all_sources,
+        download_source,
+        export_ine_tables,
+        fetch_ine_deflators,
     )
-}
-
-TARGET_YEAR = 2026
-
-# Official verified INE Base 2021=100 historical series for ECOICOP 06 Sanidad
-DEFAULT_SANIDAD_INDICES: Dict[int, float] = {
-    2002: 87.50,
-    2003: 89.34,
-    2004: 89.67,
-    2005: 90.44,
-    2006: 91.66,
-    2007: 90.27,
-    2008: 90.42,
-    2009: 89.81,
-    2010: 88.94,
-    2011: 87.76,
-    2012: 90.87,
-    2013: 97.12,
-    2014: 97.25,
-    2015: 97.39,
-    2016: 97.15,
-    2017: 97.87,
-    2018: 98.16,
-    2019: 98.96,
-    2020: 99.32,
-    2021: 100.00,
-    2022: 101.10,
-    2023: 102.99,
-    2024: 105.09,
-    2025: 107.24,
-    2026: 109.43,
-}
+except ImportError:
+    from download_costs_sources import (
+        DEFAULT_SANIDAD_INDICES,
+        TARGET_YEAR,
+        IneIndexRecord,
+        download_all_sources,
+        download_source,
+        export_ine_tables,
+        fetch_ine_deflators,
+    )
 
 SPANISH_WORDS_7 = {
     "DRENAJE",
@@ -130,97 +106,6 @@ def read_text_file(filepath: str) -> str:
             continue
     with open(filepath, "r", encoding="utf-8", errors="replace") as f:
         return f.read()
-
-
-def fetch_ine_deflators(cache_path: str = "data/raw/ine-ipc-medicina.json") -> Dict[int, float]:
-    """Fetch healthcare CPI index series from INE API (Table 50913 - ECOICOP 06 Sanidad) or fallback."""
-    url = "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50913"
-    indices: Dict[int, float] = dict(DEFAULT_SANIDAD_INDICES)
-    raw_data = None
-
-    # Check local cached JSON first
-    if os.path.exists(cache_path) and os.path.getsize(cache_path) > 1000:
-        try:
-            with open(cache_path, "r", encoding="utf-8") as f:
-                raw_data = json.load(f)
-        except Exception:
-            pass
-
-    # Fetch from API if not cached
-    if not raw_data:
-        try:
-            r = requests.get(url, headers=HEADERS, verify=False, timeout=10)
-            if r.status_code == 200:
-                raw_data = r.json()
-                os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-                with open(cache_path, "w", encoding="utf-8") as f:
-                    json.dump(raw_data, f)
-        except Exception as e:
-            print(f"[WARN] Using base INE deflators ({e})")
-
-    if raw_data and isinstance(raw_data, list):
-        for series in raw_data:
-            nom = series.get("Nombre", "").strip()
-            # Strictly match ECOICOP 06 Sanidad (avoid General CPI)
-            if (
-                nom.startswith("Nacional. Sanidad. Índice")
-                or nom.startswith("Nacional. 06 Sanidad. Índice")
-                or "Nacional. Sanidad. Índice." in nom
-            ):
-                pts = series.get("Data", [])
-                by_yr: Dict[int, List[float]] = {}
-                for p in pts:
-                    y = p.get("Anyo")
-                    v = p.get("Valor")
-                    if y and v is not None:
-                        by_yr.setdefault(int(y), []).append(float(v))
-                for y, vals in by_yr.items():
-                    indices[y] = round(sum(vals) / len(vals), 2)
-                if 2025 in indices and 2024 in indices:
-                    annual_rate = indices[2025] / indices[2024]
-                    indices[2026] = round(indices[2025] * annual_rate, 2)
-                break
-
-    return indices
-
-
-def export_ine_tables(
-    output_dir: str = "data", raw_path: str = "data/raw/ine-ipc-medicina.json"
-) -> pd.DataFrame:
-    """Parse and export official INE Table 50913 ECOICOP 06 series to CSV, Parquet, and JSON."""
-    deflators = fetch_ine_deflators(cache_path=raw_path)
-    target_idx = deflators.get(TARGET_YEAR, 109.43)
-
-    records: List[IneIndexRecord] = []
-    for yr in sorted(deflators.keys()):
-        idx_val = deflators[yr]
-        fac = round(target_idx / idx_val, 4)
-        is_proj = yr >= 2025
-        records.append(
-            IneIndexRecord(
-                ecoicop_code="06",
-                series_name="Nacional. Sanidad. Índice.",
-                year=yr,
-                annual_index=idx_val,
-                factor_to_2026=fac,
-                is_projected=is_proj,
-            )
-        )
-
-    df_ine = pd.DataFrame([asdict(r) for r in records])
-    os.makedirs(output_dir, exist_ok=True)
-
-    csv_path = os.path.join(output_dir, "ine_indices_sanidad.csv")
-    parquet_path = os.path.join(output_dir, "ine_indices_sanidad.parquet")
-    json_path = os.path.join(output_dir, "ine_indices_sanidad.json")
-
-    df_ine.to_csv(csv_path, index=False, encoding="utf-8")
-    df_ine.to_parquet(parquet_path, index=False, compression="snappy")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(df_ine.to_dict(orient="records"), f, indent=2, ensure_ascii=False)
-
-    print(f"[EXPORT] Exported canonical INE index datasets -> {parquet_path}")
-    return df_ine
 
 
 def is_noise_text(text: str) -> bool:
@@ -886,63 +771,6 @@ def format_code_std(raw_code: Any, context: str = "") -> str:
     return ""
 
 
-def download_source(
-    src: Dict[str, Any], raw_dir: str = "data/raw", force: bool = False
-) -> str:
-    """Download single source document to data/raw/."""
-    os.makedirs(raw_dir, exist_ok=True)
-    src_id = src["id"]
-    fmt = src.get("file_format", "pdf")
-    target_path = os.path.join(raw_dir, f"{src_id}.{fmt}")
-
-    if not force and os.path.exists(target_path) and os.path.getsize(target_path) > 200:
-        return target_path
-
-    if src_id == "can-2024-precios":
-        url = "https://sede.gobiernodecanarias.org/boc/boc-a-2024-077-1334.pdf"
-    elif src_id == "pvas-2024-precios":
-        url = src.get("url_data") or src.get("url_pdf")
-    elif src_id == "arag-2023-precios":
-        url = src.get("url_data") or src.get("url_pdf")
-    elif src_id == "mad-2023-precios":
-        url = src.get("url_gazette", "")
-    else:
-        url = src.get("url_pdf") or src.get("url_data") or src.get("url_gazette", "")
-
-    if not url:
-        return target_path
-
-    # Special handling for Madrid JSF dynamic HTML
-    if src_id == "mad-2023-precios":
-        try:
-            session = requests.Session()
-            r_init = session.get(url, headers=HEADERS, verify=False, timeout=15)
-            m = re.findall(r"ficheroTemporal_\d+\.html", r_init.text)
-            if m:
-                mad_url = f"https://gestiona.comunidad.madrid/wleg_pub/html/{m[0]}"
-                r_mad = session.get(mad_url, headers=HEADERS, verify=False, timeout=20)
-                if r_mad.status_code == 200 and len(r_mad.content) > 1000:
-                    with open(target_path, "wb") as f:
-                        f.write(r_mad.content)
-                    print(f"[DOWNLOAD] {src_id} -> {target_path} ({len(r_mad.content)} bytes)")
-                    return target_path
-        except Exception as e:
-            print(f"[WARN] Madrid dynamic download fallback: {e}")
-
-    try:
-        r = requests.get(url, headers=HEADERS, verify=False, timeout=30)
-        if r.status_code == 200 and len(r.content) > 200:
-            with open(target_path, "wb") as f:
-                f.write(r.content)
-            print(f"[DOWNLOAD] {src_id} -> {target_path} ({len(r.content)} bytes)")
-        else:
-            print(f"[WARN] Non-200 or empty response for {src_id}: {r.status_code}")
-    except Exception as e:
-        print(f"[WARN] Could not download {src_id} ({e}), using cached if present.")
-
-    return target_path
-
-
 def extract_grd_excel(
     src: Dict[str, Any], filepath: str, deflators: Dict[int, float]
 ) -> List[CostRecord]:
@@ -1448,60 +1276,35 @@ def extract_pdf_catalog(
     return records
 
 
-def run_pipeline(
-    registry_path: str = "data/specs/registries.yml",
+def extract_source_records(
+    src: Dict[str, Any],
+    filepath: str,
+    deflators: Optional[Dict[int, float]] = None,
+) -> List[CostRecord]:
+    """Extract and standardize records from a single local file (PDF, XLSX, HTML)."""
+    if deflators is None:
+        deflators = fetch_ine_deflators()
+    fmt = src.get("file_format", "pdf")
+    if fmt == "xlsx":
+        return extract_grd_excel(src, filepath, deflators)
+    elif fmt == "html":
+        return extract_html_catalog(src, filepath, deflators)
+    elif fmt == "pdf":
+        return extract_pdf_catalog(src, filepath, deflators)
+    return []
+
+
+def consolidate_and_export(
+    records: List[CostRecord],
     output_csv: str = "data/costs_spain.csv",
     output_parquet: str = "data/costs_spain.parquet",
     output_json: str = "data/costs_spain.json",
-    download_fresh: bool = False,
-    deflators: Optional[Dict[int, float]] = None,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Execute complete reproducible cost extraction & INE deflator pipeline."""
-    with open(registry_path, "r", encoding="utf-8") as f:
-        registry = yaml.safe_load(f)
+) -> pd.DataFrame:
+    """Deduplicate, assign sequential cost_ids, validate invariants, and write catalog artifacts."""
+    if not records:
+        raise ValueError("[ERROR] Zero records provided for catalog compilation.")
 
-    sources = registry.get("sources", [])
-
-    if deflators is None:
-        deflators = fetch_ine_deflators()
-    print(
-        f"[INFO] Initialized INE Deflators (Target {TARGET_YEAR} Index = {deflators.get(TARGET_YEAR, 109.43)})"
-    )
-
-    # Export canonical INE index datasets
-    df_ine = export_ine_tables(output_dir=os.path.dirname(output_csv) or "data")
-
-    all_records: List[CostRecord] = []
-    os.makedirs("data/raw", exist_ok=True)
-
-    for src in sources:
-        src_id = src["id"]
-        fmt = src.get("file_format", "pdf")
-        filepath = os.path.join("data/raw", f"{src_id}.{fmt}")
-
-        if download_fresh or not os.path.exists(filepath) or os.path.getsize(filepath) < 200:
-            filepath = download_source(src, raw_dir="data/raw")
-
-        if not os.path.exists(filepath) or os.path.getsize(filepath) < 100:
-            print(f"[WARN] Skipping {src_id}: empty or missing file {filepath}")
-            continue
-
-        print(f"[PROCESS] Ingesting {src_id} ({src['ccaa']} - {fmt})...")
-        extracted: List[CostRecord] = []
-        if fmt == "xlsx":
-            extracted = extract_grd_excel(src, filepath, deflators)
-        elif fmt == "html":
-            extracted = extract_html_catalog(src, filepath, deflators)
-        elif fmt == "pdf":
-            extracted = extract_pdf_catalog(src, filepath, deflators)
-
-        print(f"[OK] Extracted {len(extracted)} records from {src_id}.")
-        all_records.extend(extracted)
-
-    if not all_records:
-        raise ValueError("[ERROR] Zero records extracted across all sources.")
-
-    df = pd.DataFrame([asdict(r) for r in all_records])
+    df = pd.DataFrame([asdict(r) for r in records])
 
     # Deduplicate exact matching rows (same description, cost, ccaa)
     df = df.drop_duplicates(subset=["description", "cost_original", "ccaa"])
@@ -1523,7 +1326,7 @@ def run_pipeline(
     assert df["ccaa"].isna().sum() == 0, "No null ccaa allowed"
 
     # Export canonical catalogs
-    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+    os.makedirs(os.path.dirname(output_csv) or ".", exist_ok=True)
     df.to_csv(output_csv, index=False, encoding="utf-8")
     print(f"[EXPORT] Wrote CSV -> {output_csv} ({len(df):,} rows)")
 
@@ -1553,24 +1356,111 @@ def run_pipeline(
         .to_string()
     )
 
+    return df
+
+
+def run_pipeline(
+    registry_path: str = "data/specs/registries.yml",
+    raw_dir: str = "data/raw",
+    output_csv: str = "data/costs_spain.csv",
+    output_parquet: str = "data/costs_spain.parquet",
+    output_json: str = "data/costs_spain.json",
+    download_fresh: bool = False,
+    source_id: Optional[str] = None,
+    ccaa: Optional[str] = None,
+    deflators: Optional[Dict[int, float]] = None,
+    limit_preview: Optional[int] = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Execute complete 100% offline cost extraction, normalization, and catalog compilation."""
+    with open(registry_path, "r", encoding="utf-8") as f:
+        registry = yaml.safe_load(f)
+
+    sources = registry.get("sources", [])
+    if source_id:
+        sources = [s for s in sources if s["id"] == source_id]
+        if not sources:
+            raise ValueError(f"[ERROR] Source ID '{source_id}' not found in registry.")
+    elif ccaa:
+        sources = [s for s in sources if s.get("ccaa", "").lower() == ccaa.lower()]
+        if not sources:
+            raise ValueError(f"[ERROR] No sources found matching CCAA '{ccaa}'.")
+
+    if deflators is None:
+        deflators = fetch_ine_deflators()
+    print(
+        f"[INFO] Initialized INE Deflators (Target {TARGET_YEAR} Index = {deflators.get(TARGET_YEAR, 109.43)})"
+    )
+
+    # Export canonical INE index datasets
+    df_ine = export_ine_tables(output_dir=os.path.dirname(output_csv) or "data")
+
+    all_records: List[CostRecord] = []
+
+    for src in sources:
+        src_id = src["id"]
+        fmt = src.get("file_format", "pdf")
+        filepath = os.path.join(raw_dir, f"{src_id}.{fmt}")
+
+        if download_fresh or not os.path.exists(filepath) or os.path.getsize(filepath) < 100:
+            if download_fresh:
+                filepath = download_source(src, raw_dir=raw_dir, force=True)
+            elif not os.path.exists(filepath):
+                print(
+                    f"[WARN] Missing {filepath}. Run 'python scripts/download_costs_sources.py --source-id {src_id}' to download it."
+                )
+                continue
+
+        if not os.path.exists(filepath) or os.path.getsize(filepath) < 100:
+            print(f"[WARN] Skipping {src_id}: empty or missing file {filepath}")
+            continue
+
+        print(f"[PROCESS] Ingesting {src_id} ({src['ccaa']} - {fmt})...")
+        extracted = extract_source_records(src, filepath, deflators)
+        print(f"[OK] Extracted {len(extracted)} records from {src_id}.")
+        all_records.extend(extracted)
+
+    if not all_records:
+        raise ValueError("[ERROR] Zero records extracted across selected sources.")
+
+    if limit_preview is not None and limit_preview > 0:
+        df_preview = pd.DataFrame([asdict(r) for r in all_records[:limit_preview]])
+        print(f"\n[PREVIEW] Showing first {len(df_preview)} records (offline preview mode, no file overwrite):")
+        print(df_preview[["cost_id", "ccaa", "setting", "omop_domain", "code_std", "description", "cost_original", "cost_updated"]].to_string())
+        return df_preview, df_ine
+
+    df = consolidate_and_export(
+        records=all_records,
+        output_csv=output_csv,
+        output_parquet=output_parquet,
+        output_json=output_json,
+    )
+
     return df, df_ine
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Spanish Healthcare Cost Extractor.")
-    parser.add_argument("--registry", default="data/specs/registries.yml")
-    parser.add_argument("--output-csv", default="data/costs_spain.csv")
-    parser.add_argument("--output-parquet", default="data/costs_spain.parquet")
-    parser.add_argument("--output-json", default="data/costs_spain.json")
-    parser.add_argument("--fresh", action="store_true", default=False)
+    parser = argparse.ArgumentParser(description="Spanish Healthcare Cost Offline Scraper & Catalog Extractor.")
+    parser.add_argument("--registry", default="data/specs/registries.yml", help="Path to registries.yml")
+    parser.add_argument("--raw-dir", default="data/raw", help="Directory containing cached raw files")
+    parser.add_argument("--source-id", default=None, help="Extract only a specific source ID")
+    parser.add_argument("--ccaa", default=None, help="Extract only sources for a specific CCAA")
+    parser.add_argument("--output-csv", default="data/costs_spain.csv", help="Destination CSV catalog")
+    parser.add_argument("--output-parquet", default="data/costs_spain.parquet", help="Destination Parquet catalog")
+    parser.add_argument("--output-json", default="data/costs_spain.json", help="Destination JSON catalog")
+    parser.add_argument("--limit-preview", type=int, default=None, help="Preview N records without writing files")
+    parser.add_argument("--fresh", action="store_true", default=False, help="Force fresh download if missing")
     args = parser.parse_args()
 
     run_pipeline(
         registry_path=args.registry,
+        raw_dir=args.raw_dir,
         output_csv=args.output_csv,
         output_parquet=args.output_parquet,
         output_json=args.output_json,
         download_fresh=args.fresh,
+        source_id=args.source_id,
+        ccaa=args.ccaa,
+        limit_preview=args.limit_preview,
     )
 
 

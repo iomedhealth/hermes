@@ -8,10 +8,18 @@ import tempfile
 import unittest
 import pandas as pd
 
+from scripts.download_costs_sources import (
+    DEFAULT_SANIDAD_INDICES as DL_DEFAULT_INDICES,
+    TARGET_YEAR as DL_TARGET_YEAR,
+    download_source,
+    export_ine_tables as dl_export_ine,
+    fetch_ine_deflators as dl_fetch_ine,
+)
 from scripts.scrape_costs_es import (
     DEFAULT_SANIDAD_INDICES,
     TARGET_YEAR,
     export_ine_tables,
+    extract_source_records,
     fetch_ine_deflators,
     format_code_std,
     infer_omop_domain,
@@ -20,6 +28,7 @@ from scripts.scrape_costs_es import (
     is_noise_text,
     parse_price,
     read_text_file,
+    run_pipeline,
 )
 
 
@@ -164,6 +173,38 @@ class TestScrapeCostsEs(unittest.TestCase):
         self.assertGreater((df["setting"] == "Inpatient").sum(), 5000)
         self.assertGreater((df["setting"] == "Diagnostics").sum(), 4000)
         self.assertLess((df["setting"] == "Outpatient").mean(), 0.65)
+
+    def test_downloader_and_offline_scraper_split(self):
+        """Verify dedicated downloader module and 100% offline scraper extraction."""
+        # Check downloader module symbols
+        self.assertEqual(DL_TARGET_YEAR, TARGET_YEAR)
+        self.assertEqual(DL_DEFAULT_INDICES[2021], DEFAULT_SANIDAD_INDICES[2021])
+
+        # Test single-source offline extraction
+        sample_src = {
+            "id": "and-2024-precios",
+            "ccaa": "Andalucía",
+            "year": 2024,
+            "file_format": "pdf",
+            "legal_title": "Tarifas SAS 2024",
+            "url_pdf": "",
+        }
+        raw_file = "data/raw/and-2024-precios.pdf"
+        if os.path.exists(raw_file):
+            records = extract_source_records(sample_src, raw_file)
+            self.assertGreater(len(records), 1000)
+            self.assertEqual(records[0].ccaa, "Andalucía")
+
+        # Test run_pipeline single source offline preview
+        if os.path.exists(raw_file):
+            df_preview, _ = run_pipeline(
+                registry_path="data/specs/registries.yml",
+                raw_dir="data/raw",
+                source_id="and-2024-precios",
+                limit_preview=5,
+            )
+            self.assertEqual(len(df_preview), 5)
+            self.assertEqual(df_preview["ccaa"].iloc[0], "Andalucía")
 
 
 if __name__ == "__main__":
