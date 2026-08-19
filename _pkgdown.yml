@@ -29,6 +29,7 @@ reference:
     desc: "Functions for defining and building cohorts."
     contents:
       - init
+      - compute_hospitalization_cohorts
   - title: "Stage 2: Baseline & HCRU"
     desc: "Descriptive statistics and healthcare resource utilization."
     contents:

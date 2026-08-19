@@ -3,6 +3,8 @@
 export(adjust_ps)
 export(assess_balance)
 export(compile_trajectories)
+export(computeHospitalizationCohorts)
+export(compute_hospitalization_cohorts)
 export(extract_hcru)
 export(fit_ps)
 export(init)
