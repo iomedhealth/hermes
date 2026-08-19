@@ -42,12 +42,14 @@ reference:
       - addProcedures
       - addCosts
   - title: "Stage 2: Summarisation & Reporting"
-    desc: "Standardised result summaries and publication-ready table formatters."
+    desc: "Standardised result summaries and publication-ready table & plot formatters."
     contents:
       - summariseUtilization
       - summariseCosts
       - tableUtilization
       - tableCosts
+      - plotUtilization
+      - plotCosts
       - summarise_baseline
       - extract_hcru
       - extractHcru

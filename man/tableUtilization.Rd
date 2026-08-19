@@ -6,22 +6,46 @@
 \usage{
 tableUtilization(
   result,
-  type = "gt",
+  estimateName = character(),
   header = c("strata", "estimate"),
+  settingsColumn = character(),
   groupColumn = character(),
-  hide = character()
+  rename = character(),
+  type = "gt",
+  hide = character(),
+  columnOrder = character(),
+  factor = list(),
+  style = NULL,
+  showMinCellCount = TRUE,
+  .options = list()
 )
 }
 \arguments{
 \item{result}{A \code{summarised_result} object.}
 
-\item{type}{Output format: \code{"gt"}, \code{"flextable"}, or \code{"tibble"}. Default: \code{"gt"}.}
+\item{estimateName}{Formatted estimates pattern, e.g. \code{c("Mean (SD)" = "<mean> (<sd>)")}.}
 
 \item{header}{Columns to place in table header. Default: \code{c("strata", "estimate")}.}
 
+\item{settingsColumn}{Settings columns to include. Default: \code{character()}.}
+
 \item{groupColumn}{Group columns. Default: \code{character()}.}
 
+\item{rename}{Named vector of column renamings. Default: \code{character()}.}
+
+\item{type}{Output format: \code{"gt"}, \code{"flextable"}, \code{"reactable"}, \code{"datatable"}, or \code{"tibble"}. Default: \code{"gt"}.}
+
 \item{hide}{Columns to hide. Default: \code{character()}.}
+
+\item{columnOrder}{Order of columns in table. Default: \code{character()}.}
+
+\item{factor}{List of factor orderings. Default: \code{list()}.}
+
+\item{style}{Table styling name or object. Default: \code{NULL}.}
+
+\item{showMinCellCount}{Whether to suppress counts below threshold. Default: \code{TRUE}.}
+
+\item{.options}{Additional formatting options. Default: \code{list()}.}
 }
 \value{
 A formatted table object or tibble.

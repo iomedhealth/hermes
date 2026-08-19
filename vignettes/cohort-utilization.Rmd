@@ -170,7 +170,7 @@ utilSummary |>
 costSummary <- summariseCosts(
   cohort = cdm$study_enriched,
   strata = list("cohort_definition_id"),
-  estimates = c("mean", "sd", "median", "q25", "q75")
+  estimates = c("mean", "sd", "median", "q25", "q75", "min", "max")
 )
 
 costSummary |>
@@ -178,16 +178,66 @@ costSummary |>
   utils::head(8)
 ```
 
-### Publication-Ready GT Table
+### Publication-Ready GT & Flextable Output
+
+`tableUtilization()` and `tableCosts()` integrate with `visOmopResults::visOmopTable()` to format publication-grade summary tables:
 
 ```{r render_table}
-# Render formatted table
-tableUtilization(utilSummary, type = "tibble")
+# Format summary table with concise estimate strings
+tableUtilization(
+  result = utilSummary,
+  estimateName = c(
+    "Mean (SD)" = "<mean> (<sd>)",
+    "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]"
+  ),
+  header = c("cohort_name")
+)
 ```
 
 ---
 
-## 5. Summary Matrix Mapping
+## 5. Visualizing Care Utilization & Costs (`visOmopResults` Style)
+
+HERMES provides `plotUtilization()` and `plotCosts()` for rapid exploratory and publication visualization, leveraging standard `visOmopResults` ggplot themes and facets.
+
+### Bar Plots for Care Utilization
+
+```{r plot_util_bar, fig.width = 8, fig.height = 3.5}
+# Bar plot comparing follow-up mean care utilization across key settings
+main_util_vars <- c(
+  "inpatient_admissions_followup",
+  "emergency_visits_followup",
+  "gp_visits_followup",
+  "specialist_visits_followup",
+  "rx_fills_followup"
+)
+
+plotUtilization(
+  result = utilSummary |> dplyr::filter(variable_name %in% main_util_vars),
+  plotType = "barplot",
+  x = "cohort_name",
+  y = "mean",
+  facet = "variable_name",
+  colour = "cohort_name"
+)
+```
+
+### Box Plots for Direct Medical Costs
+
+```{r plot_cost_box, fig.width = 8, fig.height = 4}
+# Box plot showing median and interquartile range for follow-up cost domains
+plotCosts(
+  result = costSummary |> dplyr::filter(grepl("followup", variable_name)),
+  plotType = "boxplot",
+  x = "cohort_name",
+  facet = "variable_name",
+  colour = "cohort_name"
+)
+```
+
+---
+
+## 6. Summary Matrix Mapping
 
 | Domain | Metrics Extracted | Function Responsible | Output Columns |
 | :--- | :--- | :--- | :--- |

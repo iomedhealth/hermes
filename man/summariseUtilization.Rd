@@ -6,6 +6,7 @@
 \usage{
 summariseUtilization(
   cohort,
+  group = list("cohort_name"),
   strata = list(),
   estimates = c("mean", "sd", "median", "q25", "q75", "min", "max"),
   variables = NULL
@@ -13,6 +14,8 @@ summariseUtilization(
 }
 \arguments{
 \item{cohort}{An enriched cohort table containing utilization columns.}
+
+\item{group}{List of character vectors specifying grouping columns. Default: \code{list("cohort_name")}.}
 
 \item{strata}{List of character vectors specifying stratification columns. Default: \code{list()}.}
 

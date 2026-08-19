@@ -1,6 +1,7 @@
 #' Summarise Healthcare Resource Utilization for a Cohort
 #'
 #' @param cohort An enriched cohort table containing utilization columns.
+#' @param group List of character vectors specifying grouping columns. Default: `list("cohort_name")`.
 #' @param strata List of character vectors specifying stratification columns. Default: `list()`.
 #' @param estimates Summary estimators to compute. Default: `c("mean", "sd", "median", "q25", "q75", "min", "max")`.
 #' @param variables Optional character vector of specific variables to summarise. If NULL, auto-detects utilization columns.
@@ -9,11 +10,22 @@
 #' @export
 summariseUtilization <- function(
   cohort,
+  group = list("cohort_name"),
   strata = list(),
   estimates = c("mean", "sd", "median", "q25", "q75", "min", "max"),
   variables = NULL
 ) {
   # ponytail: delegate to PatientProfiles::summariseResult with auto-detected utilization columns
+  if (inherits(cohort, "cohort_table") && !"cohort_name" %in% colnames(cohort)) {
+    cohort <- PatientProfiles::addCohortName(cohort)
+  }
+
+  groupCols <- unlist(group)
+  missingGroup <- setdiff(groupCols, colnames(cohort))
+  if (length(missingGroup) > 0) {
+    group <- list()
+  }
+
   if (is.null(variables)) {
     allCols <- colnames(cohort)
     utilPatterns <- c(
@@ -32,6 +44,7 @@ summariseUtilization <- function(
 
   PatientProfiles::summariseResult(
     table = cohort,
+    group = group,
     strata = strata,
     variables = variables,
     estimates = estimates,
@@ -42,6 +55,7 @@ summariseUtilization <- function(
 #' Summarise Direct Medical Costs for a Cohort
 #'
 #' @param cohort An enriched cohort table containing cost columns.
+#' @param group List of character vectors specifying grouping columns. Default: `list("cohort_name")`.
 #' @param strata List of character vectors specifying stratification columns. Default: `list()`.
 #' @param costColumns Character vector of cost columns to summarise. If NULL, selects all columns starting with `cost_`.
 #' @param estimates Summary estimators to compute. Default: `c("mean", "sd", "median", "q25", "q75", "min", "max")`.
@@ -50,11 +64,22 @@ summariseUtilization <- function(
 #' @export
 summariseCosts <- function(
   cohort,
+  group = list("cohort_name"),
   strata = list(),
   costColumns = NULL,
   estimates = c("mean", "sd", "median", "q25", "q75", "min", "max")
 ) {
   # ponytail: delegate to PatientProfiles::summariseResult with auto-detected cost columns
+  if (inherits(cohort, "cohort_table") && !"cohort_name" %in% colnames(cohort)) {
+    cohort <- PatientProfiles::addCohortName(cohort)
+  }
+
+  groupCols <- unlist(group)
+  missingGroup <- setdiff(groupCols, colnames(cohort))
+  if (length(missingGroup) > 0) {
+    group <- list()
+  }
+
   if (is.null(costColumns)) {
     allCols <- colnames(cohort)
     costColumns <- allCols[grepl("^cost_", allCols)]
@@ -67,6 +92,7 @@ summariseCosts <- function(
 
   PatientProfiles::summariseResult(
     table = cohort,
+    group = group,
     strata = strata,
     variables = costColumns,
     estimates = estimates,

@@ -35,7 +35,45 @@ test_that("summariseCosts returns valid summarised_result and tableUtilization f
   expect_true(inherits(cost_res, "summarised_result"))
   omopgenerics::validateResultArgument(cost_res)
 
-  # Table formatting
-  tbl <- tableCosts(cost_res, type = "tibble")
-  expect_true(is.data.frame(tbl))
+  # Table formatting - tibble
+  tbl_df <- tableCosts(cost_res, type = "tibble")
+  expect_true(is.data.frame(tbl_df))
+
+  # Table formatting - gt
+  tbl_gt <- tableCosts(
+    cost_res,
+    type = "gt",
+    estimateName = c("Mean (SD)" = "<mean> (<sd>)")
+  )
+  expect_true(inherits(tbl_gt, "gt_tbl"))
+})
+
+test_that("plotUtilization and plotCosts produce valid ggplot visualizations", {
+  cdm <- hermes_test_cdm()
+
+  cohort_enriched <- cdm$target_cohort |>
+    addHospitalizations(window = list(followup = c(0, 365))) |>
+    addCosts(window = list(followup = c(0, 365)))
+
+  res_util <- summariseUtilization(cohort = cohort_enriched)
+  res_cost <- summariseCosts(cohort = cohort_enriched)
+
+  # Bar plots
+  p_util_bar <- plotUtilization(res_util, plotType = "barplot")
+  expect_true(inherits(p_util_bar, "ggplot"))
+
+  p_cost_bar <- plotCosts(res_cost, plotType = "barplot")
+  expect_true(inherits(p_cost_bar, "ggplot"))
+
+  # Box plots
+  p_util_box <- plotUtilization(res_util, plotType = "boxplot")
+  expect_true(inherits(p_util_box, "ggplot"))
+
+  p_cost_box <- plotCosts(res_cost, plotType = "boxplot")
+  expect_true(inherits(p_cost_box, "ggplot"))
+
+  # Empty result warning
+  empty_res <- omopgenerics::emptySummarisedResult()
+  expect_warning(p_empty <- plotUtilization(empty_res))
+  expect_true(inherits(p_empty, "ggplot"))
 })
