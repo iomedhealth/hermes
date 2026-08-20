@@ -28,7 +28,9 @@ computeHospitalizationCohorts(
 
 \item{visit_concept_ids}{Integer vector of OMOP visit concept IDs. Default: \code{c(9201L, 262L, 32037L, 581379L)}.}
 
-\item{readmission_window}{Maximum days between previous discharge and next admission. Default: 30.}
+\item{readmission_window}{Backward compatible snake_case parameter.}
+
+\item{visitConceptIds}{Integer vector of OMOP visit concept IDs. Default: \code{c(9201L, 262L, 581379L)}.}
 
 \item{icuConceptIds}{Integer vector of OMOP ICU visit concept IDs. Default: \code{32037L}.}
 

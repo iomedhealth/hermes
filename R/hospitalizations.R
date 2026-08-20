@@ -116,8 +116,10 @@ compute_hospitalization_cohorts <- function(
 }
 
 #' @rdname compute_hospitalization_cohorts
+#' @param visitConceptIds Integer vector of OMOP visit concept IDs. Default: `c(9201L, 262L, 581379L)`.
 #' @param icuConceptIds Integer vector of OMOP ICU visit concept IDs. Default: `32037L`.
 #' @param readmissionWindow Maximum days between previous discharge and next admission. Default: 30.
+#' @param readmission_window Backward compatible snake_case parameter.
 #' @export
 computeHospitalizationCohorts <- function(
   cdm,
