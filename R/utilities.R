@@ -25,20 +25,26 @@ validateWindow <- function(window, call = parent.frame()) {
 
   for (i in seq_along(window)) {
     w <- window[[i]]
-    if (!is.numeric(w) || length(w) != 2 || is.na(w[1]) || is.na(w[2])) {
-      cli::cli_abort("Each window element must be a numeric vector of length 2 without NA.", call = call)
+    if (!is.numeric(w) || length(w) != 2) {
+      cli::cli_abort("Each window element must be a numeric vector of length 2.", call = call)
+    }
+    if (is.na(w[1])) {
+      w[1] <- -Inf
+    }
+    if (is.na(w[2])) {
+      w[2] <- Inf
     }
     if (w[1] > w[2]) {
       cli::cli_abort(glue::glue("Window interval [{w[1]}, {w[2]}] is invalid: start cannot exceed end."), call = call)
     }
 
     wName <- if (!is.null(nms) && nms[i] != "") {
-      nms[i]
+      tolower(nms[i])
     } else {
-      # format as e.g. m365_to_m1 or 0_to_365
-      sStr <- if (w[1] < 0) paste0("m", abs(w[1])) else as.character(w[1])
-      eStr <- if (w[2] < 0) paste0("m", abs(w[2])) else as.character(w[2])
-      paste0(sStr, "_to_", eStr)
+      # format as e.g. m365_to_m1, 0_to_365, 0_to_inf, minf_to_0, minf_to_inf
+      sStr <- if (is.infinite(w[1])) "minf" else if (w[1] < 0) paste0("m", abs(w[1])) else as.character(w[1])
+      eStr <- if (is.infinite(w[2])) "inf" else if (w[2] < 0) paste0("m", abs(w[2])) else as.character(w[2])
+      tolower(paste0(sStr, "_to_", eStr))
     }
     cleanWindow[[wName]] <- w
   }

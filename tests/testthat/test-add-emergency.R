@@ -87,3 +87,23 @@ test_that("addEmergency and addEmergencyVisits aliases work identically", {
   expect_equal(res1, res2)
   expect_equal(res1, res3)
 })
+
+test_that("addEmergencyCare supports infinite and NA windows", {
+  cdm <- hermesTestCdm()
+
+  # 1. Unnamed c(0, Inf) -> emergency_visits_0_to_inf
+  resInf <- cdm$target_cohort |>
+    addEmergencyCare(window = c(0, Inf)) |>
+    dplyr::collect()
+
+  expect_true("emergency_visits_0_to_inf" %in% colnames(resInf))
+  p2 <- resInf |> dplyr::filter(.data$subject_id == 2L)
+  expect_equal(p2$emergency_visits_0_to_inf, 1)
+
+  # 2. NA normalization: c(0, NA) -> identical to c(0, Inf)
+  resNa <- cdm$target_cohort |>
+    addEmergencyCare(window = list(c(0, NA))) |>
+    dplyr::collect()
+
+  expect_equal(resInf, resNa)
+})

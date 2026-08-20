@@ -23,3 +23,17 @@ test_that("addCosts extracts and aggregates domain and total costs", {
   expect_equal(p1$cost_procedure_followup, 300)
   expect_gte(p1$cost_total_followup, 2000)
 })
+
+test_that("addCosts supports infinite and NA window bounds", {
+  cdm <- hermesTestCdm()
+
+  resInf <- cdm$target_cohort |>
+    addCosts(window = c(0, Inf)) |>
+    dplyr::collect()
+
+  expect_true("cost_total_0_to_inf" %in% colnames(resInf))
+  expect_true("cost_inpatient_0_to_inf" %in% colnames(resInf))
+
+  p1 <- resInf |> dplyr::filter(.data$subject_id == 1L)
+  expect_gte(p1$cost_total_0_to_inf, 2000)
+})
