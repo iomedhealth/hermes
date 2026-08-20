@@ -36,12 +36,12 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
+    <li><a class="dropdown-item" href="../articles/hermes-ecosystem.html">The HERMES Ecosystem: Modular Architecture &amp; Package Suite</a></li>
     <li><a class="dropdown-item" href="../articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
     <li><a class="dropdown-item" href="../articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Deep Dives</h6></li>
     <li><a class="dropdown-item" href="../articles/hcru_logic.html">HCRU Extraction Logic</a></li>
-    <li><a class="dropdown-item" href="../articles/API_SPECIFICATION.html">API &amp; Architecture Specification</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -66,103 +66,183 @@
       <img src="../logo.svg" class="logo" alt=""><h1>HCRU Extraction Logic</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/iomedhealth/hermes/blob/v0.5.0/vignettes/hcru_logic.Rmd" class="external-link"><code>vignettes/hcru_logic.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/iomedhealth/hermes/blob/main/vignettes/hcru_logic.Rmd" class="external-link"><code>vignettes/hcru_logic.Rmd</code></a></small>
       <div class="d-none name"><code>hcru_logic.Rmd</code></div>
     </div>
 
     
     
 <div class="section level2">
-<h2 id="hcru-extraction-logic">HCRU Extraction Logic<a class="anchor" aria-label="anchor" href="#hcru-extraction-logic"></a>
+<h2 id="hcru-direct-cost-extraction-logic">HCRU &amp; Direct Cost Extraction Logic<a class="anchor" aria-label="anchor" href="#hcru-direct-cost-extraction-logic"></a>
 </h2>
-<p>This document outlines the extraction logic for Healthcare Resource
-Utilization (HCRU) from the OMOP <code>COST</code> table.</p>
+<p>This document outlines the extraction and linkage logic for
+Healthcare Resource Utilization (HCRU) and direct medical expenditures
+from the OMOP CDM <code>COST</code> table across the HERMES
+ecosystem.</p>
+<hr>
 <div class="section level3">
-<h3 id="logical-flow">Logical Flow<a class="anchor" aria-label="anchor" href="#logical-flow"></a>
+<h3 id="dual-cost-extraction-modalities">1. Dual Cost Extraction Modalities<a class="anchor" aria-label="anchor" href="#dual-cost-extraction-modalities"></a>
 </h3>
-<pre class="text"><code>                            +--------------------------+
-                            |       extract_hcru()     |
-                            +-------------+------------+
-                                          |
-                                          v
-                              +----------------------+
-                              |  Does 'cost' table   |
-                              |  exist in the CDM?   |
-                              +------+---------+-----+
-                                     |         |
-                                [No] |         | [Yes]
-                                     v         v
-                  +--------------------+     +---------------------------+
-                  | Warn user: "No     |     |   Is 'cost' table empty?  |
-                  | cost table found"  |     |   (record count == 0)     |
-                  | Return empty data. |     +-------+---------+---------+
-                  +--------------------+             |         |
-                                                [Yes]|         | [No]
-                                                     v         |
-                                     +--------------------+    |
-                                     | Warn user: Table   |    |
-                                     | exists but empty.  |    |
-                                     | Return empty data. |    |
-                                     +--------------------+    v
-                                                 +--------------------------------+
-                                                 | Are financial metrics          |
-                                                 | (total_paid, total_charge)     |
-                                                 | available and &gt; 0?             |
-                                                 +---------+-------------+--------+
-                                                           |             |
-                                                      [No] |             | [Yes]
-                                                           v             |
-                                     +---------------------------+       |
-                                     | Do drg_concept_id or      |       |
-                                     | drg_source_value exist    |       |
-                                     | in the table?             |       |
-                                     +-------+---------+---------+       |
-                                             |         |                 |
-                                        [No] |         | [Yes]           |
-                                             v         v                 |
-                      +------------------------+  +-------------------+  |
-                      | Warn user: "No cost    |  | Prompt user for   |  |
-                      | metrics or DRGs found" |  | DRG-to-Cost       |  |
-                      | Return empty data.     |  | lookup dictionary |  |
-                      +------------------------+  +--------+----------+  |
-                                                           |             |
-                                                           |             |
-                                                           v             v
-                                                +--------------------------------+
-                                                | Extract unadjusted costs &amp;     |
-                                                | summarize by cost_domain_id    |
-                                                | via dplyr::group_by()          |
-                                                +--------------------------------+
-                                                           |
-                                                           v
-                                                +--------------------------------+
-                                                | Return hermes_hcru object      |
-                                                +--------------------------------+</code></pre>
+<p>HERMES provides two complementary mechanisms for extracting cost
+data:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>In-Database Cohort Enrichment
+(<code><a href="https://rdrr.io/pkg/CohortCosts/man/addCosts.html" class="external-link">CohortCosts::addCosts()</a></code>)</strong>:
+<ul>
+<li>Appends windowed domain cost columns (<code>cost_inpatient_*</code>,
+<code>cost_outpatient_*</code>, <code>cost_drug_*</code>,
+<code>cost_procedure_*</code>, <code>cost_total_*</code>) directly to
+any OMOP cohort table in the database write schema.</li>
+<li>Suited for epidemiological studies, patient profiling, and
+multivariable regression.</li>
+</ul>
+</li>
+<li>
+<strong>Pipeline State-Cost Extraction
+(<code><a href="https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html" class="external-link">CohortEconomics::extract_hcru()</a></code>)</strong>:
+<ul>
+<li>Links clinical event expenditures to study subjects and tags each
+cost with the patient’s health state (e.g. <code>State_Baseline</code>
+vs <code>State_Outcome</code>).</li>
+<li>Feeds state-specific cost distributions directly into Stage 4
+(<code><a href="https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html" class="external-link">compile_trajectories()</a></code>) and Stage 5 Markov simulations
+(<code><a href="https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html" class="external-link">simulate_economics()</a></code>).</li>
+</ul>
+</li>
+</ol>
+<hr>
 </div>
 <div class="section level3">
-<h3 id="detailed-rules">Detailed Rules<a class="anchor" aria-label="anchor" href="#detailed-rules"></a>
+<h3 id="extraction-decision-flow">2. Extraction Decision Flow<a class="anchor" aria-label="anchor" href="#extraction-decision-flow"></a>
+</h3>
+<pre class="text"><code>                            +-------------------------------------+
+                            | addCosts() or extract_hcru() called |
+                            +------------------+------------------+
+                                               |
+                                               v
+                                   +-----------------------+
+                                   |   Does 'cost' table   |
+                                   |   exist in the CDM?   |
+                                   +-------+-------+-------+
+                                           |       |
+                                      [No] |       | [Yes]
+                                           v       v
+                        +--------------------+   +---------------------------+
+                        | Warn user: No cost |   |   Is 'cost' table empty?  |
+                        | table found. Fill  |   |   (record count == 0)     |
+                        | columns with 0.0.  |   +-------+---------+---------+
+                        +--------------------+           |         |
+                                                    [Yes]|         | [No]
+                                                         v         |
+                                         +--------------------+    |
+                                         | Warn user: Table   |    |
+                                         | exists but empty.  |    |
+                                         | Return 0.0 values. |    |
+                                         +--------------------+    v
+                                                     +--------------------------------+
+                                                     | Are financial metrics          |
+                                                     | (total_paid, total_charge)     |
+                                                     | available and populated?       |
+                                                     +---------+-------------+--------+
+                                                               |             |
+                                                          [No] |             | [Yes]
+                                                               v             |
+                                         +---------------------------+       |
+                                         | Do drg_concept_id or      |       |
+                                         | drg_source_value exist    |       |
+                                         | in the table?             |       |
+                                         +-------+---------+---------+       |
+                                                 |         |                 |
+                                            [No] |         | [Yes]           |
+                                                 v         v                 |
+                          +------------------------+  +-------------------+  |
+                          | Zero-fill cost columns |  | Prompt user for   |  |
+                          | or warn missing metric |  | DRG-to-Cost       |  |
+                          |                        |  | lookup dictionary |  |
+                          +------------------------+  +--------+----------+  |
+                                                               |             |
+                                                               |             |
+                                                               v             v
+                                                    +--------------------------------+
+                                                    | Link by cost_event_id across   |
+                                                    | Condition, Visit, Drug, and    |
+                                                    | Procedure occurrence tables    |
+                                                    +--------------------------------+
+                                                               |
+                                                               v
+                                                    +--------------------------------+
+                                                    | Aggregate across temporal      |
+                                                    | windows &amp; zero-fill subjects   |
+                                                    +--------------------------------+</code></pre>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="polymorphic-event-linkage-strategy">3. Polymorphic Event Linkage Strategy<a class="anchor" aria-label="anchor" href="#polymorphic-event-linkage-strategy"></a>
+</h3>
+<p>OMOP CDM v5.3+ stores costs in a polymorphic <code>COST</code> table
+where <code>cost_event_id</code> references the primary key of the
+domain table indicated by <code>cost_domain_id</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="kw">SELECT</span> </span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  c.person_id,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  c.cost_domain_id,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  c.cost_type_concept_id,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  c.total_paid,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  c.total_charge,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  c.paid_by_payer,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  c.paid_by_patient,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  v.visit_concept_id,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  v.visit_start_date,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  v.visit_end_date</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="kw">FROM</span> cdm.<span class="kw">cost</span> c</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="kw">JOIN</span> cdm.visit_occurrence v </span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="kw">ON</span> c.cost_event_id <span class="op">=</span> v.visit_occurrence_id </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a> <span class="kw">AND</span> c.cost_domain_id <span class="op">=</span> <span class="st">'Visit'</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="kw">WHERE</span> c.person_id <span class="kw">IN</span> (<span class="kw">SELECT</span> subject_id <span class="kw">FROM</span> study_cohort);</span></code></pre></div>
+<div class="section level4">
+<h4 id="supported-cost-domains">Supported Cost Domains<a class="anchor" aria-label="anchor" href="#supported-cost-domains"></a>
+</h4>
+<ul>
+<li>
+<strong>Inpatient Visits</strong>
+(<code>cost_domain_id = 'Visit'</code> and <code>visit_concept_id</code>
+in Inpatient/ICU concepts).</li>
+<li>
+<strong>Outpatient Visits</strong>
+(<code>cost_domain_id = 'Visit'</code> and <code>visit_concept_id</code>
+in Outpatient concepts).</li>
+<li>
+<strong>Pharmacy</strong> (<code>cost_domain_id = 'Drug'</code>
+linked via <code>drug_exposure_id</code>).</li>
+<li>
+<strong>Procedures &amp; Diagnostics</strong>
+(<code>cost_domain_id = 'Procedure'</code> or
+<code>'Measurement'</code>).</li>
+<li>
+<strong>Conditions</strong>
+(<code>cost_domain_id = 'Condition'</code> linked via
+<code>condition_occurrence_id</code>).</li>
+</ul>
+<hr>
+</div>
+</div>
+<div class="section level3">
+<h3 id="resilience-fallback-rules">4. Resilience &amp; Fallback Rules<a class="anchor" aria-label="anchor" href="#resilience-fallback-rules"></a>
 </h3>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Structural Check</strong>: First, verify if the
-<code>cost</code> table actually exists in the database schema.</li>
+<strong>Missing Cost Table</strong>: If the database schema lacks a
+<code>COST</code> table, a clear warning is emitted
+(<code>Missing 'cost' table in CDM</code>), and all cost columns are
+safely populated with <code>0.0</code> to prevent pipeline crashes.</li>
 <li>
-<strong>Content Check</strong>: OMOP CDMs often generate the
-structure for all tables by default. The <code>COST</code> table might
-exist but contain 0 rows.</li>
+<strong>Empty Cost Table</strong>: If the table exists with 0 rows,
+subjects are retained with <code>0.0</code> expenditures.</li>
 <li>
-<strong>Metric Check</strong>: Some databases populate the
-<code>COST</code> table with event linkages but mask the actual
-financial values due to privacy. Check if <code>total_charge</code>,
-<code>total_cost</code>, <code>total_paid</code>, or <code>paid_*</code>
-columns are all <code>NA</code> or <code>0</code>.</li>
-<li>
-<strong>DRG Fallback</strong>: If the financial values are masked,
-the pipeline pivots to check for Diagnosis-Related Group (DRG) codes
-(<code>drg_concept_id</code> or <code>drg_source_value</code>). If
-present, prompt the user for a standardized DRG lookup table to infer an
-estimated cost for the event, ensuring economic simulations don’t fail
-due to zero-cost data.</li>
+<strong>Missing Subject Records</strong>: Zero-utilization subjects
+in the cohort are preserved via left joins with coalesce to
+<code>0.0</code>, ensuring no patient attrition during cost
+enrichment.</li>
 </ol>
 </div>
 </div>

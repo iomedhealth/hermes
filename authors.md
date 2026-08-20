@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/iomedhealth/hermes/blob/v0.5.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/iomedhealth/hermes/blob/main/inst/CITATION)
 
 Maeztu, G. (2026). HERMES: Health Economic Resource Modeling &
 Evaluation System. Developed by IOMED. R package version 0.5.0.

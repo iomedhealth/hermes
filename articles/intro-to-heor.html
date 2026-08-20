@@ -36,12 +36,12 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
+    <li><a class="dropdown-item" href="../articles/hermes-ecosystem.html">The HERMES Ecosystem: Modular Architecture &amp; Package Suite</a></li>
     <li><a class="dropdown-item" href="../articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
     <li><a class="dropdown-item" href="../articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Deep Dives</h6></li>
     <li><a class="dropdown-item" href="../articles/hcru_logic.html">HCRU Extraction Logic</a></li>
-    <li><a class="dropdown-item" href="../articles/API_SPECIFICATION.html">API &amp; Architecture Specification</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -66,7 +66,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Introduction to HEOR for OMOP Users</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/iomedhealth/hermes/blob/v0.5.0/vignettes/intro-to-heor.Rmd" class="external-link"><code>vignettes/intro-to-heor.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/iomedhealth/hermes/blob/main/vignettes/intro-to-heor.Rmd" class="external-link"><code>vignettes/intro-to-heor.Rmd</code></a></small>
       <div class="d-none name"><code>intro-to-heor.Rmd</code></div>
     </div>
 
@@ -127,14 +127,16 @@ is below the threshold, the drug is considered cost-effective.</p>
 OMOP CDM? We map OHDSI concepts to HEOR concepts.</p>
 <table class="table">
 <colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">OMOP / OHDSI Concept</th>
 <th align="left">HEOR / CEA Concept</th>
 <th align="left">HERMES Stage</th>
+<th align="left">Package Responsible</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -145,6 +147,8 @@ A)</td>
 <strong>Treatment Arm</strong> (The new intervention
 being evaluated)</td>
 <td align="left">Stage 1</td>
+<td align="left">
+<code>CohortEconomics</code> (<code><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init()</a></code>)</td>
 </tr>
 <tr class="even">
 <td align="left">
@@ -154,34 +158,73 @@ Drug B)</td>
 <strong>Standard of Care Arm</strong> (The baseline
 intervention)</td>
 <td align="left">Stage 1</td>
+<td align="left">
+<code>CohortEconomics</code> (<code><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init()</a></code>)</td>
 </tr>
 <tr class="odd">
 <td align="left">
-<strong>Outcome Cohorts</strong> (e.g., stroke,
-myocardial infarction)</td>
+<strong>Demographics &amp; Covariates</strong> (Age,
+sex, comorbidities)</td>
+<td align="left"><strong>Patient Characteristics &amp;
+Confounders</strong></td>
+<td align="left">Stage 2 &amp; 3</td>
 <td align="left">
-<strong>Health States / Clinical Events</strong>
-(Transitions in a Markov state-transition model)</td>
-<td align="left">Stage 4</td>
+<code>CohortEconomics</code>
+(<code><a href="https://rdrr.io/pkg/CohortEconomics/man/summarise_baseline.html" class="external-link">summarise_baseline()</a></code>, <code><a href="https://rdrr.io/pkg/CohortEconomics/man/fit_ps.html" class="external-link">fit_ps()</a></code>)</td>
 </tr>
 <tr class="even">
 <td align="left">
-<strong>Concept Sets &amp; Covariates</strong> (Age,
-sex, baseline conditions)</td>
+<strong>Care Encounters &amp; Prescriptions</strong>
+(Visits, drugs, procedures)</td>
+<td align="left"><strong>Healthcare Resource Utilization
+(HCRU)</strong></td>
+<td align="left">Stage 2</td>
 <td align="left">
-<strong>Patient Characteristics &amp;
-Confounders</strong> (Used for Propensity Score matching to emulate a
-randomized trial)</td>
-<td align="left">Stage 2 &amp; 3</td>
+<code>CohortUtilisation</code>
+(<code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html" class="external-link">addVisits()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html" class="external-link">addPrescriptions()</a></code>,
+<code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html" class="external-link">addProcedures()</a></code>)</td>
 </tr>
 <tr class="odd">
 <td align="left">
-<strong>COST Table</strong> (Total paid, charge, cost
-concept)</td>
-<td align="left">
-<strong>Healthcare Resource Utilization (HCRU) &amp;
-Direct Medical Costs</strong> (The numerator in the ICER)</td>
+<strong>COST Table</strong> (Total paid, charge,
+allowed)</td>
+<td align="left"><strong>Direct Medical Costs &amp;
+Tariffs</strong></td>
 <td align="left">Stage 2 &amp; 4</td>
+<td align="left">
+<code>CohortCosts</code> (<code><a href="https://rdrr.io/pkg/CohortCosts/man/addCosts.html" class="external-link">addCosts()</a></code>) /
+<code>CohortEconomics</code> (<code><a href="https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html" class="external-link">extract_hcru()</a></code>)</td>
+</tr>
+<tr class="even">
+<td align="left">
+<strong>Outcome Cohorts</strong> (e.g., stroke, disease
+progression)</td>
+<td align="left"><strong>Health States / Clinical Events</strong></td>
+<td align="left">Stage 4</td>
+<td align="left">
+<code>CohortEconomics</code>
+(<code><a href="https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html" class="external-link">compile_trajectories()</a></code>)</td>
+</tr>
+<tr class="odd">
+<td align="left">
+<strong>Longitudinal Transitions</strong> (Markov model
+matrices)</td>
+<td align="left"><strong>State-Transition Simulation</strong></td>
+<td align="left">Stage 5</td>
+<td align="left">
+<code>CohortEconomics</code>
+(<code><a href="https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html" class="external-link">simulate_economics()</a></code>)</td>
+</tr>
+<tr class="even">
+<td align="left">
+<strong>Incremental Costs &amp; Effects</strong> (PSA
+iterations)</td>
+<td align="left"><strong>Decision Analysis (ICER, CEAC,
+NMB)</strong></td>
+<td align="left">Stage 6</td>
+<td align="left">
+<code>CohortEconomics</code> (<code><a href="https://rdrr.io/pkg/CohortEconomics/man/run_cea.html" class="external-link">run_cea()</a></code>,
+<code><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_ceac.html" class="external-link">plot_ceac()</a></code>)</td>
 </tr>
 </tbody>
 </table>
@@ -190,9 +233,9 @@ Direct Medical Costs</strong> (The numerator in the ICER)</td>
 <h2 id="the-hermes-6-stage-pipeline">The HERMES 6-Stage Pipeline<a class="anchor" aria-label="anchor" href="#the-hermes-6-stage-pipeline"></a>
 </h2>
 <p>To get from raw OMOP data to a finalized ICER and decision-analytic
-plots, HERMES enforces a strict 6-stage pipeline.</p>
+plots, HERMES enforces a strict 6-stage pipeline:</p>
 <div class="section level3">
-<h3 id="cohort-generation">1. Cohort Generation<a class="anchor" aria-label="anchor" href="#cohort-generation"></a>
+<h3 id="cohort-generation-init">1. Cohort Generation (<code>init()</code>)<a class="anchor" aria-label="anchor" href="#cohort-generation-init"></a>
 </h3>
 <p>You define your <code>target_cohort</code>,
 <code>comparator_cohort</code>, and <code>outcome_cohort</code> using
@@ -200,7 +243,8 @@ standard OHDSI tools (like Atlas, Capr, or CohortConstructor) and
 instantiate them in the database.</p>
 </div>
 <div class="section level3">
-<h3 id="descriptive-baseline-hcru-characterization">2. Descriptive Baseline &amp; HCRU Characterization<a class="anchor" aria-label="anchor" href="#descriptive-baseline-hcru-characterization"></a>
+<h3 id="descriptive-baseline-hcru-characterization-summarise_baseline-extract_hcru">2. Descriptive Baseline &amp; HCRU Characterization
+(<code>summarise_baseline()</code>, <code>extract_hcru()</code>)<a class="anchor" aria-label="anchor" href="#descriptive-baseline-hcru-characterization-summarise_baseline-extract_hcru"></a>
 </h3>
 <p>HERMES profiles the cohorts, extracting demographics and calculating
 unadjusted care utilization (hospitalizations, outpatient visits) and
@@ -208,7 +252,8 @@ direct medical costs by directly querying the OMOP <code>COST</code>
 table.</p>
 </div>
 <div class="section level3">
-<h3 id="causal-propensity-score-ps-adjustment">3. Causal Propensity Score (PS) Adjustment<a class="anchor" aria-label="anchor" href="#causal-propensity-score-ps-adjustment"></a>
+<h3 id="causal-propensity-score-ps-adjustment-fit_ps-adjust_ps-assess_balance">3. Causal Propensity Score (PS) Adjustment (<code>fit_ps()</code>,
+<code>adjust_ps()</code>, <code>assess_balance()</code>)<a class="anchor" aria-label="anchor" href="#causal-propensity-score-ps-adjustment-fit_ps-adjust_ps-assess_balance"></a>
 </h3>
 <p>Observational data is biased. Patients prescribed the new expensive
 drug might be sicker (or healthier) than those on the standard of care.
@@ -217,7 +262,8 @@ HERMES uses high-dimensional regularized logistic regression (via
 the cohorts, creating a pseudo-randomized population.</p>
 </div>
 <div class="section level3">
-<h3 id="trajectory-compilation-state-cost-extraction">4. Trajectory Compilation &amp; State-Cost Extraction<a class="anchor" aria-label="anchor" href="#trajectory-compilation-state-cost-extraction"></a>
+<h3 id="trajectory-compilation-state-cost-extraction-compile_trajectories">4. Trajectory Compilation &amp; State-Cost Extraction
+(<code>compile_trajectories()</code>)<a class="anchor" aria-label="anchor" href="#trajectory-compilation-state-cost-extraction-compile_trajectories"></a>
 </h3>
 <p>Patient timelines are sliced into discrete time cycles (e.g.,
 months). HERMES tracks how patients transition between different health
@@ -225,15 +271,16 @@ states (e.g., from “Healthy” to “Outcome Event” to “Dead”) and extra
 the specific costs accrued while in those states.</p>
 </div>
 <div class="section level3">
-<h3 id="economic-simulation">5. Economic Simulation<a class="anchor" aria-label="anchor" href="#economic-simulation"></a>
+<h3 id="economic-simulation-simulate_economics">5. Economic Simulation (<code>simulate_economics()</code>)<a class="anchor" aria-label="anchor" href="#economic-simulation-simulate_economics"></a>
 </h3>
 <p>Using the transition probabilities and cost distributions derived in
-Stage 4, HERMES simulates a decision-analytic model (often a Markov
-model or microsimulation via <code>hesim</code>). This projects the
-long-term costs and QALYs over a lifetime horizon.</p>
+Stage 4, HERMES simulates a decision-analytic Markov model. This
+projects the long-term costs and QALYs over a lifetime horizon with
+probabilistic sensitivity analysis (PSA).</p>
 </div>
 <div class="section level3">
-<h3 id="decision-analysis-post-processing-cea">6. Decision Analysis &amp; Post-Processing (CEA)<a class="anchor" aria-label="anchor" href="#decision-analysis-post-processing-cea"></a>
+<h3 id="decision-analysis-post-processing-run_cea-plot_ceac-plot_plane">6. Decision Analysis &amp; Post-Processing (<code>run_cea()</code>,
+<code>plot_ceac()</code>, <code>plot_plane()</code>)<a class="anchor" aria-label="anchor" href="#decision-analysis-post-processing-run_cea-plot_ceac-plot_plane"></a>
 </h3>
 <p>Finally, HERMES calculates the ICER and Net Monetary Benefit (NMB),
 generating standardized visualizations like the Cost-Effectiveness Plane
@@ -244,10 +291,20 @@ and the Cost-Effectiveness Acceptability Curve (CEAC), powered by
 <div class="section level2">
 <h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
-<p>Now that you understand the conceptual mapping, check out the
-<strong>Guides</strong> section to see how HERMES handles specific
-technical challenges, such as safely extracting data from the OMOP
-<code>COST</code> table.</p>
+<ul>
+<li>
+<strong><a href="hermes-ecosystem.html">The HERMES Ecosystem &amp;
+Modular Suite</a></strong>: Overview of the 3 standalone packages and
+architecture.</li>
+<li>
+<strong><a href="cohort-utilization.html">Cohort Utilization &amp;
+Cost Enrichment</a></strong>: Deep dive into the 3-layer in-database
+cohort enrichers.</li>
+<li>
+<strong><a href="hcru_logic.html">HCRU Extraction
+Logic</a></strong>: Technical rules for OMOP <code>COST</code> table
+linkage and zero-fill fallbacks.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
