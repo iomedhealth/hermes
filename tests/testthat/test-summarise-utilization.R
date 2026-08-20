@@ -1,8 +1,8 @@
 test_that("summariseUtilization returns a valid summarised_result object", {
-  cdm <- hermes_test_cdm()
+  cdm <- hermesTestCdm()
 
   cohort_enriched <- cdm$target_cohort |>
-    addHospitalizations(window = list(followup = c(0, 365))) |>
+    addInpatients(window = list(followup = c(0, 365))) |>
     addOutpatientVisits(
       window = list(followup = c(0, 365)),
       specialties = list(oncology = 38004507L, cardiology = 38004451L)
@@ -54,10 +54,10 @@ test_that("summariseCosts returns valid summarised_result and tableUtilization f
 })
 
 test_that("plotUtilization and plotCosts produce valid ggplot visualizations", {
-  cdm <- hermes_test_cdm()
+  cdm <- hermesTestCdm()
 
   cohort_enriched <- cdm$target_cohort |>
-    addHospitalizations(window = list(followup = c(0, 365))) |>
+    addInpatients(window = list(followup = c(0, 365))) |>
     addCosts(window = list(followup = c(0, 365)))
 
   res_util <- summariseUtilization(cohort = cohort_enriched)

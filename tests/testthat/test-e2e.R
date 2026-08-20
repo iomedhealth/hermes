@@ -98,8 +98,9 @@ test_that("End-to-End pipeline produces valid CEA plots", {
 
   # Test modular cohort enricher pipeline
   cdm$target_cohort_enriched <- cdm$target_cohort |>
-    addHospitalizations(window = list(baseline = c(-365, -1), followup = c(0, 365))) |>
+    addInpatients(window = list(baseline = c(-365, -1), followup = c(0, 365))) |>
     addOutpatientVisits(window = list(followup = c(0, 365))) |>
+    addEmergencyCare(window = list(followup = c(0, 365))) |>
     addPrescriptions(window = list(followup = c(0, 365))) |>
     addProcedures(window = list(followup = c(0, 365))) |>
     addCosts(window = list(followup = c(0, 365)), name = "target_cohort_enriched")

@@ -1,31 +1,38 @@
-#' Add Outpatient and Emergency Visits to a Cohort
+#' Add Emergency Care Utilization Metrics to a Cohort
+#'
+#' @description
+#' Identifies emergency encounters by querying `visit_occurrence` and `provider`
+#' tables, capturing encounters with emergency visit concept IDs (e.g. 9203, 262, 581478)
+#' as well as visits delivered by emergency medicine specialist providers (e.g. 38004510),
+#' with optional granular specialty stratification.
 #'
 #' @param x A cohort table or cdm_table.
 #' @param indexDate Date variable in `x` anchoring the observation window. Default: `"cohort_start_date"`.
 #' @param censorDate Optional date variable in `x` to censor observation.
 #' @param window A named or unnamed list of 2-element numeric vectors. Default: `list(c(-365, -1), c(0, 365))`.
-#' @param stratifySpecialty Logical; whether to partition visits by GP vs Specialist vs ED. Default: `TRUE`.
-#' @param gpSpecialtyConceptIds OMOP provider specialty concept IDs for General Practice. Default: `c(38004446L)`.
+#' @param emergencyVisitConceptIds OMOP visit concept IDs for emergency care. Default: `c(9203L, 262L, 581478L)`.
+#' @param emergencySpecialtyConceptIds OMOP provider specialty concept IDs for emergency medicine. Default: `c(38004510L)`.
+#' @param stratifySpecialty Logical; whether to compute specialty breakdown. Default: `FALSE`.
 #' @param specialties Optional named list of integer vectors of OMOP specialty concept IDs for granular specialty breakdown. Default: `NULL`.
-#' @param includeEmergency Logical; whether to include emergency visits. Default: `TRUE`.
-#' @param nameStyle Column naming pattern. Default: `"{setting}_visits_{window_name}"`.
+#' @param nameStyle Column naming pattern. Default: `"emergency_visits_{window_name}"`.
 #' @param name Name of the new table in the write schema. If NULL, a temporary table is returned.
 #'
-#' @return The cohort table `x` with added outpatient visit metric columns.
+#' @return The cohort table `x` with added emergency visit metric columns.
+#' @aliases addEmergency addEmergencyVisits
 #' @export
-addOutpatientVisits <- function(
+addEmergencyCare <- function(
   x,
   indexDate = "cohort_start_date",
   censorDate = NULL,
   window = list(c(-365, -1), c(0, 365)),
-  stratifySpecialty = TRUE,
-  gpSpecialtyConceptIds = c(38004446L),
+  emergencyVisitConceptIds = c(9203L, 262L, 581478L),
+  emergencySpecialtyConceptIds = c(38004510L),
+  stratifySpecialty = FALSE,
   specialties = NULL,
-  includeEmergency = TRUE,
-  nameStyle = "{setting}_visits_{window_name}",
+  nameStyle = "emergency_visits_{window_name}",
   name = NULL
 ) {
-  # ponytail: windowed dbplyr query against visit_occurrence + provider with 0-fill
+  # ponytail: dual-criteria visit_occurrence + provider query for emergency acts with 0-fill
   if (!inherits(x, "cdm_table") && !inherits(x, "cohort_table") && !inherits(x, "tbl_dbi")) {
     cli::cli_abort("Argument 'x' must be a cdm_table or cohort_table.")
   }
@@ -37,7 +44,8 @@ addOutpatientVisits <- function(
   name <- validateName(name)
   specialties <- validateSpecialties(specialties)
 
-  gpSpecialtyConceptIds <- as.integer(gpSpecialtyConceptIds)
+  emergencyVisitConceptIds <- as.integer(emergencyVisitConceptIds)
+  emergencySpecialtyConceptIds <- if (!is.null(emergencySpecialtyConceptIds)) as.integer(emergencySpecialtyConceptIds) else integer()
 
   x_cols <- colnames(x)
   person_col <- if ("person_id" %in% x_cols) "person_id" else "subject_id"
@@ -55,12 +63,9 @@ addOutpatientVisits <- function(
     tibble::tibble(provider_id = integer(), specialty_concept_id = integer())
   }
 
-  visit_concepts <- if (includeEmergency) c(9202L, 9203L, 581477L) else c(9202L, 581477L)
-
   visit_df <- if ("visit_occurrence" %in% names(cdm)) {
     cdm$visit_occurrence |>
-      dplyr::filter(.data$person_id %in% !!unique(cohort_df[[person_col]]) &
-        .data$visit_concept_id %in% !!visit_concepts) |>
+      dplyr::filter(.data$person_id %in% !!unique(cohort_df[[person_col]])) |>
       dplyr::select(
         "visit_occurrence_id",
         person_id = "person_id",
@@ -80,25 +85,22 @@ addOutpatientVisits <- function(
   visit_df <- visit_df |>
     dplyr::left_join(provider_df, by = "provider_id") |>
     dplyr::mutate(
-      is_ed = .data$visit_concept_id == 9203L,
-      is_gp = .data$visit_concept_id %in% c(9202L, 581477L) &
-        (is.na(.data$specialty_concept_id) | .data$specialty_concept_id %in% gpSpecialtyConceptIds),
-      is_spec = .data$visit_concept_id %in% c(9202L, 581477L) &
-        (!is.na(.data$specialty_concept_id) & !.data$specialty_concept_id %in% gpSpecialtyConceptIds),
-      is_other = .data$visit_concept_id %in% c(9202L, 581477L) & !.data$is_gp & !.data$is_spec
-    )
+      is_emergency = (.data$visit_concept_id %in% emergencyVisitConceptIds) |
+        (!is.na(.data$specialty_concept_id) & .data$specialty_concept_id %in% emergencySpecialtyConceptIds)
+    ) |>
+    dplyr::filter(.data$is_emergency)
 
   if (!is.null(specialties) && length(specialties) > 0) {
     for (s_name in names(specialties)) {
       s_ids <- as.integer(specialties[[s_name]])
-      visit_df[[paste0("is_", s_name)]] <- visit_df$visit_concept_id %in% c(9202L, 581477L) &
-        !is.na(visit_df$specialty_concept_id) &
+      visit_df[[paste0("is_spec_", s_name)]] <- !is.na(visit_df$specialty_concept_id) &
         visit_df$specialty_concept_id %in% s_ids
     }
   }
 
+  spec_cols <- if (!is.null(specialties)) paste0("is_spec_", names(specialties)) else character()
+
   res_list <- list(cohort_df)
-  spec_is_cols <- if (!is.null(specialties)) paste0("is_", names(specialties)) else character()
 
   for (win_name in names(clean_window)) {
     win_range <- clean_window[[win_name]]
@@ -121,37 +123,23 @@ addOutpatientVisits <- function(
     win_summary <- win_events |>
       dplyr::group_by(.data$subject_id) |>
       dplyr::summarise(
-        ed_cnt = sum(ifelse(.data$is_ed, 1L, 0L), na.rm = TRUE),
-        gp_cnt = sum(ifelse(.data$is_gp, 1L, 0L), na.rm = TRUE),
-        spec_cnt = sum(ifelse(.data$is_spec, 1L, 0L), na.rm = TRUE),
-        other_cnt = sum(ifelse(.data$is_other, 1L, 0L), na.rm = TRUE),
+        er_cnt = dplyr::n(),
         dplyr::across(
-          dplyr::all_of(spec_is_cols),
+          dplyr::all_of(spec_cols),
           ~ sum(ifelse(.x, 1L, 0L), na.rm = TRUE)
         ),
         .groups = "drop"
       )
 
-    c_ed <- paste0("emergency_visits_", win_name)
-    c_gp <- paste0("gp_visits_", win_name)
-    c_spec <- paste0("specialist_visits_", win_name)
-    c_other <- paste0("other_outpatient_visits_", win_name)
-
-    names(win_summary)[names(win_summary) == "ed_cnt"] <- c_ed
-    names(win_summary)[names(win_summary) == "gp_cnt"] <- c_gp
-    names(win_summary)[names(win_summary) == "spec_cnt"] <- c_spec
-    names(win_summary)[names(win_summary) == "other_cnt"] <- c_other
+    c_er <- paste0("emergency_visits_", win_name)
+    names(win_summary)[names(win_summary) == "er_cnt"] <- c_er
 
     if (!is.null(specialties)) {
       for (s_name in names(specialties)) {
-        orig_col <- paste0("is_", s_name)
-        target_col <- paste0(s_name, "_visits_", win_name)
+        orig_col <- paste0("is_spec_", s_name)
+        target_col <- paste0(s_name, "_emergency_visits_", win_name)
         names(win_summary)[names(win_summary) == orig_col] <- target_col
       }
-    }
-
-    if (!includeEmergency) {
-      win_summary <- win_summary |> dplyr::select(-dplyr::all_of(c_ed))
     }
 
     res_list <- c(res_list, list(win_summary))
@@ -180,3 +168,11 @@ addOutpatientVisits <- function(
   }
   cdm[[table_name]]
 }
+
+#' @rdname addEmergencyCare
+#' @export
+addEmergency <- addEmergencyCare
+
+#' @rdname addEmergencyCare
+#' @export
+addEmergencyVisits <- addEmergencyCare

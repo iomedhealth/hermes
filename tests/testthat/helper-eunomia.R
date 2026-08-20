@@ -34,12 +34,12 @@ hermes_test_cdm <- function(env = parent.frame()) {
     condition_type_concept_id = c(0L, 0L, 0L)
   )
   provider <- tibble::tibble(
-    provider_id = c(1L, 2L),
-    specialty_concept_id = c(38004446L, 38004477L) # 38004446 = General Practice, 38004477 = Specialist
+    provider_id = c(1L, 2L, 3L),
+    specialty_concept_id = c(38004446L, 38004477L, 38004510L) # 38004446 = General Practice, 38004477 = Specialist, 38004510 = Emergency Medicine
   )
   visit_occurrence <- tibble::tibble(
-    visit_occurrence_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L),
-    person_id = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L),
+    visit_occurrence_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L),
+    person_id = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L),
     visit_concept_id = c(
       9201L, # 1: Inpatient (followup)
       9201L, # 2: Inpatient readmission within 30d (followup)
@@ -48,7 +48,8 @@ hermes_test_cdm <- function(env = parent.frame()) {
       9202L, # 5: Outpatient GP (followup)
       9202L, # 6: Outpatient Specialist (followup)
       42898160L, # 7: SNF / Post-acute (followup)
-      9201L # 8: Inpatient for person 2 (followup)
+      9201L, # 8: Inpatient for person 2 (followup)
+      9202L  # 9: Outpatient visit attended by Emergency Medicine specialist (provider 3) (followup)
     ),
     visit_start_date = as.Date(c(
       "2010-02-01",
@@ -58,7 +59,8 @@ hermes_test_cdm <- function(env = parent.frame()) {
       "2010-03-01",
       "2010-04-01",
       "2010-05-01",
-      "2010-03-10"
+      "2010-03-10",
+      "2010-06-01"
     )),
     visit_end_date = as.Date(c(
       "2010-02-05", # 4 days LOS
@@ -68,10 +70,11 @@ hermes_test_cdm <- function(env = parent.frame()) {
       "2010-03-01", # 0 days LOS
       "2010-04-01", # 0 days LOS
       "2010-05-10", # 9 days LOS
-      "2010-03-15" # 5 days LOS
+      "2010-03-15", # 5 days LOS
+      "2010-06-01"  # 0 days LOS
     )),
-    visit_type_concept_id = rep(44818517L, 8),
-    provider_id = c(1L, 1L, 1L, 1L, 1L, 2L, 1L, 1L)
+    visit_type_concept_id = rep(44818517L, 9),
+    provider_id = c(1L, 1L, 1L, 1L, 1L, 2L, 1L, 1L, 3L)
   )
   drug_exposure <- tibble::tibble(
     drug_exposure_id = c(1L, 2L, 3L, 4L),
@@ -150,3 +153,5 @@ hermes_test_cdm <- function(env = parent.frame()) {
 
   return(cdm)
 }
+
+hermesTestCdm <- hermes_test_cdm

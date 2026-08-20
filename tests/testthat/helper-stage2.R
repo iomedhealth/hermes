@@ -38,3 +38,5 @@ hermes_test_study <- function(env = parent.frame()) {
   study <- init(cdm, "target_cohort", "comparator_cohort", "outcome_cohort")
   return(study)
 }
+
+hermesTestStudy <- hermes_test_study

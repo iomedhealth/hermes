@@ -91,3 +91,20 @@ validateCensorDate <- function(censorDate, x, call = parent.frame()) {
 validateName <- function(name, call = parent.frame()) {
   omopgenerics::assertCharacter(name, length = 1, null = TRUE, call = call)
 }
+
+#' Validate specialties argument
+#'
+#' @param specialties Optional named list of integer/numeric vectors.
+#' @param call Environment for error reporting.
+#'
+#' @return Validated specialties list or NULL.
+#' @noRd
+validateSpecialties <- function(specialties, call = parent.frame()) {
+  if (is.null(specialties)) {
+    return(NULL)
+  }
+  if (!is.list(specialties) || is.null(names(specialties)) || any(names(specialties) == "")) {
+    cli::cli_abort("Argument 'specialties' must be a named list of integer vectors.", call = call)
+  }
+  lapply(specialties, as.integer)
+}

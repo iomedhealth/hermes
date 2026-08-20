@@ -7,13 +7,16 @@
 #' @param visitConceptIds OMOP visit concept IDs for general inpatient stays. Default: `c(9201L, 8717L, 581379L)`.
 #' @param icuConceptIds OMOP visit concept IDs for ICU stays. Default: `32037L`.
 #' @param icuSpecialtyConceptIds OMOP provider specialty concept IDs for ICU stays. Default: `c(38004500L)`.
+#' @param stratifySpecialty Logical; whether to compute specialty breakdown. Default: `FALSE`.
+#' @param specialties Optional named list of integer vectors of OMOP specialty concept IDs for granular specialty breakdown. Default: `NULL`.
 #' @param readmissions Logical; whether to compute 30-day and 90-day readmissions. Default: `FALSE`.
 #' @param nameStyle Column naming pattern. Default: `"{domain}_{metric}_{window_name}"`.
 #' @param name Name of the new table in the write schema. If NULL, a temporary table is returned.
 #'
-#' @return The cohort table `x` with added hospitalization metric columns.
+#' @return The cohort table `x` with added inpatient metric columns.
+#' @aliases addHospitalizations addInpatient
 #' @export
-addHospitalizations <- function(
+addInpatients <- function(
   x,
   indexDate = "cohort_start_date",
   censorDate = NULL,
@@ -21,6 +24,8 @@ addHospitalizations <- function(
   visitConceptIds = c(9201L, 8717L, 581379L),
   icuConceptIds = 32037L,
   icuSpecialtyConceptIds = c(38004500L),
+  stratifySpecialty = FALSE,
+  specialties = NULL,
   readmissions = FALSE,
   nameStyle = "{domain}_{metric}_{window_name}",
   name = NULL
@@ -35,6 +40,7 @@ addHospitalizations <- function(
   censorDate <- validateCensorDate(censorDate, x)
   clean_window <- validateWindow(window)
   name <- validateName(name)
+  specialties <- validateSpecialties(specialties)
 
   visitConceptIds <- as.integer(visitConceptIds)
   icuConceptIds <- as.integer(icuConceptIds)
@@ -80,6 +86,16 @@ addHospitalizations <- function(
 
   visit_df <- visit_df |>
     dplyr::left_join(provider_df, by = "provider_id")
+
+  if (!is.null(specialties) && length(specialties) > 0) {
+    for (s_name in names(specialties)) {
+      s_ids <- as.integer(specialties[[s_name]])
+      visit_df[[paste0("is_spec_", s_name)]] <- !is.na(visit_df$specialty_concept_id) &
+        visit_df$specialty_concept_id %in% s_ids
+    }
+  }
+
+  spec_cols <- if (!is.null(specialties)) paste0("is_spec_", names(specialties)) else character()
 
   # Process metrics per window
   res_list <- list(cohort_df)
@@ -133,6 +149,10 @@ addHospitalizations <- function(
         icu_los = sum(ifelse(.data$is_icu, .data$los_days, 0), na.rm = TRUE),
         readm_30 = sum(.data$readm_30, na.rm = TRUE),
         readm_90 = sum(.data$readm_90, na.rm = TRUE),
+        dplyr::across(
+          dplyr::all_of(spec_cols),
+          ~ sum(ifelse(.x & !.data$is_icu, 1L, 0L), na.rm = TRUE)
+        ),
         .groups = "drop"
       )
 
@@ -150,6 +170,14 @@ addHospitalizations <- function(
     names(win_summary)[names(win_summary) == "icu_los"] <- c_icu_los
     names(win_summary)[names(win_summary) == "readm_30"] <- c_readm_30
     names(win_summary)[names(win_summary) == "readm_90"] <- c_readm_90
+
+    if (!is.null(specialties)) {
+      for (s_name in names(specialties)) {
+        orig_col <- paste0("is_spec_", s_name)
+        target_col <- paste0(s_name, "_inpatient_admissions_", win_name)
+        names(win_summary)[names(win_summary) == orig_col] <- target_col
+      }
+    }
 
     if (!readmissions) {
       win_summary <- win_summary |> dplyr::select(-dplyr::all_of(c(c_readm_30, c_readm_90)))
@@ -181,3 +209,11 @@ addHospitalizations <- function(
   }
   cdm[[table_name]]
 }
+
+#' @rdname addInpatients
+#' @export
+addHospitalizations <- addInpatients
+
+#' @rdname addInpatients
+#' @export
+addInpatient <- addInpatients
