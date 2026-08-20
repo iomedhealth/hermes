@@ -3,7 +3,10 @@ test_that("summariseUtilization returns a valid summarised_result object", {
 
   cohort_enriched <- cdm$target_cohort |>
     addHospitalizations(window = list(followup = c(0, 365))) |>
-    addOutpatientVisits(window = list(followup = c(0, 365))) |>
+    addOutpatientVisits(
+      window = list(followup = c(0, 365)),
+      specialties = list(oncology = 38004507L, cardiology = 38004451L)
+    ) |>
     addPrescriptions(window = list(followup = c(0, 365)))
 
   res <- summariseUtilization(
@@ -18,6 +21,8 @@ test_that("summariseUtilization returns a valid summarised_result object", {
   vars <- unique(res$variable_name)
   expect_true(any(grepl("inpatient_admissions", vars)))
   expect_true(any(grepl("emergency_visits", vars)))
+  expect_true(any(grepl("oncology_visits", vars)))
+  expect_true(any(grepl("cardiology_visits", vars)))
   expect_true(any(grepl("rx_fills", vars)))
 })
 

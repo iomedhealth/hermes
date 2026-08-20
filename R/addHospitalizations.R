@@ -6,6 +6,7 @@
 #' @param window A named or unnamed list of 2-element numeric vectors. Default: `list(c(-365, -1), c(0, 365))`.
 #' @param visitConceptIds OMOP visit concept IDs for general inpatient stays. Default: `c(9201L, 8717L, 581379L)`.
 #' @param icuConceptIds OMOP visit concept IDs for ICU stays. Default: `32037L`.
+#' @param icuSpecialtyConceptIds OMOP provider specialty concept IDs for ICU stays. Default: `c(38004500L)`.
 #' @param readmissions Logical; whether to compute 30-day and 90-day readmissions. Default: `FALSE`.
 #' @param nameStyle Column naming pattern. Default: `"{domain}_{metric}_{window_name}"`.
 #' @param name Name of the new table in the write schema. If NULL, a temporary table is returned.
@@ -19,6 +20,7 @@ addHospitalizations <- function(
   window = list(c(-365, -1), c(0, 365)),
   visitConceptIds = c(9201L, 8717L, 581379L),
   icuConceptIds = 32037L,
+  icuSpecialtyConceptIds = c(38004500L),
   readmissions = FALSE,
   nameStyle = "{domain}_{metric}_{window_name}",
   name = NULL
@@ -36,6 +38,7 @@ addHospitalizations <- function(
 
   visitConceptIds <- as.integer(visitConceptIds)
   icuConceptIds <- as.integer(icuConceptIds)
+  icuSpecialtyConceptIds <- if (!is.null(icuSpecialtyConceptIds)) as.integer(icuSpecialtyConceptIds) else integer()
   all_concepts <- unique(c(visitConceptIds, icuConceptIds))
 
   x_cols <- colnames(x)
@@ -44,6 +47,14 @@ addHospitalizations <- function(
   cohort_df <- x |> dplyr::collect()
   if (nrow(cohort_df) == 0) {
     return(x)
+  }
+
+  provider_df <- if ("provider" %in% names(cdm)) {
+    cdm$provider |>
+      dplyr::select("provider_id", "specialty_concept_id") |>
+      dplyr::collect()
+  } else {
+    tibble::tibble(provider_id = integer(), specialty_concept_id = integer())
   }
 
   visit_df <- if ("visit_occurrence" %in% names(cdm)) {
@@ -55,16 +66,20 @@ addHospitalizations <- function(
         person_id = "person_id",
         "visit_concept_id",
         "visit_start_date",
-        "visit_end_date"
+        "visit_end_date",
+        "provider_id"
       ) |>
       dplyr::collect()
   } else {
     tibble::tibble(
       visit_occurrence_id = integer(), person_id = integer(),
       visit_concept_id = integer(), visit_start_date = as.Date(character()),
-      visit_end_date = as.Date(character())
+      visit_end_date = as.Date(character()), provider_id = integer()
     )
   }
+
+  visit_df <- visit_df |>
+    dplyr::left_join(provider_df, by = "provider_id")
 
   # Process metrics per window
   res_list <- list(cohort_df)
@@ -89,7 +104,8 @@ addHospitalizations <- function(
       dplyr::mutate(
         end_dt = dplyr::coalesce(.data$visit_end_date, .data$visit_start_date),
         los_days = pmax(0, as.numeric(difftime(.data$end_dt, .data$visit_start_date, units = "days"))),
-        is_icu = .data$visit_concept_id %in% icuConceptIds
+        is_icu = (.data$visit_concept_id %in% icuConceptIds) |
+          (!is.na(.data$specialty_concept_id) & .data$specialty_concept_id %in% icuSpecialtyConceptIds)
       )
 
     if (readmissions && nrow(win_events) > 0) {

@@ -11,6 +11,7 @@ addHospitalizations(
   window = list(c(-365, -1), c(0, 365)),
   visitConceptIds = c(9201L, 8717L, 581379L),
   icuConceptIds = 32037L,
+  icuSpecialtyConceptIds = c(38004500L),
   readmissions = FALSE,
   nameStyle = "{domain}_{metric}_{window_name}",
   name = NULL
@@ -28,6 +29,8 @@ addHospitalizations(
 \item{visitConceptIds}{OMOP visit concept IDs for general inpatient stays. Default: \code{c(9201L, 8717L, 581379L)}.}
 
 \item{icuConceptIds}{OMOP visit concept IDs for ICU stays. Default: \code{32037L}.}
+
+\item{icuSpecialtyConceptIds}{OMOP provider specialty concept IDs for ICU stays. Default: \code{c(38004500L)}.}
 
 \item{readmissions}{Logical; whether to compute 30-day and 90-day readmissions. Default: \code{FALSE}.}
 
