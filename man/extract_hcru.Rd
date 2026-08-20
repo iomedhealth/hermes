@@ -51,6 +51,18 @@ extractHcru(
 \item{calculate_readmissions}{Logical, whether to compute 30-day and 90-day readmissions (default \code{FALSE}).}
 
 \item{persistence}{Logical, whether to calculate Proportion of Days Covered (PDC) (default \code{FALSE}).}
+
+\item{baselineWindow}{Relative days from cohort start date defining baseline (default \code{c(-365, -1)}).}
+
+\item{followupWindow}{Relative days from cohort start date defining follow-up (default \code{c(0, 365)}).}
+
+\item{costField}{Column name in \code{cost} table to aggregate (default \code{"total_paid"}).}
+
+\item{visitDomains}{Visit categories to extract from \code{visit_occurrence}.}
+
+\item{postAcute}{Logical, whether to extract post-acute/SNF/hospice care (default \code{TRUE}).}
+
+\item{calculateReadmissions}{Logical, whether to compute 30-day and 90-day readmissions (default \code{FALSE}).}
 }
 \value{
 A \code{hermes_hcru} object enriched with \code{study$costs} and \code{study$hcru}.

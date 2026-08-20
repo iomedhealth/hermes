@@ -13,8 +13,17 @@ An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Ou
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://iomed.health}
+  \item \url{https://www.iomed.health/}
   \item \url{https://github.com/iomedhealth/hermes}
+}
+
+}
+\author{
+\strong{Maintainer}: Gabriel Maeztu \email{gabriel@iomed.health}
+
+Authors:
+\itemize{
+  \item Gabriel Maeztu \email{gabriel@iomed.health}
 }
 
 }

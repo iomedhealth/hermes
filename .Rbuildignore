@@ -8,10 +8,15 @@
 ^\.idea$
 ^\.opencode$
 ^audit$
+^data$
+^dags$
+^scripts$
+^extras$
+^pkgdown$
+^\.venv$
+^requirements\.txt$
 ^docs$
 ^LICENSE\.md$
 ^generate_plots\.R$
 ^_pkgdown\.yml$
 ^AGENTS\.md$
-^docs$
-^\.github$

@@ -514,6 +514,12 @@ extract_hcru <- function(
 }
 
 #' @rdname extract_hcru
+#' @param baselineWindow Relative days from cohort start date defining baseline (default `c(-365, -1)`).
+#' @param followupWindow Relative days from cohort start date defining follow-up (default `c(0, 365)`).
+#' @param costField Column name in `cost` table to aggregate (default `"total_paid"`).
+#' @param visitDomains Visit categories to extract from `visit_occurrence`.
+#' @param postAcute Logical, whether to extract post-acute/SNF/hospice care (default `TRUE`).
+#' @param calculateReadmissions Logical, whether to compute 30-day and 90-day readmissions (default `FALSE`).
 #' @export
 extractHcru <- function(
   study,
