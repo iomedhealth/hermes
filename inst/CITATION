@@ -4,11 +4,11 @@ citEntry(entry = "Manual",
   title        = "HERMES: Health Economic Resource Modeling & Evaluation System",
   author       = personList(person("Gabriel", "Maeztu", email = "gabriel@iomed.health", role = c("aut", "cre"))),
   year         = format(Sys.Date(), "%Y"),
-  note         = "Developed by IOMED Medical Solutions SL. R package version 0.1.0.",
+  note         = "Developed by IOMED Medical Solutions SL. R package version 0.2.0.",
   url          = "https://github.com/iomedhealth/hermes",
   textVersion  =
   paste0("Maeztu, G. (", format(Sys.Date(), "%Y"), "). ",
         "HERMES: Health Economic Resource Modeling & Evaluation System. ",
-        "Developed by IOMED. R package version 0.1.0. ",
+        "Developed by IOMED. R package version 0.2.0. ",
         "https://github.com/iomedhealth/hermes")
 )

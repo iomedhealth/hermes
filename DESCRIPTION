@@ -1,6 +1,6 @@
 Package: HERMES
 Title: Health Economics and Outcomes Research Pipeline on OMOP CDM
-Version: 0.1.0
+Version: 0.2.0
 Author: Gabriel Maeztu [aut, cre]
 Maintainer: Gabriel Maeztu <gabriel@iomed.health>
 Description: An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data. Developed by IOMED.
