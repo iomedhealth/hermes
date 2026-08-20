@@ -27,6 +27,19 @@ extract_hcru(
   calculate_readmissions = FALSE,
   persistence = FALSE
 )
+
+extractHcru(
+  study,
+  baselineWindow = c(-365, -1),
+  followupWindow = c(0, 365),
+  costField = "total_paid",
+  visitDomains = c("inpatient", "outpatient", "emergency", "specialist"),
+  pharmacotherapy = TRUE,
+  diagnostics = TRUE,
+  postAcute = TRUE,
+  calculateReadmissions = FALSE,
+  persistence = FALSE
+)
 ```
 
 ## Arguments

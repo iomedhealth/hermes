@@ -21,7 +21,7 @@ health state (e.g., before or after the outcome event)."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">HERMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@ health state (e.g., before or after the outcome event)."><meta property="og:imag
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
     <li><a class="dropdown-item" href="../articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
+    <li><a class="dropdown-item" href="../articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Deep Dives</h6></li>
     <li><a class="dropdown-item" href="../articles/hcru_logic.html">HCRU Extraction Logic</a></li>
@@ -78,6 +79,19 @@ health state (e.g., before or after the outcome event).</p>
 <span>  diagnostics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  post_acute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  calculate_readmissions <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  persistence <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">extractHcru</span><span class="op">(</span></span>
+<span>  <span class="va">study</span>,</span>
+<span>  baselineWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>  followupWindow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">365</span><span class="op">)</span>,</span>
+<span>  costField <span class="op">=</span> <span class="st">"total_paid"</span>,</span>
+<span>  visitDomains <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inpatient"</span>, <span class="st">"outpatient"</span>, <span class="st">"emergency"</span>, <span class="st">"specialist"</span><span class="op">)</span>,</span>
+<span>  pharmacotherapy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  diagnostics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  postAcute <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  calculateReadmissions <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  persistence <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>

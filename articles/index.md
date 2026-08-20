@@ -3,6 +3,7 @@
 ### Getting Started
 
 - [Introduction to HEOR for OMOP Users](intro-to-heor.md):
+- [Cohort Utilization & Cost Enrichment](cohort-utilization.md):
 
 ### Deep Dives
 

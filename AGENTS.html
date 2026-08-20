@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">HERMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
     <li><a class="dropdown-item" href="articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
+    <li><a class="dropdown-item" href="articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Deep Dives</h6></li>
     <li><a class="dropdown-item" href="articles/hcru_logic.html">HCRU Extraction Logic</a></li>
@@ -85,7 +86,14 @@
 <li>
 <strong>Assignment:</strong> Always use <code>&lt;-</code> for assignment (never <code>=</code>).</li>
 <li>
-<strong>Naming Conventions:</strong> Use <code>snake_case</code> for functions, parameters, and variable names.</li>
+<strong>Naming Conventions (DARWIN EU Standard):</strong>
+<ul><li>
+<strong>Functions &amp; Arguments:</strong> Use <code>lowerCamelCase</code> (e.g. <code>addInpatientHcru()</code>, <code><a href="reference/compute_hospitalization_cohorts.html">computeHospitalizationCohorts()</a></code>, <code>indexDate = "cohort_start_date"</code>). Provide snake_case aliases if backward compatibility is needed.</li>
+<li>
+<strong>Database &amp; Cohort Columns:</strong> Use <code>snake_case</code> for all table column names (e.g. <code>cohort_start_date</code>, <code>inpatient_admissions</code>, <code>days_supply</code>, <code>total_paid</code>).</li>
+<li>
+<strong>S3 Classes:</strong> Use <code>snake_case</code> prefixed with <code>hermes_</code> (e.g. <code>hermes_study</code>, <code>hermes_hcru</code>).</li>
+</ul></li>
 <li>
 <strong>OMOP/OHDSI Rules:</strong>
 <ul><li>Never modify core OMOP tables. Write temporary work tables to designated result/scratch schemas.</li>
@@ -98,8 +106,9 @@
 <li>Ensure all new logic has test coverage using <code>testthat</code>.</li>
 </ul></li>
 <li>
-<strong>Formatting:</strong>
-<ul><li>Run <code>styler::style_dir()</code> and <code>lintr::lint_dir()</code> before committing.</li>
+<strong>Formatting &amp; Linting:</strong>
+<ul><li>Adhere to <code>.github/CONTRIBUTING.md</code> and <code>extras/PackageMaintenance.R</code>.</li>
+<li>Run <code>styler::style_dir()</code> and <code>lintr::lint_package(".", linters = lintr::linters_with_defaults(lintr::object_name_linter(styles = "camelCase")))</code> before committing.</li>
 </ul></li>
 </ul><!-- SPECKIT START --><p>For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan: specs/005-hcru-domain-extraction/plan.md <!-- SPECKIT END --></p>
 </div>

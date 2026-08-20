@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">HERMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
     <li><a class="dropdown-item" href="../articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
+    <li><a class="dropdown-item" href="../articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Deep Dives</h6></li>
     <li><a class="dropdown-item" href="../articles/hcru_logic.html">HCRU Extraction Logic</a></li>
@@ -42,7 +43,7 @@
     <div class="section level2">
       <h2 id="stage-cohort-generation">Stage 1: Cohort Generation<a class="anchor" aria-label="anchor" href="#stage-cohort-generation"></a></h2>
 
-      <div class="section-desc"><p>Functions for defining and building cohorts.</p></div>
+      <div class="section-desc"><p>Functions for defining, initializing, and building care episodes.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -55,10 +56,24 @@
 
         </dt>
         <dd>Initialize a HERMES study (Stage 1: Cohort Generation)</dd>
-      </dl></div><div class="section level2">
-      <h2 id="stage-baseline-hcru">Stage 2: Baseline &amp; HCRU<a class="anchor" aria-label="anchor" href="#stage-baseline-hcru"></a></h2>
 
-      <div class="section-desc"><p>Descriptive statistics and healthcare resource utilization.</p></div>
+        <dt>
+
+          <code><a href="compute_hospitalization_cohorts.html">compute_hospitalization_cohorts()</a></code> <code><a href="compute_hospitalization_cohorts.html">computeHospitalizationCohorts()</a></code>
+
+        </dt>
+        <dd>Generate Hospitalization and Readmission Cohorts (Stage 1 &amp; 2)</dd>
+
+        <dt>
+
+          <code><a href="computeInfusionCohorts.html">computeInfusionCohorts()</a></code>
+
+        </dt>
+        <dd>Create Infusion Administration Episode Cohorts</dd>
+      </dl></div><div class="section level2">
+      <h2 id="stage-cohort-utilization-cost-enrichers">Stage 2: Cohort Utilization &amp; Cost Enrichers<a class="anchor" aria-label="anchor" href="#stage-cohort-utilization-cost-enrichers"></a></h2>
+
+      <div class="section-desc"><p>In-database cohort enrichment verbs following PatientProfiles patterns.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -67,6 +82,92 @@
 
       <dl><dt>
 
+          <code><a href="addHospitalizations.html">addHospitalizations()</a></code>
+
+        </dt>
+        <dd>Add Inpatient and ICU Hospitalization Metrics to a Cohort</dd>
+
+        <dt>
+
+          <code><a href="addOutpatientVisits.html">addOutpatientVisits()</a></code>
+
+        </dt>
+        <dd>Add Outpatient and Emergency Visits to a Cohort</dd>
+
+        <dt>
+
+          <code><a href="addPrescriptions.html">addPrescriptions()</a></code>
+
+        </dt>
+        <dd>Add Prescription and Medication Metrics to a Cohort</dd>
+
+        <dt>
+
+          <code><a href="addProcedures.html">addProcedures()</a></code>
+
+        </dt>
+        <dd>Add Diagnostic Measurements and Procedure Occurrences to a Cohort</dd>
+
+        <dt>
+
+          <code><a href="addCosts.html">addCosts()</a></code>
+
+        </dt>
+        <dd>Add Direct Medical Costs to a Cohort</dd>
+      </dl></div><div class="section level2">
+      <h2 id="stage-summarisation-reporting">Stage 2: Summarisation &amp; Reporting<a class="anchor" aria-label="anchor" href="#stage-summarisation-reporting"></a></h2>
+
+      <div class="section-desc"><p>Standardised result summaries and publication-ready table &amp; plot formatters.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="summariseUtilization.html">summariseUtilization()</a></code>
+
+        </dt>
+        <dd>Summarise Healthcare Resource Utilization for a Cohort</dd>
+
+        <dt>
+
+          <code><a href="summariseCosts.html">summariseCosts()</a></code>
+
+        </dt>
+        <dd>Summarise Direct Medical Costs for a Cohort</dd>
+
+        <dt>
+
+          <code><a href="tableUtilization.html">tableUtilization()</a></code>
+
+        </dt>
+        <dd>Format Utilization Results as Visual Tables</dd>
+
+        <dt>
+
+          <code><a href="tableCosts.html">tableCosts()</a></code>
+
+        </dt>
+        <dd>Format Cost Results as Visual Tables</dd>
+
+        <dt>
+
+          <code><a href="plotUtilization.html">plotUtilization()</a></code>
+
+        </dt>
+        <dd>Plot Healthcare Resource Utilization</dd>
+
+        <dt>
+
+          <code><a href="plotCosts.html">plotCosts()</a></code>
+
+        </dt>
+        <dd>Plot Direct Medical Costs</dd>
+
+        <dt>
+
           <code><a href="summarise_baseline.html">summarise_baseline()</a></code>
 
         </dt>
@@ -74,7 +175,7 @@
 
         <dt>
 
-          <code><a href="extract_hcru.html">extract_hcru()</a></code>
+          <code><a href="extract_hcru.html">extract_hcru()</a></code> <code><a href="extract_hcru.html">extractHcru()</a></code>
 
         </dt>
         <dd>Extract Healthcare Resource Utilization (HCRU) from OMOP CDM (Stage 2: HCRU)</dd>
@@ -168,6 +269,22 @@
 
         </dt>
         <dd>Summary Table</dd>
+      </dl></div><div class="section level2">
+      <h2 id="mock-data-testing-utilities">Mock Data &amp; Testing Utilities<a class="anchor" aria-label="anchor" href="#mock-data-testing-utilities"></a></h2>
+
+      <div class="section-desc"><p>Helpers for creating synthetic in-memory OMOP CDM test references.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="mockHERMES.html">mockHERMES()</a></code>
+
+        </dt>
+        <dd>Create a Mock OMOP CDM Reference for Testing and Demonstrations</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

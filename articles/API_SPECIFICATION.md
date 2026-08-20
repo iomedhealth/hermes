@@ -2,7 +2,7 @@
 
 ## HERMES API & Architecture Specification
 
-**Version:** 0.1.0 (Draft)  
+**Version:** 0.2.0 (Draft)  
 **Package Name:** `HERMES`
 (`Health Economic Resource Modeling & Evaluation System`)  
 **Target R Version:** R \>= 4.1

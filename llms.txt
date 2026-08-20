@@ -122,19 +122,50 @@ documentation:
 
 ## Stage 1: Cohort Generation
 
-Functions for defining and building cohorts.
+Functions for defining, initializing, and building care episodes.
 
 - [`init()`](init.md) : Initialize a HERMES study (Stage 1: Cohort
   Generation)
+- [`compute_hospitalization_cohorts()`](compute_hospitalization_cohorts.md)
+  [`computeHospitalizationCohorts()`](compute_hospitalization_cohorts.md)
+  : Generate Hospitalization and Readmission Cohorts (Stage 1 & 2)
+- [`computeInfusionCohorts()`](computeInfusionCohorts.md) : Create
+  Infusion Administration Episode Cohorts
 
-## Stage 2: Baseline & HCRU
+## Stage 2: Cohort Utilization & Cost Enrichers
 
-Descriptive statistics and healthcare resource utilization.
+In-database cohort enrichment verbs following PatientProfiles patterns.
 
+- [`addHospitalizations()`](addHospitalizations.md) : Add Inpatient and
+  ICU Hospitalization Metrics to a Cohort
+- [`addOutpatientVisits()`](addOutpatientVisits.md) : Add Outpatient and
+  Emergency Visits to a Cohort
+- [`addPrescriptions()`](addPrescriptions.md) : Add Prescription and
+  Medication Metrics to a Cohort
+- [`addProcedures()`](addProcedures.md) : Add Diagnostic Measurements
+  and Procedure Occurrences to a Cohort
+- [`addCosts()`](addCosts.md) : Add Direct Medical Costs to a Cohort
+
+## Stage 2: Summarisation & Reporting
+
+Standardised result summaries and publication-ready table & plot
+formatters.
+
+- [`summariseUtilization()`](summariseUtilization.md) : Summarise
+  Healthcare Resource Utilization for a Cohort
+- [`summariseCosts()`](summariseCosts.md) : Summarise Direct Medical
+  Costs for a Cohort
+- [`tableUtilization()`](tableUtilization.md) : Format Utilization
+  Results as Visual Tables
+- [`tableCosts()`](tableCosts.md) : Format Cost Results as Visual Tables
+- [`plotUtilization()`](plotUtilization.md) : Plot Healthcare Resource
+  Utilization
+- [`plotCosts()`](plotCosts.md) : Plot Direct Medical Costs
 - [`summarise_baseline()`](summarise_baseline.md) : Summarise baseline
   demographics and comorbidities (Stage 2: Baseline)
-- [`extract_hcru()`](extract_hcru.md) : Extract Healthcare Resource
-  Utilization (HCRU) from OMOP CDM (Stage 2: HCRU)
+- [`extract_hcru()`](extract_hcru.md) [`extractHcru()`](extract_hcru.md)
+  : Extract Healthcare Resource Utilization (HCRU) from OMOP CDM (Stage
+  2: HCRU)
 
 ## Stage 3: Propensity Score
 
@@ -167,11 +198,19 @@ Economic simulation and decision analysis.
 - [`plot_plane()`](plot_plane.md) : Plot Cost-Effectiveness Plane
 - [`table_summary()`](table_summary.md) : Summary Table
 
+## Mock Data & Testing Utilities
+
+Helpers for creating synthetic in-memory OMOP CDM test references.
+
+- [`mockHERMES()`](mockHERMES.md) : Create a Mock OMOP CDM Reference for
+  Testing and Demonstrations
+
 # Articles
 
 ### Getting Started
 
 - [Introduction to HEOR for OMOP Users](intro-to-heor.md):
+- [Cohort Utilization & Cost Enrichment](cohort-utilization.md):
 
 ### Deep Dives
 
