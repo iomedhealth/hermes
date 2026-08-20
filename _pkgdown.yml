@@ -19,6 +19,7 @@ articles:
     navbar: "Getting Started"
     contents:
       - intro-to-heor
+      - cohort-utilization
   - title: "Deep Dives"
     navbar: "Deep Dives"
     contents:
@@ -26,14 +27,32 @@ articles:
       - API_SPECIFICATION
 reference:
   - title: "Stage 1: Cohort Generation"
-    desc: "Functions for defining and building cohorts."
+    desc: "Functions for defining, initializing, and building care episodes."
     contents:
       - init
-  - title: "Stage 2: Baseline & HCRU"
-    desc: "Descriptive statistics and healthcare resource utilization."
+      - compute_hospitalization_cohorts
+      - computeHospitalizationCohorts
+      - computeInfusionCohorts
+  - title: "Stage 2: Cohort Utilization & Cost Enrichers"
+    desc: "In-database cohort enrichment verbs following PatientProfiles patterns."
     contents:
+      - addHospitalizations
+      - addOutpatientVisits
+      - addPrescriptions
+      - addProcedures
+      - addCosts
+  - title: "Stage 2: Summarisation & Reporting"
+    desc: "Standardised result summaries and publication-ready table & plot formatters."
+    contents:
+      - summariseUtilization
+      - summariseCosts
+      - tableUtilization
+      - tableCosts
+      - plotUtilization
+      - plotCosts
       - summarise_baseline
       - extract_hcru
+      - extractHcru
   - title: "Stage 3: Propensity Score"
     desc: "Causal adjustment and matching."
     contents:
@@ -52,3 +71,7 @@ reference:
       - plot_ceac
       - plot_plane
       - table_summary
+  - title: "Mock Data & Testing Utilities"
+    desc: "Helpers for creating synthetic in-memory OMOP CDM test references."
+    contents:
+      - mockHERMES

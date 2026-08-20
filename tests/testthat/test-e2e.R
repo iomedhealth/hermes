@@ -95,4 +95,25 @@ test_that("End-to-End pipeline produces valid CEA plots", {
 
   expect_false(is.null(p_ceac))
   expect_false(is.null(p_plane))
+
+  # Test modular cohort enricher pipeline
+  cdm$target_cohort_enriched <- cdm$target_cohort |>
+    addHospitalizations(window = list(baseline = c(-365, -1), followup = c(0, 365))) |>
+    addOutpatientVisits(window = list(followup = c(0, 365))) |>
+    addPrescriptions(window = list(followup = c(0, 365))) |>
+    addProcedures(window = list(followup = c(0, 365))) |>
+    addCosts(window = list(followup = c(0, 365)), name = "target_cohort_enriched")
+
+  expect_true(inherits(cdm$target_cohort_enriched, "cohort_table"))
+  enriched_df <- cdm$target_cohort_enriched |> dplyr::collect()
+  expect_equal(nrow(enriched_df), nrow(cdm$target_cohort |> dplyr::collect()))
+  expect_true("inpatient_admissions_followup" %in% colnames(enriched_df))
+  expect_true("cost_total_followup" %in% colnames(enriched_df))
+
+  util_sum <- summariseUtilization(cdm$target_cohort_enriched)
+  expect_true(inherits(util_sum, "summarised_result"))
+  omopgenerics::validateResultArgument(util_sum)
+
+  tbl_util <- tableUtilization(util_sum, type = "tibble")
+  expect_true(is.data.frame(tbl_util))
 })

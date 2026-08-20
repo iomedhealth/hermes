@@ -1,0 +1,248 @@
+---
+title: "Cohort Utilization & Cost Enrichment"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cohort Utilization & Cost Enrichment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+# Cohort Utilization & Cost Enrichment
+
+In Health Economics and Outcomes Research (HEOR) and Real-World Evidence (RWE), evaluating Healthcare Resource Utilization (HCRU) and direct medical costs requires capturing granular patient encounters across multiple care settings (inpatient, outpatient, pharmacy, diagnostics, procedures, and financial claims).
+
+Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`), **HERMES** provides a pipe-friendly, 3-layer architecture for cohort construction, in-database column enrichment, and standardized reporting.
+
+---
+
+## 3-Layer Architecture Overview
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                   OMOP CDM DATABASE                                    │
+│  (visit_occurrence, provider, drug_exposure, procedure_occurrence, measurement, cost)  │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+                                    │
+       ┌────────────────────────────┼────────────────────────────┐
+       ▼                            ▼                            ▼
+ 1. Episode Constructors     2. Cohort Enrichers          3. Summarisation & Reporting
+ (CohortConstructor Style)   (PatientProfiles Style)      (CohortCharacteristics Style)
+ ─────────────────────────   ───────────────────────      ────────────────────────────
+ Standalone episode cohorts  Appends windowed metric      Standardised result objects
+ in write schema:            columns in-database:         for publication tables:
+ • computeHospitalization*   • addHospitalizations()      • summariseUtilization()
+ • computeInfusionCohorts()  • addOutpatientVisits()      • summariseCosts()
+                             • addPrescriptions()         • tableUtilization()
+                             • addProcedures()            • tableCosts()
+                             • addCosts()
+```
+
+---
+
+## 1. Setup & CDM Connection
+
+We initialize an OMOP CDM reference (such as the mock HERMES test database):
+
+```{r setup}
+library(HERMES)
+library(dplyr)
+library(omopgenerics)
+
+# Connect to OMOP CDM
+cdm <- mockHERMES()
+```
+
+---
+
+## 2. Layer 1: Care Episode Cohort Constructors (`CohortConstructor` Style)
+
+Care episode constructors collapse contiguous or overlapping raw encounters into discrete hospitalization or infusion therapy episodes and register them in the database write schema.
+
+### Hospitalization & Readmission Episodes
+
+```{r episodes_hosp}
+# Construct collapsed hospitalization episodes and 30-day readmissions
+cdm$hosp_episodes <- computeHospitalizationCohorts(
+  cdm = cdm,
+  name = "hosp_episodes",
+  visitConceptIds = c(9201L, 8717L, 581379L),
+  icuConceptIds = 32037L,
+  readmissionWindow = 30L
+)
+
+# Inspect cohort entries
+cdm$hosp_episodes |>
+  dplyr::collect()
+```
+
+### Infusion Administration Episodes
+
+```{r episodes_infusion}
+# Construct parenteral/intravenous infusion therapy episodes
+cdm$infusion_episodes <- computeInfusionCohorts(
+  cdm = cdm,
+  name = "infusion_episodes",
+  routeConceptIds = c(4171047L) # Intravenous
+)
+
+cdm$infusion_episodes |>
+  dplyr::collect()
+```
+
+---
+
+## 3. Layer 2: In-Database Cohort Enrichment (`PatientProfiles` Style)
+
+Cohort enricher functions take an existing study cohort, execute database-side joins across configurable temporal windows (e.g., baseline `[-365, -1]` and follow-up `[0, 365]`), and append metric columns without dropping zero-utilization subjects.
+
+```{r enrich_pipeline}
+# Pipe study cohort through all 5 domain enrichers
+cdm$study_enriched <- cdm$target_cohort |>
+  addHospitalizations(
+    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    readmissions = TRUE
+  ) |>
+  addOutpatientVisits(
+    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    stratifySpecialty = TRUE
+  ) |>
+  addPrescriptions(
+    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    daysSupply = TRUE,
+    pdc = TRUE
+  ) |>
+  addProcedures(
+    window = list(baseline = c(-365, -1), followup = c(0, 365))
+  ) |>
+  addCosts(
+    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    costField = "total_paid",
+    name = "study_enriched"
+  )
+
+# Inspect enriched columns
+colnames(cdm$study_enriched)
+```
+
+```text
+The enriched cohort table contains:
+• Inpatient: inpatient_admissions_*, inpatient_los_days_*, icu_admissions_*, icu_los_days_*, readmissions_30d_*
+• Outpatient: emergency_visits_*, gp_visits_*, specialist_visits_*, other_outpatient_visits_*
+• Pharmacy: rx_fills_*, days_supply_*, pdc_*, infusions_*
+• Diagnostics: lab_tests_count_*, procedures_count_*
+• Direct Costs: cost_inpatient_*, cost_outpatient_*, cost_drug_*, cost_procedure_*, cost_total_*
+```
+
+---
+
+## 4. Layer 3: Analytics & Reporting (`CohortCharacteristics` Style)
+
+We aggregate patient-level utilization and costs into DARWIN EU standardized `summarised_result` objects compatible with `visOmopResults`.
+
+### Summarise Care Utilization
+
+```{r summarise_util}
+utilSummary <- summariseUtilization(
+  cohort = cdm$study_enriched,
+  strata = list("cohort_definition_id"),
+  estimates = c("mean", "sd", "median", "q25", "q75", "min", "max")
+)
+
+# View standardised result structure
+utilSummary |>
+  dplyr::select("strata_name", "strata_level", "variable_name", "estimate_name", "estimate_value") |>
+  utils::head(10)
+```
+
+### Summarise Direct Medical Costs
+
+```{r summarise_cost}
+costSummary <- summariseCosts(
+  cohort = cdm$study_enriched,
+  strata = list("cohort_definition_id"),
+  estimates = c("mean", "sd", "median", "q25", "q75", "min", "max")
+)
+
+costSummary |>
+  dplyr::select("strata_name", "strata_level", "variable_name", "estimate_name", "estimate_value") |>
+  utils::head(8)
+```
+
+### Publication-Ready GT & Flextable Output
+
+`tableUtilization()` and `tableCosts()` integrate with `visOmopResults::visOmopTable()` to format publication-grade summary tables:
+
+```{r render_table}
+# Format summary table with concise estimate strings
+tableUtilization(
+  result = utilSummary,
+  estimateName = c(
+    "Mean (SD)" = "<mean> (<sd>)",
+    "Median [Q25 - Q75]" = "<median> [<q25> - <q75>]"
+  ),
+  header = c("cohort_name")
+)
+```
+
+---
+
+## 5. Visualizing Care Utilization & Costs (`visOmopResults` Style)
+
+HERMES provides `plotUtilization()` and `plotCosts()` for rapid exploratory and publication visualization, leveraging standard `visOmopResults` ggplot themes and facets.
+
+### Bar Plots for Care Utilization
+
+```{r plot_util_bar, fig.width = 8, fig.height = 3.5}
+# Bar plot comparing follow-up mean care utilization across key settings
+main_util_vars <- c(
+  "inpatient_admissions_followup",
+  "emergency_visits_followup",
+  "gp_visits_followup",
+  "specialist_visits_followup",
+  "rx_fills_followup"
+)
+
+plotUtilization(
+  result = utilSummary |> dplyr::filter(variable_name %in% main_util_vars),
+  plotType = "barplot",
+  x = "cohort_name",
+  y = "mean",
+  facet = "variable_name",
+  colour = "cohort_name"
+)
+```
+
+### Box Plots for Direct Medical Costs
+
+```{r plot_cost_box, fig.width = 8, fig.height = 4}
+# Box plot showing median and interquartile range for follow-up cost domains
+plotCosts(
+  result = costSummary |> dplyr::filter(grepl("followup", variable_name)),
+  plotType = "boxplot",
+  x = "cohort_name",
+  facet = "variable_name",
+  colour = "cohort_name"
+)
+```
+
+---
+
+## 6. Summary Matrix Mapping
+
+| Domain | Metrics Extracted | Function Responsible | Output Columns |
+| :--- | :--- | :--- | :--- |
+| **[Inpatient]** | Admissions, ICU, LOS, Readmissions | `addHospitalizations()` | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*` |
+| **[Outpatient]** | GP, Specialist, ER, Other Visits | `addOutpatientVisits()` | `gp_visits_*`, `specialist_visits_*`, `emergency_visits_*` |
+| **[Pharmacy]** | Rx Fills, Days Supply, PDC, Infusions | `addPrescriptions()` | `rx_fills_*`, `days_supply_*`, `pdc_*`, `infusions_*` |
+| **[Diagnostics/Proc]** | Labs, Imaging, Procedures | `addProcedures()` | `lab_tests_count_*`, `procedures_count_*` |
+| **[Direct Costs]** | Inpatient, Outpatient, Drug, Total | `addCosts()` | `cost_inpatient_*`, `cost_outpatient_*`, `cost_drug_*`, `cost_total_*` |

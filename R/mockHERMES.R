@@ -1,42 +1,42 @@
-library(CDMConnector)
-library(omopgenerics)
-library(dplyr)
-library(dbplyr)
-
-hermes_test_cdm <- function(env = parent.frame()) {
-  # Initialize an empty duckdb
+#' Create a Mock OMOP CDM Reference for Testing and Demonstrations
+#'
+#' @param numberIndividuals Number of synthetic individuals to create. Default: 10.
+#'
+#' @return A `cdm_reference` object connected to an in-memory DuckDB database.
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(HERMES)
+#' cdm <- mockHERMES()
+#' }
+mockHERMES <- function(numberIndividuals = 10) {
+  # ponytail: self-contained mock duckdb CDM reference for vignettes and examples
   con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
 
-  # Auto-teardown
-  withr::defer(DBI::dbDisconnect(con, shutdown = TRUE), envir = env)
-
-  # Create synthetic OMOP tables
   person <- tibble::tibble(
-    person_id = c(1L, 2L, 3L),
-    gender_concept_id = c(8507L, 8532L, 8507L),
-    year_of_birth = c(1980L, 1975L, 1990L),
-    race_concept_id = c(0L, 0L, 0L),
-    ethnicity_concept_id = c(0L, 0L, 0L)
+    person_id = seq_len(numberIndividuals),
+    gender_concept_id = rep(c(8507L, 8532L), length.out = numberIndividuals),
+    year_of_birth = rep(1980L, numberIndividuals),
+    month_of_birth = rep(1L, numberIndividuals),
+    day_of_birth = rep(1L, numberIndividuals),
+    race_concept_id = rep(0L, numberIndividuals),
+    ethnicity_concept_id = rep(0L, numberIndividuals)
   )
+
   observation_period <- tibble::tibble(
-    observation_period_id = c(1L, 2L, 3L),
-    person_id = c(1L, 2L, 3L),
-    observation_period_start_date = as.Date(c("2000-01-01", "2000-01-01", "2000-01-01")),
-    observation_period_end_date = as.Date(c("2020-12-31", "2020-12-31", "2020-12-31")),
-    period_type_concept_id = c(0L, 0L, 0L)
+    observation_period_id = seq_len(numberIndividuals),
+    person_id = seq_len(numberIndividuals),
+    observation_period_start_date = rep(as.Date("2000-01-01"), numberIndividuals),
+    observation_period_end_date = rep(as.Date("2025-12-31"), numberIndividuals),
+    period_type_concept_id = rep(0L, numberIndividuals)
   )
-  condition_occurrence <- tibble::tibble(
-    condition_occurrence_id = c(1L, 2L, 3L),
-    person_id = c(1L, 1L, 1L),
-    condition_concept_id = c(4285898L, 4266809L, 192671L),
-    condition_start_date = as.Date(c("2010-01-01", "2010-06-01", "2010-12-01")),
-    condition_end_date = as.Date(c("2010-01-10", "2010-06-10", "2010-12-10")),
-    condition_type_concept_id = c(0L, 0L, 0L)
-  )
+
   provider <- tibble::tibble(
     provider_id = c(1L, 2L),
     specialty_concept_id = c(38004446L, 38004477L) # 38004446 = General Practice, 38004477 = Specialist
   )
+
   visit_occurrence <- tibble::tibble(
     visit_occurrence_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L),
     person_id = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L),
@@ -51,28 +51,17 @@ hermes_test_cdm <- function(env = parent.frame()) {
       9201L # 8: Inpatient for person 2 (followup)
     ),
     visit_start_date = as.Date(c(
-      "2010-02-01",
-      "2010-02-20",
-      "2010-02-02",
-      "2009-10-01",
-      "2010-03-01",
-      "2010-04-01",
-      "2010-05-01",
-      "2010-03-10"
+      "2010-02-01", "2010-02-20", "2010-02-02", "2009-10-01",
+      "2010-03-01", "2010-04-01", "2010-05-01", "2010-03-10"
     )),
     visit_end_date = as.Date(c(
-      "2010-02-05", # 4 days LOS
-      "2010-02-23", # 3 days LOS
-      "2010-02-04", # 2 days LOS
-      "2009-10-01", # 0 days LOS
-      "2010-03-01", # 0 days LOS
-      "2010-04-01", # 0 days LOS
-      "2010-05-10", # 9 days LOS
-      "2010-03-15" # 5 days LOS
+      "2010-02-05", "2010-02-23", "2010-02-04", "2009-10-01",
+      "2010-03-01", "2010-04-01", "2010-05-10", "2010-03-15"
     )),
     visit_type_concept_id = rep(44818517L, 8),
     provider_id = c(1L, 1L, 1L, 1L, 1L, 2L, 1L, 1L)
   )
+
   drug_exposure <- tibble::tibble(
     drug_exposure_id = c(1L, 2L, 3L, 4L),
     person_id = c(1L, 1L, 2L, 1L),
@@ -84,6 +73,7 @@ hermes_test_cdm <- function(env = parent.frame()) {
     days_supply = c(30L, 30L, 30L, 1L),
     quantity = c(30, 30, 30, 1)
   )
+
   procedure_occurrence <- tibble::tibble(
     procedure_occurrence_id = c(1L, 2L),
     person_id = c(1L, 1L),
@@ -91,6 +81,7 @@ hermes_test_cdm <- function(env = parent.frame()) {
     procedure_date = as.Date(c("2010-02-01", "2009-11-15")),
     procedure_type_concept_id = rep(38000275L, 2)
   )
+
   measurement <- tibble::tibble(
     measurement_id = c(1L, 2L),
     person_id = c(1L, 1L),
@@ -98,6 +89,7 @@ hermes_test_cdm <- function(env = parent.frame()) {
     measurement_date = as.Date(c("2010-02-02", "2009-12-01")),
     measurement_type_concept_id = rep(44818702L, 2)
   )
+
   cost <- tibble::tibble(
     cost_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L),
     cost_event_id = c(1L, 2L, 3L, 1L, 1L, 1L, 1L),
@@ -110,14 +102,23 @@ hermes_test_cdm <- function(env = parent.frame()) {
     paid_by_patient = c(100.0, 100.0, 20.0, 200.0, 20.0, 50.0, 10.0)
   )
 
+  condition_occurrence <- tibble::tibble(
+    condition_occurrence_id = c(1L, 2L, 3L),
+    person_id = c(1L, 1L, 1L),
+    condition_concept_id = c(4285898L, 4266809L, 192671L),
+    condition_start_date = as.Date(c("2010-01-01", "2010-06-01", "2010-12-01")),
+    condition_end_date = as.Date(c("2010-01-10", "2010-06-10", "2010-12-10")),
+    condition_type_concept_id = rep(0L, 3)
+  )
+
   DBI::dbWriteTable(con, "person", person)
   DBI::dbWriteTable(con, "observation_period", observation_period)
-  DBI::dbWriteTable(con, "condition_occurrence", condition_occurrence)
   DBI::dbWriteTable(con, "provider", provider)
   DBI::dbWriteTable(con, "visit_occurrence", visit_occurrence)
   DBI::dbWriteTable(con, "drug_exposure", drug_exposure)
   DBI::dbWriteTable(con, "procedure_occurrence", procedure_occurrence)
   DBI::dbWriteTable(con, "measurement", measurement)
+  DBI::dbWriteTable(con, "condition_occurrence", condition_occurrence)
   DBI::dbWriteTable(con, "cost", cost)
 
   cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
@@ -142,11 +143,11 @@ hermes_test_cdm <- function(env = parent.frame()) {
   )
 
   cdm <- omopgenerics::insertTable(cdm, name = "target_cohort", table = target)
-  cdm$target_cohort <- newCohortTable(cdm$target_cohort)
+  cdm$target_cohort <- omopgenerics::newCohortTable(cdm$target_cohort, .softValidation = TRUE)
   cdm <- omopgenerics::insertTable(cdm, name = "comparator_cohort", table = comparator)
-  cdm$comparator_cohort <- newCohortTable(cdm$comparator_cohort)
+  cdm$comparator_cohort <- omopgenerics::newCohortTable(cdm$comparator_cohort, .softValidation = TRUE)
   cdm <- omopgenerics::insertTable(cdm, name = "outcome_cohort", table = outcome)
-  cdm$outcome_cohort <- newCohortTable(cdm$outcome_cohort)
+  cdm$outcome_cohort <- omopgenerics::newCohortTable(cdm$outcome_cohort, .softValidation = TRUE)
 
-  return(cdm)
+  cdm
 }

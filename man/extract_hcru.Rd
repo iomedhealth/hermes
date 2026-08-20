@@ -2,6 +2,7 @@
 % Please edit documentation in R/hcru.R
 \name{extract_hcru}
 \alias{extract_hcru}
+\alias{extractHcru}
 \title{Extract Healthcare Resource Utilization (HCRU) from OMOP CDM (Stage 2: HCRU)}
 \usage{
 extract_hcru(
@@ -14,6 +15,19 @@ extract_hcru(
   diagnostics = TRUE,
   post_acute = TRUE,
   calculate_readmissions = FALSE,
+  persistence = FALSE
+)
+
+extractHcru(
+  study,
+  baselineWindow = c(-365, -1),
+  followupWindow = c(0, 365),
+  costField = "total_paid",
+  visitDomains = c("inpatient", "outpatient", "emergency", "specialist"),
+  pharmacotherapy = TRUE,
+  diagnostics = TRUE,
+  postAcute = TRUE,
+  calculateReadmissions = FALSE,
   persistence = FALSE
 )
 }

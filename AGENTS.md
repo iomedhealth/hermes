@@ -38,7 +38,10 @@ Agents developing functions or modules in HERMES must align their implementation
 - **Language:** R (Target R >= 4.1).
 - **Pipes:** Always use the base R pipe `|>` instead of `%>%`.
 - **Assignment:** Always use `<-` for assignment (never `=`).
-- **Naming Conventions:** Use `snake_case` for functions, parameters, and variable names.
+- **Naming Conventions (DARWIN EU Standard):**
+  - **Functions & Arguments:** Use `lowerCamelCase` (e.g. `addInpatientHcru()`, `computeHospitalizationCohorts()`, `indexDate = "cohort_start_date"`). Provide snake_case aliases if backward compatibility is needed.
+  - **Database & Cohort Columns:** Use `snake_case` for all table column names (e.g. `cohort_start_date`, `inpatient_admissions`, `days_supply`, `total_paid`).
+  - **S3 Classes:** Use `snake_case` prefixed with `hermes_` (e.g. `hermes_study`, `hermes_hcru`).
 - **OMOP/OHDSI Rules:**
   - Never modify core OMOP tables. Write temporary work tables to designated result/scratch schemas.
   - Rely on `omopgenerics` accessors (`cohortCount()`, `settings()`).
@@ -46,8 +49,9 @@ Agents developing functions or modules in HERMES must align their implementation
 - **Testing:**
   - Place unit tests in `tests/testthat/`.
   - Ensure all new logic has test coverage using `testthat`.
-- **Formatting:**
-  - Run `styler::style_dir()` and `lintr::lint_dir()` before committing.
+- **Formatting & Linting:**
+  - Adhere to `.github/CONTRIBUTING.md` and `extras/PackageMaintenance.R`.
+  - Run `styler::style_dir()` and `lintr::lint_package(".", linters = lintr::linters_with_defaults(lintr::object_name_linter(styles = "camelCase")))` before committing.
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,

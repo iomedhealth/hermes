@@ -512,3 +512,31 @@ extract_hcru <- function(
 
   new_hermes_hcru(res)
 }
+
+#' @rdname extract_hcru
+#' @export
+extractHcru <- function(
+  study,
+  baselineWindow = c(-365, -1),
+  followupWindow = c(0, 365),
+  costField = "total_paid",
+  visitDomains = c("inpatient", "outpatient", "emergency", "specialist"),
+  pharmacotherapy = TRUE,
+  diagnostics = TRUE,
+  postAcute = TRUE,
+  calculateReadmissions = FALSE,
+  persistence = FALSE
+) {
+  extract_hcru(
+    study = study,
+    baseline_window = baselineWindow,
+    followup_window = followupWindow,
+    cost_field = costField,
+    visit_domains = visitDomains,
+    pharmacotherapy = pharmacotherapy,
+    diagnostics = diagnostics,
+    post_acute = postAcute,
+    calculate_readmissions = calculateReadmissions,
+    persistence = persistence
+  )
+}
