@@ -20,3 +20,4 @@ pkgdown/
 .specify/extensions/.cache/
 .specify/feature.json
 tests/data/
+reports/

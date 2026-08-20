@@ -53,71 +53,79 @@ addCosts <- function(
     cost_raw <- cdm$cost |> dplyr::collect()
     cost_col <- if (costField %in% colnames(cost_raw)) costField else "total_paid"
 
-    linked_list <- list()
-
-    # Condition
-    if ("condition_occurrence" %in% names(cdm)) {
-      c_df <- cdm$condition_occurrence |>
-        dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
-        dplyr::select("condition_occurrence_id", person_id = "person_id", event_date = "condition_start_date") |>
-        dplyr::collect()
-      c_costs <- cost_raw |>
-        dplyr::filter(.data$cost_domain_id == "Condition") |>
-        dplyr::inner_join(c_df, by = c("cost_event_id" = "condition_occurrence_id")) |>
-        dplyr::mutate(cost_domain = "Condition", cost_val = as.numeric(.data[[cost_col]]))
-      linked_list <- c(linked_list, list(c_costs))
-    }
-
-    # Visit (Inpatient vs Outpatient)
-    if ("visit_occurrence" %in% names(cdm)) {
-      v_df <- cdm$visit_occurrence |>
-        dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
-        dplyr::select("visit_occurrence_id", person_id = "person_id", "visit_concept_id", event_date = "visit_start_date") |>
-        dplyr::collect()
-      v_costs <- cost_raw |>
-        dplyr::filter(.data$cost_domain_id == "Visit") |>
-        dplyr::inner_join(v_df, by = c("cost_event_id" = "visit_occurrence_id")) |>
-        dplyr::mutate(
-          cost_domain = as.character(ifelse(.data$visit_concept_id %in% c(9201L, 8717L, 581379L, 32037L), "Inpatient", "Outpatient")),
-          cost_val = as.numeric(.data[[cost_col]])
-        )
-      linked_list <- c(linked_list, list(v_costs))
-    }
-
-    # Drug
-    if ("drug_exposure" %in% names(cdm)) {
-      d_df <- cdm$drug_exposure |>
-        dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
-        dplyr::select("drug_exposure_id", person_id = "person_id", event_date = "drug_exposure_start_date") |>
-        dplyr::collect()
-      d_costs <- cost_raw |>
-        dplyr::filter(.data$cost_domain_id == "Drug") |>
-        dplyr::inner_join(d_df, by = c("cost_event_id" = "drug_exposure_id")) |>
-        dplyr::mutate(cost_domain = "Drug", cost_val = as.numeric(.data[[cost_col]]))
-      linked_list <- c(linked_list, list(d_costs))
-    }
-
-    # Procedure
-    if ("procedure_occurrence" %in% names(cdm)) {
-      p_df <- cdm$procedure_occurrence |>
-        dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
-        dplyr::select("procedure_occurrence_id", person_id = "person_id", event_date = "procedure_date") |>
-        dplyr::collect()
-      p_costs <- cost_raw |>
-        dplyr::filter(.data$cost_domain_id == "Procedure") |>
-        dplyr::inner_join(p_df, by = c("cost_event_id" = "procedure_occurrence_id")) |>
-        dplyr::mutate(cost_domain = "Procedure", cost_val = as.numeric(.data[[cost_col]]))
-      linked_list <- c(linked_list, list(p_costs))
-    }
-
-    cost_events <- if (length(linked_list) > 0) {
-      dplyr::bind_rows(linked_list) |>
-        dplyr::select("person_id", "event_date", "cost_domain", "cost_val")
-    } else {
-      tibble::tibble(
+    if (nrow(cost_raw) == 0) {
+      cost_events <- tibble::tibble(
         person_id = integer(), event_date = as.Date(character()),
         cost_domain = character(), cost_val = numeric()
       )
+    } else {
+      cost_raw <- cost_raw |> dplyr::select(-dplyr::any_of("person_id"))
+      linked_list <- list()
+
+      # Condition
+      if ("condition_occurrence" %in% names(cdm)) {
+        c_df <- cdm$condition_occurrence |>
+          dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
+          dplyr::select("condition_occurrence_id", person_id = "person_id", event_date = "condition_start_date") |>
+          dplyr::collect()
+        c_costs <- cost_raw |>
+          dplyr::filter(.data$cost_domain_id == "Condition") |>
+          dplyr::inner_join(c_df, by = c("cost_event_id" = "condition_occurrence_id")) |>
+          dplyr::mutate(cost_domain = "Condition", cost_val = as.numeric(.data[[cost_col]]))
+        linked_list <- c(linked_list, list(c_costs))
+      }
+
+      # Visit (Inpatient vs Outpatient)
+      if ("visit_occurrence" %in% names(cdm)) {
+        v_df <- cdm$visit_occurrence |>
+          dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
+          dplyr::select("visit_occurrence_id", person_id = "person_id", "visit_concept_id", event_date = "visit_start_date") |>
+          dplyr::collect()
+        v_costs <- cost_raw |>
+          dplyr::filter(.data$cost_domain_id == "Visit") |>
+          dplyr::inner_join(v_df, by = c("cost_event_id" = "visit_occurrence_id")) |>
+          dplyr::mutate(
+            cost_domain = as.character(ifelse(.data$visit_concept_id %in% c(9201L, 8717L, 581379L, 32037L), "Inpatient", "Outpatient")),
+            cost_val = as.numeric(.data[[cost_col]])
+          )
+        linked_list <- c(linked_list, list(v_costs))
+      }
+
+      # Drug
+      if ("drug_exposure" %in% names(cdm)) {
+        d_df <- cdm$drug_exposure |>
+          dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
+          dplyr::select("drug_exposure_id", person_id = "person_id", event_date = "drug_exposure_start_date") |>
+          dplyr::collect()
+        d_costs <- cost_raw |>
+          dplyr::filter(.data$cost_domain_id == "Drug") |>
+          dplyr::inner_join(d_df, by = c("cost_event_id" = "drug_exposure_id")) |>
+          dplyr::mutate(cost_domain = "Drug", cost_val = as.numeric(.data[[cost_col]]))
+        linked_list <- c(linked_list, list(d_costs))
+      }
+
+      # Procedure
+      if ("procedure_occurrence" %in% names(cdm)) {
+        p_df <- cdm$procedure_occurrence |>
+          dplyr::filter(.data$person_id %in% cohort_sub_ids) |>
+          dplyr::select("procedure_occurrence_id", person_id = "person_id", event_date = "procedure_date") |>
+          dplyr::collect()
+        p_costs <- cost_raw |>
+          dplyr::filter(.data$cost_domain_id == "Procedure") |>
+          dplyr::inner_join(p_df, by = c("cost_event_id" = "procedure_occurrence_id")) |>
+          dplyr::mutate(cost_domain = "Procedure", cost_val = as.numeric(.data[[cost_col]]))
+        linked_list <- c(linked_list, list(p_costs))
+      }
+
+      cost_events <- if (length(linked_list) > 0) {
+        dplyr::bind_rows(linked_list) |>
+          dplyr::select("person_id", "event_date", "cost_domain", "cost_val")
+      } else {
+        tibble::tibble(
+          person_id = integer(), event_date = as.Date(character()),
+          cost_domain = character(), cost_val = numeric()
+        )
+      }
     }
   }
 
