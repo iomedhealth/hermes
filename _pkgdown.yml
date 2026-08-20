@@ -26,46 +26,12 @@ articles:
     contents:
       - hcru_logic
 reference:
-  - title: "🏥 Healthcare Resource Utilization (CohortUtilisation)"
-    desc: "In-database cohort enrichment verbs for inpatient, emergency, outpatient, medication, and procedure utilization."
+  - title: "🛠️ Testing & Demonstration Utilities"
+    desc: "Synthetic in-memory OMOP CDM reference for demonstrations, vignettes, and tests."
     contents:
-      - addInpatients
-      - addHospitalizations
-      - addInpatient
-      - addEmergencyCare
-      - addEmergency
-      - addEmergencyVisits
-      - addOutpatientVisits
-      - addVisits
-      - addPrescriptions
-      - addProcedures
-      - computeHospitalizationCohorts
-      - compute_hospitalization_cohorts
-      - computeInfusionCohorts
-      - summariseUtilization
-      - tableUtilization
-      - plotUtilization
-  - title: "💰 Direct Medical Costs & Tariffs (CohortCosts)"
-    desc: "OMOP COST table linkage, domain expenditure aggregation, and medical costing formatters."
-    contents:
-      - addCosts
-      - summariseCosts
-      - tableCosts
-      - plotCosts
-  - title: "🎲 Health Economics, Simulation & CEA (CohortEconomics)"
-    desc: "Causal propensity score adjustment, longitudinal health-state trajectories, Markov microsimulations, and Cost-Effectiveness Analysis."
-    contents:
-      - init
-      - summarise_baseline
-      - extract_hcru
-      - extractHcru
-      - fit_ps
-      - adjust_ps
-      - assess_balance
-      - compile_trajectories
-      - simulate_economics
-      - run_cea
-      - plot_ceac
-      - plot_plane
-      - table_summary
       - mockHERMES
+
+  - title: "📦 Re-Exported Domain Verbs"
+    desc: "Functions imported and re-exported from `CohortUtilisation`, `CohortCosts`, and `CohortEconomics`."
+    contents:
+      - reexports
