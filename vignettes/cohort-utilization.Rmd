@@ -158,7 +158,8 @@ cdm$visits_enriched <- cdm$target_cohort |>
       oncology = c(38004507L, 38004006L),
       cardiology = 38004453L
     ),
-    readmissions = TRUE
+    readmissions = TRUE,
+    name = "visits_enriched"
   )
 
 colnames(cdm$visits_enriched)
