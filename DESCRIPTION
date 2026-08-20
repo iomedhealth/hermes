@@ -41,6 +41,7 @@ Suggests:
     Cohort2Trajectory,
     TrajectoryMarkovAnalysis,
     hesim,
+    BCEA,
     heemod,
     Eunomia,
     duckdb,

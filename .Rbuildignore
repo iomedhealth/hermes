@@ -22,3 +22,5 @@
 ^AGENTS\.md$
 ^reports$
 ^packages$
+^tests/testthat/Rplots\.pdf$
+^Rplots\.pdf$
