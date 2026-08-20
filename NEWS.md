@@ -1,3 +1,20 @@
+# HERMES 0.5.0
+
+## Major Architecture & Modularization Update
+
+* **Monorepo Architecture with 3 Standalone DARWIN EU Domain Packages**:
+  * **`CohortUtilisation` (`packages/CohortUtilisation`)**: Lightweight, standalone package for Healthcare Resource Utilization (HCRU) extraction (`addInpatients`, `addEmergencyCare`, `addOutpatientVisits`, `addVisits`, `addPrescriptions`, `addProcedures`, `computeHospitalizationCohorts`, `computeInfusionCohorts`, `summariseUtilization`, `tableUtilization`, `plotUtilization`) with 0 heavy simulation dependencies.
+  * **`CohortCosts` (`packages/CohortCosts`)**: Dedicated direct medical costs and health economics costing package (`addCosts`, `summariseCosts`, `tableCosts`, `plotCosts`, Spanish unit cost tariffs & health price indices).
+  * **`CohortEconomics` (`packages/CohortEconomics`)**: Comprehensive health economics modeling package for causal propensity scores, longitudinal health-state trajectories, Markov microsimulations, and Cost-Effectiveness Analysis (CEA) (`init`, `fit_ps`, `compile_trajectories`, `simulate_economics`, `run_cea`).
+
+* **`hermes` Umbrella Metapackage**:
+  * Root `hermes` metapackage allows single-command installation (`pak::pkg_install("iomedhealth/hermes")`).
+  * Dynamic `.onAttach()` hook displays a tidyverse-style startup banner and attaches all three domain namespaces.
+  * Re-exports all analytical verbs for frictionless scripting.
+  * Unified `_pkgdown.yml` documentation website catalog.
+
+---
+
 # HERMES 0.4.0
 
 ## Bug Fixes & Improvements
