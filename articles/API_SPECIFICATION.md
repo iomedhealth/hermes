@@ -19,7 +19,8 @@ observational healthcare data structured in the OMOP Common Data Model
 #### Core Principles
 
 1.  **Explicit Namespace Usage:** Designed for function calls using
-    `hermes::<function>()` (e.g., `hermes::init()`,
+    `hermes::<function>()` (e.g.,
+    [`hermes::init()`](https://rdrr.io/pkg/CohortEconomics/man/init.html),
     `hermes::compute_cea()`).
 2.  **Pipe-Friendly Workflow:** Functions accept and return S3 study
     objects, supporting the base R pipe operator (`|>`).
@@ -363,9 +364,10 @@ hermes::table_summary(cea_object, format = c("gt", "flextable"))
 
 ### 4. Native OMOP `COST` Table Query Strategy
 
-When `hermes::extract_hcru()` or `hermes::extract_state_costs()` is
-invoked, HERMES generates optimized SQL via `dbplyr` targeting the OMOP
-`COST` table:
+When
+[`hermes::extract_hcru()`](https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html)
+or `hermes::extract_state_costs()` is invoked, HERMES generates
+optimized SQL via `dbplyr` targeting the OMOP `COST` table:
 
 ``` sql
 SELECT 
@@ -392,7 +394,7 @@ WHERE c.person_id IN (SELECT subject_id FROM study_cohort);
 
 ``` r
 
-library(HERMES)
+library(hermes)
 library(CDMConnector)
 
 # Connect to database

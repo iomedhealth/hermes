@@ -48,7 +48,7 @@ database):
 
 ``` r
 
-library(HERMES)
+library(hermes)
 library(dplyr)
 library(omopgenerics)
 
@@ -84,8 +84,8 @@ cdm$hosp_episodes |>
 #>   cohort_definition_id subject_id cohort_start_date cohort_end_date
 #>                  <int>      <int> <date>            <date>         
 #> 1                    1          1 2010-02-20        2010-02-23     
-#> 2                    1          2 2010-03-10        2010-03-15     
-#> 3                    1          1 2010-02-01        2010-02-05     
+#> 2                    1          1 2010-02-01        2010-02-05     
+#> 3                    1          2 2010-03-10        2010-03-15     
 #> 4                    2          1 2010-02-20        2010-02-23
 ```
 
@@ -350,8 +350,10 @@ costSummary |>
 
 #### Publication-Ready GT & Flextable Output
 
-[`tableUtilization()`](../reference/tableUtilization.md) and
-[`tableCosts()`](../reference/tableCosts.md) integrate with
+[`tableUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html)
+and
+[`tableCosts()`](https://rdrr.io/pkg/CohortCosts/man/tableCosts.html)
+integrate with
 [`visOmopResults::visOmopTable()`](https://darwin-eu.github.io/visOmopResults/reference/visOmopTable.html)
 to format publication-grade summary tables:
 
@@ -374,31 +376,20 @@ tableUtilization(
 
 ### 5. Visualizing Care Utilization & Costs (`visOmopResults` Style)
 
-HERMES provides [`plotUtilization()`](../reference/plotUtilization.md)
-and [`plotCosts()`](../reference/plotCosts.md) for rapid exploratory and
-publication visualization, leveraging standard `visOmopResults` ggplot
-themes and facets.
+HERMES provides
+[`plotUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html)
+and [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html)
+for rapid exploratory and publication visualization, leveraging standard
+`visOmopResults` ggplot themes and facets.
 
 #### Bar Plots for Care Utilization
 
 ``` r
 
-# Bar plot comparing follow-up mean care utilization across key settings
-main_util_vars <- c(
-  "inpatient_admissions_followup",
-  "emergency_visits_followup",
-  "gp_visits_followup",
-  "specialist_visits_followup",
-  "rx_fills_followup"
-)
-
 plotUtilization(
-  result = utilSummary |> dplyr::filter(variable_name %in% main_util_vars),
-  plotType = "barplot",
-  x = "cohort_name",
-  y = "mean",
-  facet = "variable_name",
-  colour = "cohort_name"
+  result = utilSummary,
+  metric = "inpatient_admissions",
+  plotType = "barplot"
 )
 ```
 
@@ -408,13 +399,10 @@ plotUtilization(
 
 ``` r
 
-# Box plot showing median and interquartile range for follow-up cost domains
 plotCosts(
-  result = costSummary |> dplyr::filter(grepl("followup", variable_name)),
-  plotType = "boxplot",
-  x = "cohort_name",
-  facet = "variable_name",
-  colour = "cohort_name"
+  result = costSummary,
+  costColumn = "cost_total",
+  plotType = "boxplot"
 )
 ```
 
@@ -426,10 +414,10 @@ plotCosts(
 
 | Domain | Metrics Extracted | Function Responsible | Output Columns |
 |:---|:---|:---|:---|
-| **\[Inpatient\]** | Admissions, ICU, LOS, Readmissions, Specialties | [`addInpatients()`](../reference/addInpatients.md) ([`addHospitalizations()`](../reference/addInpatients.md)) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*`, `{specialty}_inpatient_admissions_*` |
-| **\[Emergency\]** | ER Visits & Specialist Acute Care | [`addEmergencyCare()`](../reference/addEmergencyCare.md) ([`addEmergency()`](../reference/addEmergencyCare.md)) | `emergency_visits_*`, `{specialty}_emergency_visits_*` |
-| **\[Outpatient\]** | GP, Specialist, Other Visits, Specialties | [`addOutpatientVisits()`](../reference/addOutpatientVisits.md) | `gp_visits_*`, `specialist_visits_*`, `other_outpatient_visits_*`, `{specialty}_visits_*` |
-| **\[Multi-Setting\]** | Inpatient + Outpatient + Emergency Visits | [`addVisits()`](../reference/addVisits.md) | Combined Inpatient, Outpatient, Emergency columns |
-| **\[Pharmacy\]** | Rx Fills, Days Supply, PDC, Infusions | [`addPrescriptions()`](../reference/addPrescriptions.md) | `rx_fills_*`, `days_supply_*`, `pdc_*`, `infusions_*` |
-| **\[Diagnostics/Proc\]** | Labs, Imaging, Procedures | [`addProcedures()`](../reference/addProcedures.md) | `lab_tests_count_*`, `procedures_count_*` |
-| **\[Direct Costs\]** | Inpatient, Outpatient, Drug, Total | [`addCosts()`](../reference/addCosts.md) | `cost_inpatient_*`, `cost_outpatient_*`, `cost_drug_*`, `cost_total_*` |
+| **\[Inpatient\]** | Admissions, ICU, LOS, Readmissions, Specialties | [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html) ([`addHospitalizations()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html)) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*`, `{specialty}_inpatient_admissions_*` |
+| **\[Emergency\]** | ER Visits & Specialist Acute Care | [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html) ([`addEmergency()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html)) | `emergency_visits_*`, `{specialty}_emergency_visits_*` |
+| **\[Outpatient\]** | GP, Specialist, Other Visits, Specialties | [`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html) | `gp_visits_*`, `specialist_visits_*`, `other_outpatient_visits_*`, `{specialty}_visits_*` |
+| **\[Multi-Setting\]** | Inpatient + Outpatient + Emergency Visits | [`addVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html) | Combined Inpatient, Outpatient, Emergency columns |
+| **\[Pharmacy\]** | Rx Fills, Days Supply, PDC, Infusions | [`addPrescriptions()`](https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html) | `rx_fills_*`, `days_supply_*`, `pdc_*`, `infusions_*` |
+| **\[Diagnostics/Proc\]** | Labs, Imaging, Procedures | [`addProcedures()`](https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html) | `lab_tests_count_*`, `procedures_count_*` |
+| **\[Direct Costs\]** | Inpatient, Outpatient, Drug, Total | [`addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html) | `cost_inpatient_*`, `cost_outpatient_*`, `cost_drug_*`, `cost_total_*` |

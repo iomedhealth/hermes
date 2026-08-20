@@ -59,7 +59,7 @@ will make code review more difficult.
 
 - **Functions & Arguments:** Use `lowerCamelCase` (e.g.,
   `addInpatientHcru()`,
-  [`computeHospitalizationCohorts()`](reference/compute_hospitalization_cohorts.md),
+  [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html),
   `indexDate = "cohort_start_date"`).
 - **Database/Cohort Columns:** Use `snake_case` (e.g.,
   `cohort_start_date`, `inpatient_admissions`, `total_paid`).

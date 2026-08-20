@@ -115,5 +115,7 @@ For a detailed technical overview, function signatures, S3 class object
 flow, and OMOP `COST` query strategies, please refer to the
 documentation:
 
-- [API & Architecture Specification](vignettes/API_SPECIFICATION.Rmd)
-- [Agent Guidelines & Architecture Instructions](AGENTS.md)
+- [API & Architecture
+  Specification](https://iomedhealth.github.io/hermes/vignettes/API_SPECIFICATION.Rmd)
+- [Agent Guidelines & Architecture
+  Instructions](https://iomedhealth.github.io/hermes/AGENTS.md)

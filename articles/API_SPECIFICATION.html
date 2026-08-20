@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>API &amp; Architecture Specification • HERMES</title>
+<title>API &amp; Architecture Specification • hermes</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
@@ -19,9 +19,9 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="../index.html">HERMES</a>
+    <a class="navbar-brand me-2" href="../index.html">hermes</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>API &amp; Architecture Specification</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/iomedhealth/hermes/blob/v0.4.0/vignettes/API_SPECIFICATION.Rmd" class="external-link"><code>vignettes/API_SPECIFICATION.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/iomedhealth/hermes/blob/main/vignettes/API_SPECIFICATION.Rmd" class="external-link"><code>vignettes/API_SPECIFICATION.Rmd</code></a></small>
       <div class="d-none name"><code>API_SPECIFICATION.Rmd</code></div>
     </div>
 
@@ -92,7 +92,7 @@ OMOP Common Data Model (CDM).</p>
 <li>
 <strong>Explicit Namespace Usage:</strong> Designed for function
 calls using <code>hermes::&lt;function&gt;()</code> (e.g.,
-<code>hermes::init()</code>, <code>hermes::compute_cea()</code>).</li>
+<code><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">hermes::init()</a></code>, <code>hermes::compute_cea()</code>).</li>
 <li>
 <strong>Pipe-Friendly Workflow:</strong> Functions accept and return
 S3 study objects, supporting the base R pipe operator
@@ -155,7 +155,7 @@ reporting (<code>gt</code>, <code>flextable</code>).</li>
 treatment/exposure cohort, comparator cohort, and optional clinical
 outcome cohorts.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">init</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init</a></span><span class="op">(</span></span>
 <span>  <span class="va">cdm</span>,</span>
 <span>  <span class="va">target_cohort</span>,</span>
 <span>  <span class="va">comparator_cohort</span>,</span>
@@ -203,7 +203,7 @@ study.</li>
 <p>Generates unadjusted baseline demographic and clinical
 characterization tables.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">summarise_baseline</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/summarise_baseline.html" class="external-link">summarise_baseline</a></span><span class="op">(</span></span>
 <span>  <span class="va">study</span>,</span>
 <span>  demographics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  covariates <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -237,7 +237,7 @@ containing baseline <code>summarised_result</code> tables.</li>
 <p>Extracts healthcare resource utilization counts, event rates, and
 direct medical expenditures from the OMOP CDM.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">extract_hcru</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html" class="external-link">extract_hcru</a></span><span class="op">(</span></span>
 <span>  <span class="va">study</span>,</span>
 <span>  observation_window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">365</span><span class="op">)</span>,</span>
 <span>  visit_domains <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inpatient"</span>, <span class="st">"outpatient"</span>, <span class="st">"emergency"</span><span class="op">)</span>,</span>
@@ -332,7 +332,7 @@ Direct medical cost linkage from OMOP <code>cost</code> table.</li>
 estimate propensity scores
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">Target</mtext><mo>∣</mo><mi>X</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(\text{Target} \mid X)</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">fit_ps</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/fit_ps.html" class="external-link">fit_ps</a></span><span class="op">(</span></span>
 <span>  <span class="va">study_or_hcru</span>,</span>
 <span>  <span class="va">covariates</span>,</span>
 <span>  prior <span class="op">=</span> <span class="st">"laplace"</span>,</span>
@@ -367,7 +367,7 @@ regularized regression.</li>
 <p>Applies patient trimming, matching, or weighting to create balanced
 comparative cohorts.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">adjust_ps</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/adjust_ps.html" class="external-link">adjust_ps</a></span><span class="op">(</span></span>
 <span>  <span class="va">ps_object</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"matching"</span>, <span class="st">"iptw"</span>, <span class="st">"trimming"</span><span class="op">)</span>,</span>
 <span>  ratio <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -403,7 +403,7 @@ matched/weighted patient identifiers.</li>
 <p>Computes Standardized Mean Differences (SMD) and generates balance
 diagnostic plots (Love plots).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">assess_balance</span><span class="op">(</span><span class="va">ps_adjusted_object</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/assess_balance.html" class="external-link">assess_balance</a></span><span class="op">(</span><span class="va">ps_adjusted_object</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
 <strong>Returns:</strong> <code>summarised_result</code> containing
@@ -422,7 +422,7 @@ pre/post-adjustment SMDs and <code>ggplot2</code> Love plot.</li>
 <p>Compiles long-term patient timelines into discrete, mutually
 exclusive health states over uniform time cycles.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">compile_trajectories</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html" class="external-link">compile_trajectories</a></span><span class="op">(</span></span>
 <span>  <span class="va">ps_adjusted_object</span>,</span>
 <span>  <span class="va">state_definitions</span>,</span>
 <span>  cycle_length <span class="op">=</span> <span class="st">"30 days"</span></span>
@@ -496,7 +496,7 @@ table.</li>
 <p>Integrates transition probabilities and state-cost distributions into
 an economic state-transition model.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">simulate_economics</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html" class="external-link">simulate_economics</a></span><span class="op">(</span></span>
 <span>  <span class="va">trajectories</span>,</span>
 <span>  time_horizon <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  discount_rate <span class="op">=</span> <span class="fl">0.03</span>,</span>
@@ -539,7 +539,7 @@ containing simulated cost and QALY trajectories across iterations.</li>
 <p>Calculates Incremental Cost-Effectiveness Ratios (ICER) and Net
 Monetary Benefit (NMB) across willingness-to-pay (WTP) thresholds.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">run_cea</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/run_cea.html" class="external-link">run_cea</a></span><span class="op">(</span></span>
 <span>  <span class="va">sim_object</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <ul>
@@ -561,13 +561,13 @@ Monetary Benefit (NMB) across willingness-to-pay (WTP) thresholds.</p>
 </h5>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate Cost-Effectiveness Acceptability Curve (CEAC)</span></span>
-<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">plot_ceac</span><span class="op">(</span><span class="va">cea_object</span><span class="op">)</span></span>
+<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_ceac.html" class="external-link">plot_ceac</a></span><span class="op">(</span><span class="va">cea_object</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Generate Cost-Effectiveness Plane (Scatter plot)</span></span>
-<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">plot_plane</span><span class="op">(</span><span class="va">cea_object</span><span class="op">)</span></span>
+<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_plane.html" class="external-link">plot_plane</a></span><span class="op">(</span><span class="va">cea_object</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Export executive summary table</span></span>
-<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">table_summary</span><span class="op">(</span><span class="va">cea_object</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gt"</span>, <span class="st">"flextable"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/table_summary.html" class="external-link">table_summary</a></span><span class="op">(</span><span class="va">cea_object</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gt"</span>, <span class="st">"flextable"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 </div>
@@ -575,7 +575,7 @@ Monetary Benefit (NMB) across willingness-to-pay (WTP) thresholds.</p>
 <div class="section level3">
 <h3 id="native-omop-cost-table-query-strategy">4. Native OMOP <code>COST</code> Table Query Strategy<a class="anchor" aria-label="anchor" href="#native-omop-cost-table-query-strategy"></a>
 </h3>
-<p>When <code>hermes::extract_hcru()</code> or
+<p>When <code><a href="https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html" class="external-link">hermes::extract_hcru()</a></code> or
 <code>hermes::extract_state_costs()</code> is invoked, HERMES generates
 optimized SQL via <code>dbplyr</code> targeting the OMOP
 <code>COST</code> table:</p>
@@ -601,7 +601,7 @@ optimized SQL via <code>dbplyr</code> targeting the OMOP
 <h3 id="end-to-end-pipeline-example">5. End-to-End Pipeline Example<a class="anchor" aria-label="anchor" href="#end-to-end-pipeline-example"></a>
 </h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.iomed.health/" class="external-link">HERMES</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://iomedhealth.github.io/hermes/">hermes</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Connect to database</span></span>
@@ -609,25 +609,25 @@ optimized SQL via <code>dbplyr</code> targeting the OMOP
 <span></span>
 <span><span class="co"># Run 6-Stage HERMES Analysis Pipeline</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="va">cdm</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">init</span><span class="op">(</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init</a></span><span class="op">(</span></span>
 <span>    target_cohort     <span class="op">=</span> <span class="st">"cancer_hz"</span>,</span>
 <span>    comparator_cohort <span class="op">=</span> <span class="st">"cancer_non_hz"</span>,</span>
 <span>    outcome_cohorts   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"phn"</span>, <span class="st">"hzo"</span><span class="op">)</span>,</span>
 <span>    study_name        <span class="op">=</span> <span class="st">"HORION Economic Analysis"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">extract_hcru</span><span class="op">(</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html" class="external-link">extract_hcru</a></span><span class="op">(</span></span>
 <span>    observation_window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">365</span><span class="op">)</span>,</span>
 <span>    visit_domains      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inpatient"</span>, <span class="st">"outpatient"</span>, <span class="st">"emergency"</span><span class="op">)</span>,</span>
 <span>    cost_field         <span class="op">=</span> <span class="st">"total_paid"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">fit_ps</span><span class="op">(</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/fit_ps.html" class="external-link">fit_ps</a></span><span class="op">(</span></span>
 <span>    covariates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"sex"</span>, <span class="st">"prior_treatments"</span>, <span class="st">"comorbidities"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">adjust_ps</span><span class="op">(</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/adjust_ps.html" class="external-link">adjust_ps</a></span><span class="op">(</span></span>
 <span>    method <span class="op">=</span> <span class="st">"matching"</span>,</span>
 <span>    ratio  <span class="op">=</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">compile_trajectories</span><span class="op">(</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html" class="external-link">compile_trajectories</a></span><span class="op">(</span></span>
 <span>    state_definitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>      acute <span class="op">=</span> <span class="st">"hz_acute_cohort"</span>,</span>
 <span>      chronic <span class="op">=</span> <span class="st">"phn_chronic_cohort"</span>,</span>
@@ -636,16 +636,16 @@ optimized SQL via <code>dbplyr</code> targeting the OMOP
 <span>    cycle_length <span class="op">=</span> <span class="st">"30 days"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">extract_state_costs</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">simulate_economics</span><span class="op">(</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html" class="external-link">simulate_economics</a></span><span class="op">(</span></span>
 <span>    time_horizon <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>    n_samples    <span class="op">=</span> <span class="fl">1000</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu">run_cea</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/run_cea.html" class="external-link">run_cea</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Render Decision Analytic Visuals</span></span>
-<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">plot_ceac</span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
-<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">plot_plane</span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
-<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu">table_summary</span><span class="op">(</span><span class="va">results</span>, format <span class="op">=</span> <span class="st">"gt"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_ceac.html" class="external-link">plot_ceac</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
+<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_plane.html" class="external-link">plot_plane</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
+<span><span class="fu">hermes</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/table_summary.html" class="external-link">table_summary</a></span><span class="op">(</span><span class="va">results</span>, format <span class="op">=</span> <span class="st">"gt"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

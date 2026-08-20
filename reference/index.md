@@ -1,94 +1,126 @@
 # Package index
 
-## Stage 1: Cohort Generation
+## 🏥 Healthcare Resource Utilization (CohortUtilisation)
 
-Functions for defining, initializing, and building care episodes.
+In-database cohort enrichment verbs for inpatient, emergency,
+outpatient, medication, and procedure utilization.
 
-- [`init()`](init.md) : Initialize a HERMES study (Stage 1: Cohort
-  Generation)
-- [`compute_hospitalization_cohorts()`](compute_hospitalization_cohorts.md)
-  [`computeHospitalizationCohorts()`](compute_hospitalization_cohorts.md)
-  : Generate Hospitalization and Readmission Cohorts (Stage 1 & 2)
-- [`computeInfusionCohorts()`](computeInfusionCohorts.md) : Create
-  Infusion Administration Episode Cohorts
+- [`reexports`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addInpatients`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addHospitalizations`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addInpatient`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergencyCare`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergency`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergencyVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addOutpatientVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addPrescriptions`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addProcedures`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`computeHospitalizationCohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`compute_hospitalization_cohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`computeInfusionCohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summariseUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`tableUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plotUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summariseCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`tableCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plotCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`init`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summarise_baseline`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`extract_hcru`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`extractHcru`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`fit_ps`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`adjust_ps`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`assess_balance`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`compile_trajectories`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`simulate_economics`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`run_cea`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plot_ceac`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plot_plane`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`table_summary`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  : Objects exported from other packages
 
-## Stage 2: Cohort Utilization & Cost Enrichers
+## 💰 Direct Medical Costs & Tariffs (CohortCosts)
 
-In-database cohort enrichment verbs following PatientProfiles patterns.
+OMOP COST table linkage, domain expenditure aggregation, and medical
+costing formatters.
 
-- [`addInpatients()`](addInpatients.md)
-  [`addHospitalizations()`](addInpatients.md)
-  [`addInpatient()`](addInpatients.md) : Add Inpatient and ICU
-  Hospitalization Metrics to a Cohort
-- [`addEmergencyCare()`](addEmergencyCare.md)
-  [`addEmergency()`](addEmergencyCare.md)
-  [`addEmergencyVisits()`](addEmergencyCare.md) : Add Emergency Care
-  Utilization Metrics to a Cohort
-- [`addVisits()`](addVisits.md) : Add Multi-Setting Visit Utilization
-  Metrics to a Cohort
-- [`addOutpatientVisits()`](addOutpatientVisits.md) : Add Outpatient and
-  Emergency Visits to a Cohort
-- [`addPrescriptions()`](addPrescriptions.md) : Add Prescription and
-  Medication Metrics to a Cohort
-- [`addProcedures()`](addProcedures.md) : Add Diagnostic Measurements
-  and Procedure Occurrences to a Cohort
-- [`addCosts()`](addCosts.md) : Add Direct Medical Costs to a Cohort
+- [`reexports`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addInpatients`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addHospitalizations`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addInpatient`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergencyCare`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergency`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergencyVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addOutpatientVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addPrescriptions`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addProcedures`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`computeHospitalizationCohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`compute_hospitalization_cohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`computeInfusionCohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summariseUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`tableUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plotUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summariseCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`tableCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plotCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`init`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summarise_baseline`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`extract_hcru`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`extractHcru`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`fit_ps`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`adjust_ps`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`assess_balance`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`compile_trajectories`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`simulate_economics`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`run_cea`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plot_ceac`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plot_plane`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`table_summary`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  : Objects exported from other packages
 
-## Stage 2: Summarisation & Reporting
+## 🎲 Health Economics, Simulation & CEA (CohortEconomics)
 
-Standardised result summaries and publication-ready table & plot
-formatters.
+Causal propensity score adjustment, longitudinal health-state
+trajectories, Markov microsimulations, and Cost-Effectiveness Analysis.
 
-- [`summariseUtilization()`](summariseUtilization.md) : Summarise
-  Healthcare Resource Utilization for a Cohort
-- [`summariseCosts()`](summariseCosts.md) : Summarise Direct Medical
-  Costs for a Cohort
-- [`tableUtilization()`](tableUtilization.md) : Format Utilization
-  Results as Visual Tables
-- [`tableCosts()`](tableCosts.md) : Format Cost Results as Visual Tables
-- [`plotUtilization()`](plotUtilization.md) : Plot Healthcare Resource
-  Utilization
-- [`plotCosts()`](plotCosts.md) : Plot Direct Medical Costs
-- [`summarise_baseline()`](summarise_baseline.md) : Summarise baseline
-  demographics and comorbidities (Stage 2: Baseline)
-- [`extract_hcru()`](extract_hcru.md) [`extractHcru()`](extract_hcru.md)
-  : Extract Healthcare Resource Utilization (HCRU) from OMOP CDM (Stage
-  2: HCRU)
-
-## Stage 3: Propensity Score
-
-Causal adjustment and matching.
-
-- [`fit_ps()`](fit_ps.md) : Fit Propensity Score Model (Stage 3: Causal
-  Adjustment)
-- [`adjust_ps()`](adjust_ps.md) : Adjust Propensity Scores (Stage 3:
-  Causal Adjustment)
-- [`assess_balance()`](assess_balance.md) : Assess Covariate Balance
-  (Stage 3: Causal Adjustment)
-
-## Stage 4: Trajectories
-
-State-cost extraction and transitions.
-
-- [`compile_trajectories()`](compile_trajectories.md) : Compile State
-  Trajectories and Costs (Stage 4: Trajectory Compilation)
-
-## Stage 5 & 6: Simulation & CEA
-
-Economic simulation and decision analysis.
-
-- [`simulate_economics()`](simulate_economics.md) : Simulate Economic
-  Outcomes (Stage 5: Economic Simulation)
-- [`run_cea()`](run_cea.md) : Run Cost-Effectiveness Analysis (Stage 6:
-  Decision Analysis)
-- [`plot_ceac()`](plot_ceac.md) : Plot Cost-Effectiveness Acceptability
-  Curve (CEAC)
-- [`plot_plane()`](plot_plane.md) : Plot Cost-Effectiveness Plane
-- [`table_summary()`](table_summary.md) : Summary Table
-
-## Mock Data & Testing Utilities
-
-Helpers for creating synthetic in-memory OMOP CDM test references.
-
-- [`mockHERMES()`](mockHERMES.md) : Create a Mock OMOP CDM Reference for
-  Testing and Demonstrations
+- [`reexports`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addInpatients`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addHospitalizations`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addInpatient`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergencyCare`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergency`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addEmergencyVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addOutpatientVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addVisits`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addPrescriptions`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addProcedures`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`computeHospitalizationCohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`compute_hospitalization_cohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`computeInfusionCohorts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summariseUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`tableUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plotUtilization`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`addCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summariseCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`tableCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plotCosts`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`init`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`summarise_baseline`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`extract_hcru`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`extractHcru`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`fit_ps`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`adjust_ps`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`assess_balance`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`compile_trajectories`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`simulate_economics`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`run_cea`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plot_ceac`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`plot_plane`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  [`table_summary`](https://iomedhealth.github.io/hermes/reference/reexports.md)
+  : Objects exported from other packages
+- [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md)
+  : Create a Mock OMOP CDM Reference for Testing and Demonstrations

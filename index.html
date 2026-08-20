@@ -5,16 +5,16 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Health Economics and Outcomes Research Pipeline on OMOP CDM • HERMES</title>
+<title>Health Economics and Outcomes Research Pipeline on OMOP CDM (Metapackage) • hermes</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Health Economics and Outcomes Research Pipeline on OMOP CDM">
-<meta name="description" content="An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data. Developed by IOMED.">
-<meta property="og:description" content="An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data. Developed by IOMED.">
-<meta property="og:image" content="/logo.svg">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Health Economics and Outcomes Research Pipeline on OMOP CDM (Metapackage)">
+<meta name="description" content="An R metapackage providing an end-to-end analytical ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). Unifies CohortUtilisation (HCRU), CohortCosts (direct medical expenditures), and CohortEconomics (propensity scores, Markov simulation, and Cost-Effectiveness Analysis) on OMOP CDM data. Developed by IOMED.">
+<meta property="og:description" content="An R metapackage providing an end-to-end analytical ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). Unifies CohortUtilisation (HCRU), CohortCosts (direct medical expenditures), and CohortEconomics (propensity scores, Markov simulation, and Cost-Effectiveness Analysis) on OMOP CDM data. Developed by IOMED.">
+<meta property="og:image" content="https://iomedhealth.github.io/hermes/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,9 +22,9 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="index.html">HERMES</a>
+    <a class="navbar-brand me-2" href="index.html">hermes</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +91,7 @@
 <p>[!NOTE] The following example uses DuckDB and the synthetic <code>Eunomia</code> dataset to demonstrate the complete 6-stage pipeline.</p>
 </blockquote>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.iomed.health/" class="external-link">HERMES</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://iomed.health" class="external-link">HERMES</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ohdsi.github.io/CohortConstructor/" class="external-link">CohortConstructor</a></span><span class="op">)</span></span>
 <span></span>
@@ -106,18 +106,18 @@
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">outcome_cohort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ohdsi.github.io/CohortConstructor/reference/conceptCohort.html" class="external-link">conceptCohort</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>outcome_cohort <span class="op">=</span> <span class="fl">192671L</span><span class="op">)</span>, <span class="st">"outcome_cohort"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 1-6. Run the End-to-End Pipeline</span></span>
-<span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/init.html">init</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"target_cohort"</span>, <span class="st">"comparator_cohort"</span>, <span class="st">"outcome_cohort"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/summarise_baseline.html">summarise_baseline</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/extract_hcru.html">extract_hcru</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/fit_ps.html">fit_ps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/adjust_ps.html">adjust_ps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/compile_trajectories.html">compile_trajectories</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/simulate_economics.html">simulate_economics</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/run_cea.html">run_cea</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"target_cohort"</span>, <span class="st">"comparator_cohort"</span>, <span class="st">"outcome_cohort"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/summarise_baseline.html" class="external-link">summarise_baseline</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html" class="external-link">extract_hcru</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/fit_ps.html" class="external-link">fit_ps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/adjust_ps.html" class="external-link">adjust_ps</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html" class="external-link">compile_trajectories</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html" class="external-link">simulate_economics</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/run_cea.html" class="external-link">run_cea</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Generate plots</span></span>
-<span><span class="fu"><a href="reference/plot_ceac.html">plot_ceac</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/plot_plane.html">plot_plane</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_ceac.html" class="external-link">plot_ceac</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/plot_plane.html" class="external-link">plot_plane</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="outputs">Outputs<a class="anchor" aria-label="anchor" href="#outputs"></a>
 </h3>
@@ -163,6 +163,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://www.bioconductor.org/packages/hermes" class="external-link">View on Bioconductor</a></li>
 <li><a href="https://github.com/iomedhealth/hermes/" class="external-link">Browse source code</a></li>
 </ul>
 </div>
@@ -186,7 +187,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing HERMES</a></li>
+<li><a href="authors.html#citation">Citing hermes</a></li>
 </ul>
 </div>
 

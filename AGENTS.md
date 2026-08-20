@@ -53,7 +53,7 @@ implementations with the 6-stage framework:
 - **Naming Conventions (DARWIN EU Standard):**
   - **Functions & Arguments:** Use `lowerCamelCase`
     (e.g. `addInpatientHcru()`,
-    [`computeHospitalizationCohorts()`](reference/compute_hospitalization_cohorts.md),
+    [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html),
     `indexDate = "cohort_start_date"`). Provide snake_case aliases if
     backward compatibility is needed.
   - **Database & Cohort Columns:** Use `snake_case` for all table column
@@ -76,6 +76,57 @@ implementations with the 6-stage framework:
   - Run `styler::style_dir()` and
     `lintr::lint_package(".", linters = lintr::linters_with_defaults(lintr::object_name_linter(styles = "camelCase")))`
     before committing.
+
+------------------------------------------------------------------------
+
+## 3. Mandatory CI, Build & Monorepo Conformance Rules
+
+Before staging, committing, or pushing any changes, every agent must
+strictly verify the following conformance checks:
+
+1.  **Package Name Case Sensitivity**:
+    - The metapackage name is strictly lowercase `hermes`. Always write
+      [`library(hermes)`](https://iomedhealth.github.io/hermes/) and
+      `test_check("hermes")`. Never use
+      [`library(HERMES)`](https://iomed.health) or uppercase variants,
+      which fail on case-sensitive Linux CI runners.
+2.  **Local Monorepo Subpackage Resolution**:
+    - Subpackages (`CohortUtilisation`, `CohortCosts`,
+      `CohortEconomics`) must be installed and documented locally before
+      building the root metapackage:
+
+      ``` r
+
+      pak::pkg_install(c("local::packages/CohortUtilisation", "local::packages/CohortCosts", "local::packages/CohortEconomics"))
+      ```
+
+    - In GitHub Actions workflows (`.github/workflows/`), always pass
+      `local::packages/*` to `extra-packages` in
+      `r-lib/actions/setup-r-dependencies@v2`.
+3.  **Vignette Execution Verification**:
+    - Every vignette under `vignettes/*.Rmd` must render cleanly without
+      errors before pushing:
+
+      ``` r
+
+      lapply(list.files("vignettes", pattern = "[.]Rmd$", full.names = TRUE), rmarkdown::render, output_dir = tempdir())
+      ```
+
+    - Ensure all function signatures and arguments called in vignettes
+      match active exported APIs.
+4.  **Documentation & `pkgdown` Index Conformance**:
+    - Run `devtools::document()` across all subpackages (`packages/*`)
+      and root (`.`).
+    - Every exported function and alias in `man/*.Rd` must be indexed
+      under `reference:` in `_pkgdown.yml`.
+    - Verify site build locally:
+      `pkgdown::build_site(preview = FALSE, install = FALSE)`.
+5.  **Clean `R CMD check`**:
+    - Ensure
+      `rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")`
+      passes with 0 errors and 0 warnings on all 3 subpackages and root.
+
+------------------------------------------------------------------------
 
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:

@@ -1,5 +1,37 @@
 # Changelog
 
+## HERMES 0.5.0
+
+### Major Architecture & Modularization Update
+
+- **Monorepo Architecture with 3 Standalone DARWIN EU Domain Packages**:
+  - **`CohortUtilisation` (`packages/CohortUtilisation`)**: Lightweight,
+    standalone package for Healthcare Resource Utilization (HCRU)
+    extraction (`addInpatients`, `addEmergencyCare`,
+    `addOutpatientVisits`, `addVisits`, `addPrescriptions`,
+    `addProcedures`, `computeHospitalizationCohorts`,
+    `computeInfusionCohorts`, `summariseUtilization`,
+    `tableUtilization`, `plotUtilization`) with 0 heavy simulation
+    dependencies.
+  - **`CohortCosts` (`packages/CohortCosts`)**: Dedicated direct medical
+    costs and health economics costing package (`addCosts`,
+    `summariseCosts`, `tableCosts`, `plotCosts`, Spanish unit cost
+    tariffs & health price indices).
+  - **`CohortEconomics` (`packages/CohortEconomics`)**: Comprehensive
+    health economics modeling package for causal propensity scores,
+    longitudinal health-state trajectories, Markov microsimulations, and
+    Cost-Effectiveness Analysis (CEA) (`init`, `fit_ps`,
+    `compile_trajectories`, `simulate_economics`, `run_cea`).
+- **`hermes` Umbrella Metapackage**:
+  - Root `hermes` metapackage allows single-command installation
+    (`pak::pkg_install("iomedhealth/hermes")`).
+  - Dynamic `.onAttach()` hook displays a tidyverse-style startup banner
+    and attaches all three domain namespaces.
+  - Re-exports all analytical verbs for frictionless scripting.
+  - Unified `_pkgdown.yml` documentation website catalog.
+
+------------------------------------------------------------------------
+
 ## HERMES 0.4.0
 
 ### Bug Fixes & Improvements
@@ -27,29 +59,35 @@
 ### New Features & Enhancements
 
 - **Renamed Inpatient Enricher (`addInpatients`)**:
-  - [`addInpatients()`](../reference/addInpatients.md) is now the
-    primary DARWIN EU-standard function for inpatient and ICU cohort
-    enrichment, replacing
-    [`addHospitalizations()`](../reference/addInpatients.md).
-  - [`addHospitalizations()`](../reference/addInpatients.md) and
-    [`addInpatient()`](../reference/addInpatients.md) are preserved as
-    fully functional backward-compatible exported aliases.
+  - [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html)
+    is now the primary DARWIN EU-standard function for inpatient and ICU
+    cohort enrichment, replacing
+    [`addHospitalizations()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html).
+  - [`addHospitalizations()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html)
+    and
+    [`addInpatient()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html)
+    are preserved as fully functional backward-compatible exported
+    aliases.
   - Added `stratifySpecialty = TRUE` and `specialties` parameter to
     compute specialty-specific inpatient admissions
     (`{specialty}_inpatient_admissions_*`).
 - **Dedicated Emergency Care Enricher (`addEmergencyCare`)**:
-  - Added [`addEmergencyCare()`](../reference/addEmergencyCare.md) (with
-    aliases [`addEmergency()`](../reference/addEmergencyCare.md) and
-    [`addEmergencyVisits()`](../reference/addEmergencyCare.md)).
+  - Added
+    [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html)
+    (with aliases
+    [`addEmergency()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html)
+    and
+    [`addEmergencyVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html)).
   - Uses dual-criteria detection capturing emergency encounters via OMOP
     emergency visit concepts (`9203`, `262`, `581478`) **and** Emergency
     Medicine provider specialty concepts (`38004510`).
   - Supports granular specialty stratification
     (`{specialty}_emergency_visits_*`).
 - **Composite Multi-Setting Enricher (`addVisits`)**:
-  - Added [`addVisits()`](../reference/addVisits.md) to orchestrate
-    Inpatient, Outpatient, and Emergency care enrichment in a single
-    execution.
+  - Added
+    [`addVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html)
+    to orchestrate Inpatient, Outpatient, and Emergency care enrichment
+    in a single execution.
   - Supports selective setting filtering
     (`settings = c("inpatient", "outpatient", "emergency")`) and unified
     specialty mapping.
@@ -61,19 +99,19 @@
 ### Initial Modular HCRU & CEA Release
 
 - Layer 1: Care Episode Constructors
-  ([`computeHospitalizationCohorts()`](../reference/compute_hospitalization_cohorts.md),
-  [`computeInfusionCohorts()`](../reference/computeInfusionCohorts.md)).
+  ([`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html),
+  [`computeInfusionCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/computeInfusionCohorts.html)).
 - Layer 2: In-database cohort enrichers
-  ([`addOutpatientVisits()`](../reference/addOutpatientVisits.md),
-  [`addPrescriptions()`](../reference/addPrescriptions.md),
-  [`addProcedures()`](../reference/addProcedures.md),
-  [`addCosts()`](../reference/addCosts.md)).
+  ([`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html),
+  [`addPrescriptions()`](https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html),
+  [`addProcedures()`](https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html),
+  [`addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html)).
 - Layer 3: Analytical summarisation and reporting
-  ([`summariseUtilization()`](../reference/summariseUtilization.md),
-  [`summariseCosts()`](../reference/summariseCosts.md),
-  [`tableUtilization()`](../reference/tableUtilization.md),
-  [`tableCosts()`](../reference/tableCosts.md),
-  [`plotUtilization()`](../reference/plotUtilization.md),
-  [`plotCosts()`](../reference/plotCosts.md)).
+  ([`summariseUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/summariseUtilization.html),
+  [`summariseCosts()`](https://rdrr.io/pkg/CohortCosts/man/summariseCosts.html),
+  [`tableUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html),
+  [`tableCosts()`](https://rdrr.io/pkg/CohortCosts/man/tableCosts.html),
+  [`plotUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html),
+  [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html)).
 - End-to-end 6-stage analytical pipeline support (Cohorts,
   Baseline/HCRU, PS Adjustment, Trajectories, Simulation, CEA).

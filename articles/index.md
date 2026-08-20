@@ -2,10 +2,14 @@
 
 ### Getting Started
 
-- [Introduction to HEOR for OMOP Users](intro-to-heor.md):
-- [Cohort Utilization & Cost Enrichment](cohort-utilization.md):
+- [Introduction to HEOR for OMOP
+  Users](https://iomedhealth.github.io/hermes/articles/intro-to-heor.md):
+- [Cohort Utilization & Cost
+  Enrichment](https://iomedhealth.github.io/hermes/articles/cohort-utilization.md):
 
 ### Deep Dives
 
-- [HCRU Extraction Logic](hcru_logic.md):
-- [API & Architecture Specification](API_SPECIFICATION.md):
+- [HCRU Extraction
+  Logic](https://iomedhealth.github.io/hermes/articles/hcru_logic.md):
+- [API & Architecture
+  Specification](https://iomedhealth.github.io/hermes/articles/API_SPECIFICATION.md):
