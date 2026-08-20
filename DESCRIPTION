@@ -1,13 +1,13 @@
-Package: HERMES
-Title: Health Economics and Outcomes Research Pipeline on OMOP CDM
-Version: 0.4.0
+Package: hermes
+Title: Health Economics and Outcomes Research Pipeline on OMOP CDM (Metapackage)
+Version: 0.3.0
 Authors@R: c(
     person(given = "Gabriel",
            family = "Maeztu",
            role = c("aut", "cre"),
            email = "gabriel@iomed.health")
   )
-Description: An R package ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) focused on Healthcare Resource Utilization (HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data. Developed by IOMED.
+Description: An R metapackage providing an end-to-end analytical ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). Unifies CohortUtilisation (HCRU), CohortCosts (direct medical expenditures), and CohortEconomics (propensity scores, Markov simulation, and Cost-Effectiveness Analysis) on OMOP CDM data. Developed by IOMED.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
 URL: https://www.iomed.health/, https://github.com/iomedhealth/hermes
@@ -15,11 +15,13 @@ Depends:
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
 Imports:
-    CDMConnector,
-    omopgenerics,
-    BCEA,
-    dbplyr,
-    dplyr,
+    CohortUtilisation (>= 0.3.0),
+    CohortCosts (>= 0.3.0),
+    CohortEconomics (>= 0.3.0),
+    CDMConnector (>= 1.4.0),
+    omopgenerics (>= 0.3.0),
+    dbplyr (>= 2.4.0),
+    dplyr (>= 1.1.0),
     rlang,
     cli,
     glue
@@ -30,9 +32,9 @@ Suggests:
     DBI,
     tibble,
     gt,
-    PatientProfiles,
-    CohortConstructor,
-    CohortCharacteristics,
+    PatientProfiles (>= 1.2.0),
+    CohortConstructor (>= 0.2.0),
+    CohortCharacteristics (>= 0.3.0),
     visOmopResults,
     CohortMethod,
     Cyclops,
@@ -52,4 +54,3 @@ Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 Encoding: UTF-8
 VignetteBuilder: knitr
-

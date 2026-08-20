@@ -1,0 +1,163 @@
+#' Simulate Economic Outcomes (Stage 5: Economic Simulation)
+#'
+#' @description
+#' `simulate_economics()` runs a Probabilistic Sensitivity Analysis (PSA) using a
+#' Markov state-transition model.
+#'
+#' CEA rarely relies on single deterministic values due to inherent uncertainty in
+#' clinical data. This function runs thousands of simulations (samples). In each sample,
+#' it draws transition probabilities, costs, and health utility values from statistical
+#' distributions (Dirichlet, Gamma, Beta). It then projects these values over a specified
+#' time horizon to estimate the total long-term costs and Quality-Adjusted Life-Years
+#' (QALYs) for both the target and comparator strategies.
+#'
+#' @param traj_obj A `hermes_trajectories` object containing transition and cost data.
+#' @param time_horizon Numeric. The time horizon for the simulation in years (e.g., 10 for a 10-year model, or ~80 for a lifetime horizon). Default is 10.
+#' @param discount_rate Numeric. The annual discount rate applied to future costs and QALYs to reflect time preference. Default is 0.03 (3%).
+#' @param n_samples Integer. The number of probabilistic iterations (PSA samples) to run. Default is 100.
+#'
+#' @return A `hermes_sim` object containing the simulated total costs and QALYs across all samples.
+#'
+#' @export
+simulate_economics <- function(traj_obj, time_horizon = 10, discount_rate = 0.03, n_samples = 100) {
+  # ponytail: Simple pure-R Markov PSA engine using Dirichlet/Gamma/Beta approximations
+  # skipped: hesim/heemod dependency for the core engine, to avoid heavy external object wrangling. Add if complex parametric survival is needed.
+
+  n_cycles <- round(time_horizon * (365.25 / 30)) # 30-day cycles
+
+  if (length(traj_obj$matrices) == 0 || is.null(traj_obj$costs) || nrow(traj_obj$costs) == 0) {
+    stop("Cannot run economic simulation: empty transition matrices or cost summaries in traj_obj. Ensure Stage 3 (PS) and Stage 4 (Trajectories) completed successfully.")
+  }
+
+  strategies <- names(traj_obj$matrices)
+  if (is.null(strategies)) strategies <- paste0("Strategy_", 1:length(traj_obj$matrices))
+  n_strategies <- length(strategies)
+
+  # State space
+  if (length(traj_obj$matrices) > 0 && !is.null(rownames(traj_obj$matrices[[1]]))) {
+    states <- rownames(traj_obj$matrices[[1]])
+  } else if (!is.null(traj_obj$costs$health_state)) {
+    states <- unique(traj_obj$costs$health_state)
+  } else {
+    states <- c("State_Baseline", "State_Outcome")
+  }
+  n_states <- length(states)
+
+
+  # Pre-allocate results
+  res_costs <- data.frame(sample = integer(), strategy_id = integer(), costs = numeric())
+  res_qalys <- data.frame(sample = integer(), strategy_id = integer(), qalys = numeric())
+
+  # Method of moments for Gamma distribution (costs)
+  cost_means <- numeric(n_states)
+  cost_ses <- numeric(n_states)
+  for (i in seq_along(states)) {
+    idx <- which(traj_obj$costs$health_state == states[i])
+    if (length(idx) > 0) {
+      cost_means[i] <- traj_obj$costs$mean_cost[idx[1]]
+      cost_ses[i] <- traj_obj$costs$se_cost[idx[1]]
+    } else {
+      cost_means[i] <- 0
+      cost_ses[i] <- 0
+    }
+  }
+
+  cost_shape <- ifelse(cost_ses > 0, (cost_means / cost_ses)^2, NA)
+  cost_scale <- ifelse(cost_ses > 0, (cost_ses^2) / cost_means, NA)
+
+  # Default utilities if not provided
+  if (is.null(traj_obj$utilities) || nrow(traj_obj$utilities) == 0) {
+    util_df <- data.frame(
+      health_state = states,
+      mean_utility = ifelse(states == "State_Baseline", 0.85, 0.70),
+      se_utility = 0.05
+    )
+  } else {
+    util_df <- traj_obj$utilities
+  }
+
+  # Method of moments for Beta distribution (utilities)
+  get_beta_params <- function(mu, se) {
+    if (is.na(se) || se == 0) {
+      return(list(a = NA, b = NA))
+    }
+    var <- se^2
+    tmp <- (mu * (1 - mu) / var) - 1
+    if (tmp <= 0) {
+      return(list(a = NA, b = NA))
+    }
+    list(a = mu * tmp, b = (1 - mu) * tmp)
+  }
+
+  discount_vec <- 1 / ((1 + discount_rate)^((1:n_cycles) * (30 / 365.25)))
+
+  for (s in 1:n_samples) {
+    # Sample costs
+    s_costs <- numeric(n_states)
+    for (i in 1:n_states) {
+      if (is.na(cost_shape[i])) {
+        s_costs[i] <- cost_means[i]
+      } else {
+        s_costs[i] <- stats::rgamma(1, shape = cost_shape[i], scale = cost_scale[i])
+      }
+    }
+
+    # Sample utilities
+    s_utils <- numeric(n_states)
+    for (i in 1:n_states) {
+      bp <- get_beta_params(util_df$mean_utility[i], util_df$se_utility[i])
+      if (is.na(bp$a)) {
+        s_utils[i] <- util_df$mean_utility[i]
+      } else {
+        s_utils[i] <- stats::rbeta(1, bp$a, bp$b)
+      }
+    }
+
+    # Simulate each strategy
+    for (strat_idx in 1:n_strategies) {
+      trans_mat <- traj_obj$matrices[[strategies[strat_idx]]]
+
+      # Sample transition matrix (simplified row-wise Dirichlet using Gamma)
+      s_trans <- trans_mat
+      for (r in 1:nrow(s_trans)) {
+        alphas <- s_trans[r, ] * 100
+        alphas[alphas == 0] <- 0.001
+        g_draws <- stats::rgamma(length(alphas), shape = alphas, scale = 1)
+        s_trans[r, ] <- g_draws / sum(g_draws)
+      }
+
+      state_dist <- matrix(0, nrow = n_cycles, ncol = n_states)
+      current_state <- c(1, rep(0, n_states - 1)) # Start in state 1
+
+      total_cost <- 0
+      total_qaly <- 0
+
+      for (cycle in 1:n_cycles) {
+        current_state <- current_state %*% s_trans
+        state_dist[cycle, ] <- current_state
+
+        cycle_cost <- sum(current_state * s_costs) * discount_vec[cycle]
+        cycle_qaly <- sum(current_state * s_utils) * (30 / 365.25) * discount_vec[cycle]
+
+        total_cost <- total_cost + cycle_cost
+        total_qaly <- total_qaly + cycle_qaly
+      }
+
+      res_costs <- rbind(res_costs, data.frame(sample = s, strategy_id = strat_idx, costs = total_cost))
+      res_qalys <- rbind(res_qalys, data.frame(sample = s, strategy_id = strat_idx, qalys = total_qaly))
+    }
+  }
+
+  structure(
+    list(
+      traj_obj = traj_obj,
+      time_horizon = time_horizon,
+      discount_rate = discount_rate,
+      hesim_ce = list(
+        costs = res_costs,
+        qalys = res_qalys
+      )
+    ),
+    class = "hermes_sim"
+  )
+}

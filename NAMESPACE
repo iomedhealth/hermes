@@ -36,5 +36,43 @@ export(tableUtilization)
 export(table_summary)
 import(CDMConnector)
 import(dbplyr)
+importFrom(CohortCosts,
+  addCosts,
+  plotCosts,
+  summariseCosts,
+  tableCosts
+)
+importFrom(CohortEconomics,
+  adjust_ps,
+  assess_balance,
+  compile_trajectories,
+  extractHcru,
+  extract_hcru,
+  fit_ps,
+  init,
+  plot_ceac,
+  plot_plane,
+  run_cea,
+  simulate_economics,
+  summarise_baseline,
+  table_summary
+)
+importFrom(CohortUtilisation,
+  addEmergency,
+  addEmergencyCare,
+  addEmergencyVisits,
+  addHospitalizations,
+  addInpatient,
+  addInpatients,
+  addOutpatientVisits,
+  addPrescriptions,
+  addProcedures,
+  addVisits,
+  computeHospitalizationCohorts,
+  computeInfusionCohorts,
+  plotUtilization,
+  summariseUtilization,
+  tableUtilization
+)
 importFrom(rlang,.data)
 importFrom(stats,predict)

@@ -20,7 +20,7 @@
 
 **Purpose**: Establish the monorepo folder layout with subdirectories for `CohortUtilisation`, `CohortCosts`, and `CohortEconomics`.
 
-- [ ] T001 Create monorepo directory hierarchy under `packages/CohortUtilisation`, `packages/CohortCosts`, and `packages/CohortEconomics`
+- [X] T001 Create monorepo directory hierarchy under `packages/CohortUtilisation`, `packages/CohortCosts`, and `packages/CohortEconomics`
 
 ---
 
@@ -28,9 +28,9 @@
 
 **Purpose**: Create `DESCRIPTION` files and shared validation utilities across all three domain packages.
 
-- [ ] T002 Create `DESCRIPTION` and validation utilities in `packages/CohortUtilisation/DESCRIPTION` and `packages/CohortUtilisation/R/utilities.R`
-- [ ] T003 [P] Create `DESCRIPTION` in `packages/CohortCosts/DESCRIPTION`
-- [ ] T004 [P] Create `DESCRIPTION` in `packages/CohortEconomics/DESCRIPTION`
+- [X] T002 Create `DESCRIPTION` and validation utilities in `packages/CohortUtilisation/DESCRIPTION` and `packages/CohortUtilisation/R/utilities.R`
+- [X] T003 [P] Create `DESCRIPTION` in `packages/CohortCosts/DESCRIPTION`
+- [X] T004 [P] Create `DESCRIPTION` in `packages/CohortEconomics/DESCRIPTION`
 
 ---
 
@@ -42,12 +42,12 @@
 
 ### Tests for User Story 1 (TDD)
 
-- [ ] T005 [P] [US1] Set up test fixtures and migrate HCRU unit tests in `packages/CohortUtilisation/tests/testthat/`
+- [X] T005 [P] [US1] Set up test fixtures and migrate HCRU unit tests in `packages/CohortUtilisation/tests/testthat/`
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Migrate and implement all HCRU enrichers and formatters in `packages/CohortUtilisation/R/`
-- [ ] T007 [US1] Generate documentation and verify isolated package check via `devtools::document("packages/CohortUtilisation")` and `devtools::test("packages/CohortUtilisation")`
+- [X] T006 [US1] Migrate and implement all HCRU enrichers and formatters in `packages/CohortUtilisation/R/`
+- [X] T007 [US1] Generate documentation and verify isolated package check via `devtools::document("packages/CohortUtilisation")` and `devtools::test("packages/CohortUtilisation")`
 
 **Checkpoint**: `CohortUtilisation` complete and independently testable.
 
@@ -61,12 +61,12 @@
 
 ### Tests for User Story 2 (TDD)
 
-- [ ] T008 [P] [US2] Set up test fixtures and migrate cost unit tests in `packages/CohortCosts/tests/testthat/`
+- [X] T008 [P] [US2] Set up test fixtures and migrate cost unit tests in `packages/CohortCosts/tests/testthat/`
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Migrate and implement cost functions and tariff data in `packages/CohortCosts/R/` and `packages/CohortCosts/data/`
-- [ ] T010 [US2] Generate documentation and verify isolated package check via `devtools::document("packages/CohortCosts")` and `devtools::test("packages/CohortCosts")`
+- [X] T009 [US2] Migrate and implement cost functions and tariff data in `packages/CohortCosts/R/` and `packages/CohortCosts/data/`
+- [X] T010 [US2] Generate documentation and verify isolated package check via `devtools::document("packages/CohortCosts")` and `devtools::test("packages/CohortCosts")`
 
 **Checkpoint**: `CohortCosts` complete and independently testable.
 
@@ -80,12 +80,12 @@
 
 ### Tests for User Story 3 (TDD)
 
-- [ ] T011 [P] [US3] Set up test fixtures and migrate simulation/CEA unit tests in `packages/CohortEconomics/tests/testthat/`
+- [X] T011 [P] [US3] Set up test fixtures and migrate simulation/CEA unit tests in `packages/CohortEconomics/tests/testthat/`
 
 ### Implementation for User Story 3
 
-- [ ] T012 [US3] Migrate and implement economic modeling functions in `packages/CohortEconomics/R/`
-- [ ] T013 [US3] Generate documentation and verify isolated package check via `devtools::document("packages/CohortEconomics")` and `devtools::test("packages/CohortEconomics")`
+- [X] T012 [US3] Migrate and implement economic modeling functions in `packages/CohortEconomics/R/`
+- [X] T013 [US3] Generate documentation and verify isolated package check via `devtools::document("packages/CohortEconomics")` and `devtools::test("packages/CohortEconomics")`
 
 **Checkpoint**: `CohortEconomics` complete and independently testable.
 
@@ -99,8 +99,8 @@
 
 ### Implementation for User Story 4
 
-- [ ] T014 [US4] Implement metapackage startup banner and namespace attach hook in `R/zzz.R`
-- [ ] T015 [US4] Configure root `DESCRIPTION` and `NAMESPACE` for `hermes` metapackage and generate documentation via `devtools::document()`
+- [X] T014 [US4] Implement metapackage startup banner and namespace attach hook in `R/zzz.R`
+- [X] T015 [US4] Configure root `DESCRIPTION` and `NAMESPACE` for `hermes` metapackage and generate documentation via `devtools::document()`
 
 ---
 
@@ -112,7 +112,7 @@
 
 ### Implementation for User Story 5
 
-- [ ] T016 [US5] Update root `_pkgdown.yml` and vignettes to index all three domain packages
+- [X] T016 [US5] Update root `_pkgdown.yml` and vignettes to index all three domain packages
 
 ---
 
@@ -120,8 +120,8 @@
 
 **Purpose**: Execute full test verification and style compliance checks across the entire monorepo.
 
-- [ ] T017 [P] Execute test suites across all 3 sub-packages and root metapackage
-- [ ] T018 [P] Run `styler` and `lintr` compliance checks across all package directories
+- [X] T017 [P] Execute test suites across all 3 sub-packages and root metapackage
+- [X] T018 [P] Run `styler` and `lintr` compliance checks across all package directories
 
 ---
 

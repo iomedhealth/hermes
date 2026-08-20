@@ -1,0 +1,38 @@
+Package: CohortUtilisation
+Title: Healthcare Resource Utilization on OMOP CDM Cohorts
+Version: 0.3.0
+Authors@R: c(
+    person(given = "Gabriel",
+           family = "Maeztu",
+           role = c("aut", "cre"),
+           email = "gabriel@iomed.health")
+  )
+Description: In-database healthcare resource utilization (HCRU) extraction across inpatient, emergency, outpatient, pharmacy, and procedure domains for OMOP CDM cohorts following DARWIN EU standards.
+License: MIT + file LICENSE
+Copyright: IOMED, S.L.
+URL: https://www.iomed.health/, https://github.com/iomedhealth/hermes
+Depends: 
+    R (>= 4.1.0)
+Roxygen: list(markdown = TRUE)
+Imports:
+    CDMConnector (>= 1.4.0),
+    omopgenerics (>= 0.3.0),
+    dbplyr (>= 2.4.0),
+    dplyr (>= 1.1.0),
+    rlang,
+    cli,
+    glue
+Suggests: 
+    DBI,
+    tibble,
+    gt,
+    PatientProfiles (>= 1.2.0),
+    CohortConstructor (>= 0.2.0),
+    CohortCharacteristics (>= 0.3.0),
+    visOmopResults,
+    duckdb,
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
+Encoding: UTF-8

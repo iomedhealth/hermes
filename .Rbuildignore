@@ -20,3 +20,5 @@
 ^generate_plots\.R$
 ^_pkgdown\.yml$
 ^AGENTS\.md$
+^reports$
+^packages$
