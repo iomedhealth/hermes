@@ -9,6 +9,14 @@ data. Developed by IOMED.
 
 Useful links:
 
-- <https://iomed.health>
+- <https://www.iomed.health/>
 
 - <https://github.com/iomedhealth/hermes>
+
+## Author
+
+**Maintainer**: Gabriel Maeztu <gabriel@iomed.health>
+
+Authors:
+
+- Gabriel Maeztu <gabriel@iomed.health>

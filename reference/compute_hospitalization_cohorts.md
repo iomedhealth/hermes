@@ -41,8 +41,12 @@ computeHospitalizationCohorts(
 
 - readmission_window:
 
-  Maximum days between previous discharge and next admission. Default:
-  30.
+  Backward compatible snake_case parameter.
+
+- visitConceptIds:
+
+  Integer vector of OMOP visit concept IDs. Default:
+  `c(9201L, 262L, 581379L)`.
 
 - icuConceptIds:
 

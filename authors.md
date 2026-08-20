@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **Gabriel Maeztu**. Maintainer.
+- **Gabriel Maeztu**. Author, maintainer.
 
 ## Citation
 

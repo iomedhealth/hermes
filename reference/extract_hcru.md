@@ -90,6 +90,34 @@ extractHcru(
   Logical, whether to calculate Proportion of Days Covered (PDC)
   (default `FALSE`).
 
+- baselineWindow:
+
+  Relative days from cohort start date defining baseline (default
+  `c(-365, -1)`).
+
+- followupWindow:
+
+  Relative days from cohort start date defining follow-up (default
+  `c(0, 365)`).
+
+- costField:
+
+  Column name in `cost` table to aggregate (default `"total_paid"`).
+
+- visitDomains:
+
+  Visit categories to extract from `visit_occurrence`.
+
+- postAcute:
+
+  Logical, whether to extract post-acute/SNF/hospice care (default
+  `TRUE`).
+
+- calculateReadmissions:
+
+  Logical, whether to compute 30-day and 90-day readmissions (default
+  `FALSE`).
+
 ## Value
 
 A `hermes_hcru` object enriched with `study$costs` and `study$hcru`.

@@ -139,6 +139,30 @@ health state (e.g., before or after the outcome event).</p>
 <dt id="arg-persistence">persistence<a class="anchor" aria-label="anchor" href="#arg-persistence"></a></dt>
 <dd><p>Logical, whether to calculate Proportion of Days Covered (PDC) (default <code>FALSE</code>).</p></dd>
 
+
+<dt id="arg-baselinewindow">baselineWindow<a class="anchor" aria-label="anchor" href="#arg-baselinewindow"></a></dt>
+<dd><p>Relative days from cohort start date defining baseline (default <code>c(-365, -1)</code>).</p></dd>
+
+
+<dt id="arg-followupwindow">followupWindow<a class="anchor" aria-label="anchor" href="#arg-followupwindow"></a></dt>
+<dd><p>Relative days from cohort start date defining follow-up (default <code>c(0, 365)</code>).</p></dd>
+
+
+<dt id="arg-costfield">costField<a class="anchor" aria-label="anchor" href="#arg-costfield"></a></dt>
+<dd><p>Column name in <code>cost</code> table to aggregate (default <code>"total_paid"</code>).</p></dd>
+
+
+<dt id="arg-visitdomains">visitDomains<a class="anchor" aria-label="anchor" href="#arg-visitdomains"></a></dt>
+<dd><p>Visit categories to extract from <code>visit_occurrence</code>.</p></dd>
+
+
+<dt id="arg-postacute">postAcute<a class="anchor" aria-label="anchor" href="#arg-postacute"></a></dt>
+<dd><p>Logical, whether to extract post-acute/SNF/hospice care (default <code>TRUE</code>).</p></dd>
+
+
+<dt id="arg-calculatereadmissions">calculateReadmissions<a class="anchor" aria-label="anchor" href="#arg-calculatereadmissions"></a></dt>
+<dd><p>Logical, whether to compute 30-day and 90-day readmissions (default <code>FALSE</code>).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
