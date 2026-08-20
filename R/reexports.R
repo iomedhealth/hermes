@@ -27,9 +27,11 @@ CohortUtilisation::addPrescriptions
 #' @export
 CohortUtilisation::addProcedures
 
-#' @importFrom CohortUtilisation computeHospitalizationCohorts computeInfusionCohorts
+#' @importFrom CohortUtilisation computeHospitalizationCohorts compute_hospitalization_cohorts computeInfusionCohorts
 #' @export
 CohortUtilisation::computeHospitalizationCohorts
+#' @export
+CohortUtilisation::compute_hospitalization_cohorts
 #' @export
 CohortUtilisation::computeInfusionCohorts
 

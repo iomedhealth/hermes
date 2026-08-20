@@ -9,7 +9,8 @@ tableCosts(
   type = "gt",
   header = c("cdm_name", "cohort_name"),
   estimateName = c(N = "<count>", `Mean (SD)` = "<mean> (<sd>)", `Median (IQR)` =
-    "<median> (<q25> - <q75>)", `Min - Max` = "<min> - <max>")
+    "<median> (<q25> - <q75>)", `Min - Max` = "<min> - <max>"),
+  ...
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ tableCosts(
 \item{header}{Character vector of columns to include in the header. Default: \code{c("cdm_name", "cohort_name")}.}
 
 \item{estimateName}{Named character vector mapping estimate names.}
+
+\item{...}{Additional arguments passed to \code{visOmopResults::visOmopTable()}.}
 }
 \value{
 A formatted table object (gt_tbl, flextable, or tibble).

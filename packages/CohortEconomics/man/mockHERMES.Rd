@@ -17,7 +17,7 @@ Create a Mock OMOP CDM Reference for Testing and Demonstrations
 }
 \examples{
 \donttest{
-library(HERMES)
+library(CohortEconomics)
 cdm <- mockHERMES()
 }
 }

@@ -34,8 +34,6 @@ export(summarise_baseline)
 export(tableCosts)
 export(tableUtilization)
 export(table_summary)
-import(CDMConnector)
-import(dbplyr)
 importFrom(CohortCosts,
   addCosts,
   plotCosts,
@@ -70,9 +68,12 @@ importFrom(CohortUtilisation,
   addVisits,
   computeHospitalizationCohorts,
   computeInfusionCohorts,
+  compute_hospitalization_cohorts,
   plotUtilization,
   summariseUtilization,
   tableUtilization
 )
-importFrom(rlang,.data)
-importFrom(stats,predict)
+importFrom(rlang,
+  .data,
+  .env
+)

@@ -4,3 +4,8 @@ export(addCosts)
 export(plotCosts)
 export(summariseCosts)
 export(tableCosts)
+importFrom(CDMConnector,cdmName)
+importFrom(rlang,
+  .data,
+  .env
+)

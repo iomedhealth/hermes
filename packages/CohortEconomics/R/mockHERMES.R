@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' \donttest{
-#' library(HERMES)
+#' library(CohortEconomics)
 #' cdm <- mockHERMES()
 #' }
 mockHERMES <- function(numberIndividuals = 10) {

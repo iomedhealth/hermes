@@ -313,7 +313,7 @@ WHERE c.person_id IN (SELECT subject_id FROM study_cohort);
 ## 5. End-to-End Pipeline Example
 
 ```r
-library(HERMES)
+library(hermes)
 library(CDMConnector)
 
 # Connect to database

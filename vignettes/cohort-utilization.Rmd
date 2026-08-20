@@ -56,7 +56,7 @@ Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstruc
 We initialize an OMOP CDM reference (such as the mock HERMES test database):
 
 ```{r setup}
-library(HERMES)
+library(hermes)
 library(dplyr)
 library(omopgenerics)
 
@@ -225,35 +225,20 @@ HERMES provides `plotUtilization()` and `plotCosts()` for rapid exploratory and 
 ### Bar Plots for Care Utilization
 
 ```{r plot_util_bar, fig.width = 8, fig.height = 3.5}
-# Bar plot comparing follow-up mean care utilization across key settings
-main_util_vars <- c(
-  "inpatient_admissions_followup",
-  "emergency_visits_followup",
-  "gp_visits_followup",
-  "specialist_visits_followup",
-  "rx_fills_followup"
-)
-
 plotUtilization(
-  result = utilSummary |> dplyr::filter(variable_name %in% main_util_vars),
-  plotType = "barplot",
-  x = "cohort_name",
-  y = "mean",
-  facet = "variable_name",
-  colour = "cohort_name"
+  result = utilSummary,
+  metric = "inpatient_admissions",
+  plotType = "barplot"
 )
 ```
 
 ### Box Plots for Direct Medical Costs
 
 ```{r plot_cost_box, fig.width = 8, fig.height = 4}
-# Box plot showing median and interquartile range for follow-up cost domains
 plotCosts(
-  result = costSummary |> dplyr::filter(grepl("followup", variable_name)),
-  plotType = "boxplot",
-  x = "cohort_name",
-  facet = "variable_name",
-  colour = "cohort_name"
+  result = costSummary,
+  costColumn = "cost_total",
+  plotType = "boxplot"
 )
 ```
 

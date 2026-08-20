@@ -1,4 +1,4 @@
-url: ~
+url: https://iomedhealth.github.io/hermes/
 template:
   bootstrap: 5
   bslib:
@@ -37,6 +37,7 @@ reference:
       - addPrescriptions
       - addProcedures
       - computeHospitalizationCohorts
+      - compute_hospitalization_cohorts
       - computeInfusionCohorts
       - summariseUtilization
       - tableUtilization

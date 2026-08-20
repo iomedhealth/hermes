@@ -4,6 +4,7 @@
 #' @param type Output table format: `"gt"`, `"flextable"`, or `"tibble"`. Default: `"gt"`.
 #' @param header Character vector of columns to include in the header. Default: `c("cdm_name", "cohort_name")`.
 #' @param estimateName Named character vector mapping estimate names.
+#' @param ... Additional arguments passed to `visOmopResults::visOmopTable()`.
 #'
 #' @return A formatted table object (gt_tbl, flextable, or tibble).
 #' @export
@@ -16,7 +17,8 @@ tableCosts <- function(
     "Mean (SD)" = "<mean> (<sd>)",
     "Median (IQR)" = "<median> (<q25> - <q75>)",
     "Min - Max" = "<min> - <max>"
-  )
+  ),
+  ...
 ) {
   # ponytail: delegate to visOmopResults::visOmopTable
   omopgenerics::validateResultArgument(result)
@@ -25,6 +27,7 @@ tableCosts <- function(
     result = result,
     estimateName = estimateName,
     type = type,
-    header = header
+    header = header,
+    ...
   )
 }

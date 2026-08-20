@@ -19,6 +19,7 @@ Imports:
     omopgenerics (>= 0.3.0),
     dbplyr (>= 2.4.0),
     dplyr (>= 1.1.0),
+    ggplot2,
     rlang,
     cli,
     glue

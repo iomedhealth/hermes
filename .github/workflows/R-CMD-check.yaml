@@ -21,7 +21,17 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: local::packages/CohortUtilisation, local::packages/CohortCosts, local::packages/CohortEconomics, any::rcmdcheck
           needs: check
 
-      - uses: r-lib/actions/check-r-package@v2
+      - name: Check CohortUtilisation
+        run: Rscript -e "rcmdcheck::rcmdcheck('packages/CohortUtilisation', args = c('--no-manual', '--as-cran'), error_on = 'warning')"
+
+      - name: Check CohortCosts
+        run: Rscript -e "rcmdcheck::rcmdcheck('packages/CohortCosts', args = c('--no-manual', '--as-cran'), error_on = 'warning')"
+
+      - name: Check CohortEconomics
+        run: Rscript -e "rcmdcheck::rcmdcheck('packages/CohortEconomics', args = c('--no-manual', '--as-cran'), error_on = 'warning')"
+
+      - name: Check root hermes
+        uses: r-lib/actions/check-r-package@v2

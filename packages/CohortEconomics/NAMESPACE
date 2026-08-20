@@ -14,4 +14,8 @@ export(run_cea)
 export(simulate_economics)
 export(summarise_baseline)
 export(table_summary)
+importFrom(rlang,
+  .data,
+  .env
+)
 importFrom(stats,predict)

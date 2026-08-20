@@ -16,3 +16,8 @@ export(compute_hospitalization_cohorts)
 export(plotUtilization)
 export(summariseUtilization)
 export(tableUtilization)
+importFrom(CDMConnector,cdmName)
+importFrom(rlang,
+  .data,
+  .env
+)

@@ -145,11 +145,11 @@ hermes_test_cdm <- function(env = parent.frame()) {
   )
 
   cdm <- omopgenerics::insertTable(cdm, name = "target_cohort", table = target)
-  cdm$target_cohort <- newCohortTable(cdm$target_cohort)
+  cdm$target_cohort <- omopgenerics::newCohortTable(cdm$target_cohort)
   cdm <- omopgenerics::insertTable(cdm, name = "comparator_cohort", table = comparator)
-  cdm$comparator_cohort <- newCohortTable(cdm$comparator_cohort)
+  cdm$comparator_cohort <- omopgenerics::newCohortTable(cdm$comparator_cohort)
   cdm <- omopgenerics::insertTable(cdm, name = "outcome_cohort", table = outcome)
-  cdm$outcome_cohort <- newCohortTable(cdm$outcome_cohort)
+  cdm$outcome_cohort <- omopgenerics::newCohortTable(cdm$outcome_cohort)
 
   return(cdm)
 }
