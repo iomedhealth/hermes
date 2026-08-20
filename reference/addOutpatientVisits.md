@@ -13,6 +13,7 @@ addOutpatientVisits(
   stratifySpecialty = TRUE,
   gpSpecialtyConceptIds = c(38004446L),
   specialties = NULL,
+  includeEmergency = TRUE,
   nameStyle = "{setting}_visits_{window_name}",
   name = NULL
 )
@@ -52,6 +53,10 @@ addOutpatientVisits(
 
   Optional named list of integer vectors of OMOP specialty concept IDs
   for granular specialty breakdown. Default: `NULL`.
+
+- includeEmergency:
+
+  Logical; whether to include emergency visits. Default: `TRUE`.
 
 - nameStyle:
 

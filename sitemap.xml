@@ -12,10 +12,12 @@
 <url><loc>/index.html</loc></url>
 <url><loc>/reference/HERMES-package.html</loc></url>
 <url><loc>/reference/addCosts.html</loc></url>
-<url><loc>/reference/addHospitalizations.html</loc></url>
+<url><loc>/reference/addEmergencyCare.html</loc></url>
+<url><loc>/reference/addInpatients.html</loc></url>
 <url><loc>/reference/addOutpatientVisits.html</loc></url>
 <url><loc>/reference/addPrescriptions.html</loc></url>
 <url><loc>/reference/addProcedures.html</loc></url>
+<url><loc>/reference/addVisits.html</loc></url>
 <url><loc>/reference/adjust_ps.html</loc></url>
 <url><loc>/reference/assess_balance.html</loc></url>
 <url><loc>/reference/compile_trajectories.html</loc></url>

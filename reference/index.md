@@ -16,8 +16,16 @@ Functions for defining, initializing, and building care episodes.
 
 In-database cohort enrichment verbs following PatientProfiles patterns.
 
-- [`addHospitalizations()`](addHospitalizations.md) : Add Inpatient and
-  ICU Hospitalization Metrics to a Cohort
+- [`addInpatients()`](addInpatients.md)
+  [`addHospitalizations()`](addInpatients.md)
+  [`addInpatient()`](addInpatients.md) : Add Inpatient and ICU
+  Hospitalization Metrics to a Cohort
+- [`addEmergencyCare()`](addEmergencyCare.md)
+  [`addEmergency()`](addEmergencyCare.md)
+  [`addEmergencyVisits()`](addEmergencyCare.md) : Add Emergency Care
+  Utilization Metrics to a Cohort
+- [`addVisits()`](addVisits.md) : Add Multi-Setting Visit Utilization
+  Metrics to a Cohort
 - [`addOutpatientVisits()`](addOutpatientVisits.md) : Add Outpatient and
   Emergency Visits to a Cohort
 - [`addPrescriptions()`](addPrescriptions.md) : Add Prescription and

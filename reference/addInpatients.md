@@ -5,6 +5,21 @@ Add Inpatient and ICU Hospitalization Metrics to a Cohort
 ## Usage
 
 ``` r
+addInpatients(
+  x,
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
+  window = list(c(-365, -1), c(0, 365)),
+  visitConceptIds = c(9201L, 8717L, 581379L),
+  icuConceptIds = 32037L,
+  icuSpecialtyConceptIds = c(38004500L),
+  stratifySpecialty = FALSE,
+  specialties = NULL,
+  readmissions = FALSE,
+  nameStyle = "{domain}_{metric}_{window_name}",
+  name = NULL
+)
+
 addHospitalizations(
   x,
   indexDate = "cohort_start_date",
@@ -13,6 +28,23 @@ addHospitalizations(
   visitConceptIds = c(9201L, 8717L, 581379L),
   icuConceptIds = 32037L,
   icuSpecialtyConceptIds = c(38004500L),
+  stratifySpecialty = FALSE,
+  specialties = NULL,
+  readmissions = FALSE,
+  nameStyle = "{domain}_{metric}_{window_name}",
+  name = NULL
+)
+
+addInpatient(
+  x,
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
+  window = list(c(-365, -1), c(0, 365)),
+  visitConceptIds = c(9201L, 8717L, 581379L),
+  icuConceptIds = 32037L,
+  icuSpecialtyConceptIds = c(38004500L),
+  stratifySpecialty = FALSE,
+  specialties = NULL,
   readmissions = FALSE,
   nameStyle = "{domain}_{metric}_{window_name}",
   name = NULL
@@ -53,6 +85,15 @@ addHospitalizations(
   OMOP provider specialty concept IDs for ICU stays. Default:
   `c(38004500L)`.
 
+- stratifySpecialty:
+
+  Logical; whether to compute specialty breakdown. Default: `FALSE`.
+
+- specialties:
+
+  Optional named list of integer vectors of OMOP specialty concept IDs
+  for granular specialty breakdown. Default: `NULL`.
+
 - readmissions:
 
   Logical; whether to compute 30-day and 90-day readmissions. Default:
@@ -69,4 +110,4 @@ addHospitalizations(
 
 ## Value
 
-The cohort table `x` with added hospitalization metric columns.
+The cohort table `x` with added inpatient metric columns.

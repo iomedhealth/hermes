@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">HERMES</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,8 +148,8 @@ and register them in the database write schema.</p>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1          1 2010-02-01        2010-02-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1          2 2010-03-10        2010-03-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    1          1 2010-02-20        2010-02-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1          1 2010-02-20        2010-02-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    1          2 2010-03-10        2010-03-15     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>                    2          1 2010-02-20        2010-02-23</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -183,7 +183,7 @@ metric columns without dropping zero-utilization subjects.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Pipe study cohort through all 5 domain enrichers</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">study_enriched</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">target_cohort</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/addHospitalizations.html">addHospitalizations</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/addInpatients.html">addHospitalizations</a></span><span class="op">(</span></span>
 <span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>baseline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, followup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    readmissions <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -3194,7 +3194,7 @@ themes and facets.</p>
 <tr class="odd">
 <td align="left"><strong>[Inpatient]</strong></td>
 <td align="left">Admissions, ICU, LOS, Readmissions</td>
-<td align="left"><code><a href="../reference/addHospitalizations.html">addHospitalizations()</a></code></td>
+<td align="left"><code><a href="../reference/addInpatients.html">addHospitalizations()</a></code></td>
 <td align="left">
 <code>inpatient_admissions_*</code>,
 <code>inpatient_los_days_*</code>, <code>icu_admissions_*</code>,

@@ -82,8 +82,8 @@ cdm$hosp_episodes |>
 #>   cohort_definition_id subject_id cohort_start_date cohort_end_date
 #>                  <int>      <int> <date>            <date>         
 #> 1                    1          1 2010-02-01        2010-02-05     
-#> 2                    1          2 2010-03-10        2010-03-15     
-#> 3                    1          1 2010-02-20        2010-02-23     
+#> 2                    1          1 2010-02-20        2010-02-23     
+#> 3                    1          2 2010-03-10        2010-03-15     
 #> 4                    2          1 2010-02-20        2010-02-23
 ```
 
@@ -318,7 +318,7 @@ plotCosts(
 
 | Domain | Metrics Extracted | Function Responsible | Output Columns |
 |:---|:---|:---|:---|
-| **\[Inpatient\]** | Admissions, ICU, LOS, Readmissions | [`addHospitalizations()`](../reference/addHospitalizations.md) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*` |
+| **\[Inpatient\]** | Admissions, ICU, LOS, Readmissions | [`addHospitalizations()`](../reference/addInpatients.md) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*` |
 | **\[Outpatient\]** | GP, Specialist, ER, Other Visits | [`addOutpatientVisits()`](../reference/addOutpatientVisits.md) | `gp_visits_*`, `specialist_visits_*`, `emergency_visits_*` |
 | **\[Pharmacy\]** | Rx Fills, Days Supply, PDC, Infusions | [`addPrescriptions()`](../reference/addPrescriptions.md) | `rx_fills_*`, `days_supply_*`, `pdc_*`, `infusions_*` |
 | **\[Diagnostics/Proc\]** | Labs, Imaging, Procedures | [`addProcedures()`](../reference/addProcedures.md) | `lab_tests_count_*`, `procedures_count_*` |
