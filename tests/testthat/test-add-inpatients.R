@@ -114,3 +114,40 @@ test_that("addHospitalizations and addInpatient backward-compatibility aliases w
   expect_equal(res1, res2)
   expect_equal(res1, res3)
 })
+
+test_that("addInpatients supports infinite and NA window bounds without case mismatch", {
+  cdm <- hermesTestCdm()
+
+  # 1. Unnamed c(0, Inf) -> columns *_0_to_inf
+  resInf <- cdm$target_cohort |>
+    addInpatients(window = c(0, Inf)) |>
+    dplyr::collect()
+
+  expect_true("inpatient_admissions_0_to_inf" %in% colnames(resInf))
+  expect_true("inpatient_los_days_0_to_inf" %in% colnames(resInf))
+  p1 <- resInf |> dplyr::filter(.data$subject_id == 1L)
+  expect_equal(p1$inpatient_admissions_0_to_inf, 2)
+
+  # 2. NA normalization: c(0, NA) -> identical to c(0, Inf)
+  resNa <- cdm$target_cohort |>
+    addInpatients(window = list(c(0, NA))) |>
+    dplyr::collect()
+
+  expect_equal(resInf, resNa)
+
+  # 3. Named window: list(all_followup = c(0, Inf))
+  resNamed <- cdm$target_cohort |>
+    addInpatients(window = list(all_followup = c(0, Inf))) |>
+    dplyr::collect()
+
+  expect_true("inpatient_admissions_all_followup" %in% colnames(resNamed))
+  p1Named <- resNamed |> dplyr::filter(.data$subject_id == 1L)
+  expect_equal(p1Named$inpatient_admissions_all_followup, 2)
+
+  # 4. Bilateral infinite window: c(-Inf, Inf) -> *_minf_to_inf
+  resBilateral <- cdm$target_cohort |>
+    addInpatients(window = c(-Inf, Inf)) |>
+    dplyr::collect()
+
+  expect_true("inpatient_admissions_minf_to_inf" %in% colnames(resBilateral))
+})

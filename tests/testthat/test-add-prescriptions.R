@@ -26,3 +26,18 @@ test_that("addPrescriptions extracts fills, days supply, PDC, and infusions", {
   expect_equal(p1$infusions_followup, 1)
   expect_true(!is.na(p1$pdc_followup))
 })
+
+test_that("addPrescriptions supports infinite and NA window bounds", {
+  cdm <- hermesTestCdm()
+
+  resInf <- cdm$target_cohort |>
+    addPrescriptions(window = c(0, Inf), daysSupply = TRUE, pdc = TRUE) |>
+    dplyr::collect()
+
+  expect_true("rx_fills_0_to_inf" %in% colnames(resInf))
+  expect_true("days_supply_0_to_inf" %in% colnames(resInf))
+  expect_true("pdc_0_to_inf" %in% colnames(resInf))
+
+  p1 <- resInf |> dplyr::filter(.data$subject_id == 1L)
+  expect_equal(p1$rx_fills_0_to_inf, 2)
+})

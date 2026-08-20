@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 # Cohort Utilization & Cost Enrichment
 
-In Health Economics and Outcomes Research (HEOR) and Real-World Evidence (RWE), evaluating Healthcare Resource Utilization (HCRU) and direct medical costs requires capturing granular patient encounters across multiple care settings (inpatient, outpatient, pharmacy, diagnostics, procedures, and financial claims).
+In Health Economics and Outcomes Research (HEOR) and Real-World Evidence (RWE), evaluating Healthcare Resource Utilization (HCRU) and direct medical costs requires capturing granular patient encounters across multiple care settings (inpatient, outpatient, emergency, pharmacy, diagnostics, procedures, and financial claims).
 
 Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`), **HERMES** provides a pipe-friendly, 3-layer architecture for cohort construction, in-database column enrichment, and standardized reporting.
 
@@ -40,11 +40,13 @@ Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstruc
  ─────────────────────────   ───────────────────────      ────────────────────────────
  Standalone episode cohorts  Appends windowed metric      Standardised result objects
  in write schema:            columns in-database:         for publication tables:
- • computeHospitalization*   • addHospitalizations()      • summariseUtilization()
- • computeInfusionCohorts()  • addOutpatientVisits()      • summariseCosts()
-                             • addPrescriptions()         • tableUtilization()
-                             • addProcedures()            • tableCosts()
-                             • addCosts()
+ • computeHospitalization*   • addInpatients()            • summariseUtilization()
+ • computeInfusionCohorts()  • addEmergencyCare()         • summariseCosts()
+                             • addOutpatientVisits()      • tableUtilization()
+                             • addPrescriptions()         • tableCosts()
+                             • addProcedures()            • plotUtilization()
+                             • addCosts()                 • plotCosts()
+                             • addVisits() (composite)
 ```
 
 ---
@@ -103,29 +105,37 @@ cdm$infusion_episodes |>
 
 ## 3. Layer 2: In-Database Cohort Enrichment (`PatientProfiles` Style)
 
-Cohort enricher functions take an existing study cohort, execute database-side joins across configurable temporal windows (e.g., baseline `[-365, -1]` and follow-up `[0, 365]`), and append metric columns without dropping zero-utilization subjects.
+Cohort enricher functions take an existing study cohort, execute database-side joins across configurable temporal windows (e.g., baseline `[-365, -1]`, 1-year follow-up `[0, 365]`, or full follow-up `[0, Inf]`), and append metric columns without dropping zero-utilization subjects.
+
+### Modular Enricher Pipeline
 
 ```{r enrich_pipeline}
-# Pipe study cohort through all 5 domain enrichers
+# Pipe study cohort through all domain enrichers with fixed and open-ended windows
 cdm$study_enriched <- cdm$target_cohort |>
-  addHospitalizations(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
-    readmissions = TRUE
+  addInpatients(
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
+    readmissions = TRUE,
+    stratifySpecialty = TRUE,
+    specialties = list(cardiology = 38004453L)
+  ) |>
+  addEmergencyCare(
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf))
   ) |>
   addOutpatientVisits(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
-    stratifySpecialty = TRUE
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
+    stratifySpecialty = TRUE,
+    includeEmergency = FALSE
   ) |>
   addPrescriptions(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
     daysSupply = TRUE,
     pdc = TRUE
   ) |>
   addProcedures(
-    window = list(baseline = c(-365, -1), followup = c(0, 365))
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf))
   ) |>
   addCosts(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
     costField = "total_paid",
     name = "study_enriched"
   )
@@ -134,13 +144,25 @@ cdm$study_enriched <- cdm$target_cohort |>
 colnames(cdm$study_enriched)
 ```
 
-```text
-The enriched cohort table contains:
-• Inpatient: inpatient_admissions_*, inpatient_los_days_*, icu_admissions_*, icu_los_days_*, readmissions_30d_*
-• Outpatient: emergency_visits_*, gp_visits_*, specialist_visits_*, other_outpatient_visits_*
-• Pharmacy: rx_fills_*, days_supply_*, pdc_*, infusions_*
-• Diagnostics: lab_tests_count_*, procedures_count_*
-• Direct Costs: cost_inpatient_*, cost_outpatient_*, cost_drug_*, cost_procedure_*, cost_total_*
+### All-In-One Multi-Setting Visits with `addVisits()`
+
+To extract Inpatient, Outpatient, and Emergency utilization in a single step with unified specialty stratification:
+
+```{r add_visits_demo}
+cdm$visits_enriched <- cdm$target_cohort |>
+  addVisits(
+    window = list(baseline = c(-365, -1), all_followup = c(0, Inf)),
+    settings = c("inpatient", "outpatient", "emergency"),
+    stratifySpecialty = TRUE,
+    specialties = list(
+      oncology = c(38004507L, 38004006L),
+      cardiology = 38004453L
+    ),
+    readmissions = TRUE,
+    name = "visits_enriched"
+  )
+
+colnames(cdm$visits_enriched)
 ```
 
 ---
@@ -241,8 +263,10 @@ plotCosts(
 
 | Domain | Metrics Extracted | Function Responsible | Output Columns |
 | :--- | :--- | :--- | :--- |
-| **[Inpatient]** | Admissions, ICU, LOS, Readmissions | `addHospitalizations()` | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*` |
-| **[Outpatient]** | GP, Specialist, ER, Other Visits | `addOutpatientVisits()` | `gp_visits_*`, `specialist_visits_*`, `emergency_visits_*` |
+| **[Inpatient]** | Admissions, ICU, LOS, Readmissions, Specialties | `addInpatients()` (`addHospitalizations()`) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*`, `{specialty}_inpatient_admissions_*` |
+| **[Emergency]** | ER Visits & Specialist Acute Care | `addEmergencyCare()` (`addEmergency()`) | `emergency_visits_*`, `{specialty}_emergency_visits_*` |
+| **[Outpatient]** | GP, Specialist, Other Visits, Specialties | `addOutpatientVisits()` | `gp_visits_*`, `specialist_visits_*`, `other_outpatient_visits_*`, `{specialty}_visits_*` |
+| **[Multi-Setting]** | Inpatient + Outpatient + Emergency Visits | `addVisits()` | Combined Inpatient, Outpatient, Emergency columns |
 | **[Pharmacy]** | Rx Fills, Days Supply, PDC, Infusions | `addPrescriptions()` | `rx_fills_*`, `days_supply_*`, `pdc_*`, `infusions_*` |
 | **[Diagnostics/Proc]** | Labs, Imaging, Procedures | `addProcedures()` | `lab_tests_count_*`, `procedures_count_*` |
 | **[Direct Costs]** | Inpatient, Outpatient, Drug, Total | `addCosts()` | `cost_inpatient_*`, `cost_outpatient_*`, `cost_drug_*`, `cost_total_*` |

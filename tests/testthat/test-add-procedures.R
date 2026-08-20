@@ -22,3 +22,18 @@ test_that("addProcedures extracts labs, imaging, and procedure occurrences", {
   expect_equal(p1$lab_tests_count_followup, 1)
   expect_equal(p1$procedures_count_followup, 1)
 })
+
+test_that("addProcedures supports infinite and NA window bounds", {
+  cdm <- hermesTestCdm()
+
+  resInf <- cdm$target_cohort |>
+    addProcedures(window = c(0, Inf)) |>
+    dplyr::collect()
+
+  expect_true("lab_tests_count_0_to_inf" %in% colnames(resInf))
+  expect_true("procedures_count_0_to_inf" %in% colnames(resInf))
+
+  p1 <- resInf |> dplyr::filter(.data$subject_id == 1L)
+  expect_equal(p1$lab_tests_count_0_to_inf, 1)
+  expect_equal(p1$procedures_count_0_to_inf, 1)
+})

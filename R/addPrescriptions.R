@@ -124,7 +124,7 @@ addPrescriptions <- function(
     names(win_summary)[names(win_summary) == "inf_cnt"] <- c_inf
 
     if (pdc) {
-      win_summary[[c_pdc]] <- pmin(1.0, win_summary[[c_days]] / win_len)
+      win_summary[[c_pdc]] <- if (is.infinite(win_len)) 0.0 else pmin(1.0, win_summary[[c_days]] / win_len)
     }
 
     res_list <- c(res_list, list(win_summary))

@@ -67,3 +67,23 @@ test_that("addOutpatientVisits computes granular specialty breakdowns", {
   expect_equal(p2$oncology_visits_followup, 0)
   expect_equal(p2$specialty_x_visits_followup, 0)
 })
+
+test_that("addOutpatientVisits supports infinite and NA window bounds", {
+  cdm <- hermesTestCdm()
+
+  resInf <- cdm$target_cohort |>
+    addOutpatientVisits(window = c(0, Inf)) |>
+    dplyr::collect()
+
+  expect_true("gp_visits_0_to_inf" %in% colnames(resInf))
+  expect_true("specialist_visits_0_to_inf" %in% colnames(resInf))
+  p1 <- resInf |> dplyr::filter(.data$subject_id == 1L)
+  expect_equal(p1$gp_visits_0_to_inf, 1)
+  expect_equal(p1$specialist_visits_0_to_inf, 1)
+
+  resNa <- cdm$target_cohort |>
+    addOutpatientVisits(window = list(c(0, NA))) |>
+    dplyr::collect()
+
+  expect_equal(resInf, resNa)
+})

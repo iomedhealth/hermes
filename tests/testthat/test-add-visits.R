@@ -103,3 +103,36 @@ test_that("addVisits unifies granular specialty stratification across settings",
   p2 <- cohortEnriched |> dplyr::filter(.data$subject_id == 2L)
   expect_equal(p2$emergency_medicine_emergency_visits_followup, 1)
 })
+
+test_that("addVisits supports infinite and NA window bounds with censorDate", {
+  cdm <- hermesTestCdm()
+
+  # 1. Whole follow-up window
+  cohortEnriched <- cdm$target_cohort |>
+    addVisits(
+      window = c(0, Inf),
+      settings = c("inpatient", "outpatient", "emergency")
+    ) |>
+    dplyr::collect()
+
+  cols <- colnames(cohortEnriched)
+  expect_true("inpatient_admissions_0_to_inf" %in% cols)
+  expect_true("emergency_visits_0_to_inf" %in% cols)
+  expect_true("gp_visits_0_to_inf" %in% cols)
+
+  p1 <- cohortEnriched |> dplyr::filter(.data$subject_id == 1L)
+  expect_equal(p1$inpatient_admissions_0_to_inf, 2)
+  expect_equal(p1$emergency_visits_0_to_inf, 0)
+  expect_equal(p1$gp_visits_0_to_inf, 1)
+
+  # 2. Named window list with NA and censorDate
+  cohortCensored <- cdm$target_cohort |>
+    addVisits(
+      window = list(baseline = c(-365, -1), all_followup = c(0, NA)),
+      censorDate = "cohort_end_date"
+    ) |>
+    dplyr::collect()
+
+  expect_true("inpatient_admissions_all_followup" %in% colnames(cohortCensored))
+  expect_true("emergency_visits_all_followup" %in% colnames(cohortCensored))
+})

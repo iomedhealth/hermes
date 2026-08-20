@@ -9,7 +9,7 @@ vignette: >
 
 # HERMES API & Architecture Specification
 
-**Version:** 0.3.0 (Draft)  
+**Version:** 0.4.0 (Draft)  
 **Package Name:** `HERMES` (`Health Economic Resource Modeling & Evaluation System`)  
 **Target R Version:** R >= 4.1  
 
@@ -125,6 +125,18 @@ hermes::extract_hcru(
   * `cost_field`: String. OMOP `COST` column to extract (`"total_paid"`, `"total_charge"`, `"amount_allowed"`).
 * **Returns:** A `hermes_hcru` object containing utilization counts, Length of Stay (LOS), and direct medical cost distributions.
 * **Underlying Engine:** `omopgenerics`, `dbplyr`, OMOP `COST` table queries.
+
+#### In-Database Cohort Enrichers (`PatientProfiles` Pattern)
+
+HERMES provides pipe-friendly verbs to enrich cohort tables in-database across configurable fixed or open-ended temporal windows (`c(-365, -1)`, `c(0, 365)`, `c(0, Inf)`, `c(0, NA)`):
+
+* **`addInpatients(x, window, icuSpecialtyConceptIds, stratifySpecialty, specialties, readmissions)`**: Inpatient admissions, length of stay (LOS), ICU utilization, 30d/90d readmissions, and specialty breakdown (`{specialty}_inpatient_admissions_*`). Aliases: `addHospitalizations`, `addInpatient`.
+* **`addEmergencyCare(x, window, emergencyVisitConceptIds, emergencySpecialtyConceptIds, stratifySpecialty, specialties)`**: Dedicated emergency encounters identified via visit concepts or Emergency Medicine provider specialties. Aliases: `addEmergency`, `addEmergencyVisits`.
+* **`addOutpatientVisits(x, window, stratifySpecialty, gpSpecialtyConceptIds, specialties, includeEmergency)`**: Primary care (GP), specialist, and other outpatient visit counts.
+* **`addVisits(x, window, settings, stratifySpecialty, specialties, readmissions)`**: Composite multi-setting enricher orchestrating Inpatient, Outpatient, and Emergency care in a single call.
+* **`addPrescriptions(x, window, daysSupply, pdc, conceptSet)`**: Prescription fills, cumulative days supply, Proportion of Days Covered (PDC), and infusion episodes.
+* **`addProcedures(x, window, labConceptSet, imagingConceptSet, procedureConceptSet)`**: Laboratory measurement counts, imaging scan counts, and procedure counts.
+* **`addCosts(x, window, costField, domains)`**: Direct medical cost linkage from OMOP `cost` table.
 
 ---
 
