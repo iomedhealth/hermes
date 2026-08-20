@@ -18,20 +18,23 @@ articles:
   - title: "Getting Started"
     navbar: "Getting Started"
     contents:
+      - hermes-ecosystem
       - intro-to-heor
       - cohort-utilization
   - title: "Deep Dives"
     navbar: "Deep Dives"
     contents:
       - hcru_logic
-      - API_SPECIFICATION
 reference:
   - title: "🏥 Healthcare Resource Utilization (CohortUtilisation)"
     desc: "In-database cohort enrichment verbs for inpatient, emergency, outpatient, medication, and procedure utilization."
     contents:
       - addInpatients
       - addHospitalizations
+      - addInpatient
       - addEmergencyCare
+      - addEmergency
+      - addEmergencyVisits
       - addOutpatientVisits
       - addVisits
       - addPrescriptions

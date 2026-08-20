@@ -7,76 +7,126 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# HCRU Extraction Logic
+# HCRU & Direct Cost Extraction Logic
 
-This document outlines the extraction logic for Healthcare Resource Utilization (HCRU) from the OMOP `COST` table. 
+This document outlines the extraction and linkage logic for Healthcare Resource Utilization (HCRU) and direct medical expenditures from the OMOP CDM `COST` table across the HERMES ecosystem.
 
-## Logical Flow
+---
+
+## 1. Dual Cost Extraction Modalities
+
+HERMES provides two complementary mechanisms for extracting cost data:
+
+1. **In-Database Cohort Enrichment (`CohortCosts::addCosts()`)**:
+   * Appends windowed domain cost columns (`cost_inpatient_*`, `cost_outpatient_*`, `cost_drug_*`, `cost_procedure_*`, `cost_total_*`) directly to any OMOP cohort table in the database write schema.
+   * Suited for epidemiological studies, patient profiling, and multivariable regression.
+
+2. **Pipeline State-Cost Extraction (`CohortEconomics::extract_hcru()`)**:
+   * Links clinical event expenditures to study subjects and tags each cost with the patient's health state (e.g. `State_Baseline` vs `State_Outcome`).
+   * Feeds state-specific cost distributions directly into Stage 4 (`compile_trajectories()`) and Stage 5 Markov simulations (`simulate_economics()`).
+
+---
+
+## 2. Extraction Decision Flow
 
 ```text
-                            +--------------------------+
-                            |       extract_hcru()     |
-                            +-------------+------------+
-                                          |
-                                          v
-                              +----------------------+
-                              |  Does 'cost' table   |
-                              |  exist in the CDM?   |
-                              +------+---------+-----+
-                                     |         |
-                                [No] |         | [Yes]
-                                     v         v
-                  +--------------------+     +---------------------------+
-                  | Warn user: "No     |     |   Is 'cost' table empty?  |
-                  | cost table found"  |     |   (record count == 0)     |
-                  | Return empty data. |     +-------+---------+---------+
-                  +--------------------+             |         |
-                                                [Yes]|         | [No]
-                                                     v         |
-                                     +--------------------+    |
-                                     | Warn user: Table   |    |
-                                     | exists but empty.  |    |
-                                     | Return empty data. |    |
-                                     +--------------------+    v
-                                                 +--------------------------------+
-                                                 | Are financial metrics          |
-                                                 | (total_paid, total_charge)     |
-                                                 | available and > 0?             |
-                                                 +---------+-------------+--------+
-                                                           |             |
-                                                      [No] |             | [Yes]
-                                                           v             |
-                                     +---------------------------+       |
-                                     | Do drg_concept_id or      |       |
-                                     | drg_source_value exist    |       |
-                                     | in the table?             |       |
-                                     +-------+---------+---------+       |
-                                             |         |                 |
-                                        [No] |         | [Yes]           |
-                                             v         v                 |
-                      +------------------------+  +-------------------+  |
-                      | Warn user: "No cost    |  | Prompt user for   |  |
-                      | metrics or DRGs found" |  | DRG-to-Cost       |  |
-                      | Return empty data.     |  | lookup dictionary |  |
-                      +------------------------+  +--------+----------+  |
-                                                           |             |
-                                                           |             |
-                                                           v             v
-                                                +--------------------------------+
-                                                | Extract unadjusted costs &     |
-                                                | summarize by cost_domain_id    |
-                                                | via dplyr::group_by()          |
-                                                +--------------------------------+
-                                                           |
-                                                           v
-                                                +--------------------------------+
-                                                | Return hermes_hcru object      |
-                                                +--------------------------------+
+                            +-------------------------------------+
+                            | addCosts() or extract_hcru() called |
+                            +------------------+------------------+
+                                               |
+                                               v
+                                   +-----------------------+
+                                   |   Does 'cost' table   |
+                                   |   exist in the CDM?   |
+                                   +-------+-------+-------+
+                                           |       |
+                                      [No] |       | [Yes]
+                                           v       v
+                        +--------------------+   +---------------------------+
+                        | Warn user: No cost |   |   Is 'cost' table empty?  |
+                        | table found. Fill  |   |   (record count == 0)     |
+                        | columns with 0.0.  |   +-------+---------+---------+
+                        +--------------------+           |         |
+                                                    [Yes]|         | [No]
+                                                         v         |
+                                         +--------------------+    |
+                                         | Warn user: Table   |    |
+                                         | exists but empty.  |    |
+                                         | Return 0.0 values. |    |
+                                         +--------------------+    v
+                                                     +--------------------------------+
+                                                     | Are financial metrics          |
+                                                     | (total_paid, total_charge)     |
+                                                     | available and populated?       |
+                                                     +---------+-------------+--------+
+                                                               |             |
+                                                          [No] |             | [Yes]
+                                                               v             |
+                                         +---------------------------+       |
+                                         | Do drg_concept_id or      |       |
+                                         | drg_source_value exist    |       |
+                                         | in the table?             |       |
+                                         +-------+---------+---------+       |
+                                                 |         |                 |
+                                            [No] |         | [Yes]           |
+                                                 v         v                 |
+                          +------------------------+  +-------------------+  |
+                          | Zero-fill cost columns |  | Prompt user for   |  |
+                          | or warn missing metric |  | DRG-to-Cost       |  |
+                          |                        |  | lookup dictionary |  |
+                          +------------------------+  +--------+----------+  |
+                                                               |             |
+                                                               |             |
+                                                               v             v
+                                                    +--------------------------------+
+                                                    | Link by cost_event_id across   |
+                                                    | Condition, Visit, Drug, and    |
+                                                    | Procedure occurrence tables    |
+                                                    +--------------------------------+
+                                                               |
+                                                               v
+                                                    +--------------------------------+
+                                                    | Aggregate across temporal      |
+                                                    | windows & zero-fill subjects   |
+                                                    +--------------------------------+
 ```
 
-## Detailed Rules
+---
 
-1. **Structural Check**: First, verify if the `cost` table actually exists in the database schema.
-2. **Content Check**: OMOP CDMs often generate the structure for all tables by default. The `COST` table might exist but contain 0 rows.
-3. **Metric Check**: Some databases populate the `COST` table with event linkages but mask the actual financial values due to privacy. Check if `total_charge`, `total_cost`, `total_paid`, or `paid_*` columns are all `NA` or `0`.
-4. **DRG Fallback**: If the financial values are masked, the pipeline pivots to check for Diagnosis-Related Group (DRG) codes (`drg_concept_id` or `drg_source_value`). If present, prompt the user for a standardized DRG lookup table to infer an estimated cost for the event, ensuring economic simulations don't fail due to zero-cost data.
+## 3. Polymorphic Event Linkage Strategy
+
+OMOP CDM v5.3+ stores costs in a polymorphic `COST` table where `cost_event_id` references the primary key of the domain table indicated by `cost_domain_id`:
+
+```sql
+SELECT 
+  c.person_id,
+  c.cost_domain_id,
+  c.cost_type_concept_id,
+  c.total_paid,
+  c.total_charge,
+  c.paid_by_payer,
+  c.paid_by_patient,
+  v.visit_concept_id,
+  v.visit_start_date,
+  v.visit_end_date
+FROM cdm.cost c
+JOIN cdm.visit_occurrence v 
+  ON c.cost_event_id = v.visit_occurrence_id 
+ AND c.cost_domain_id = 'Visit'
+WHERE c.person_id IN (SELECT subject_id FROM study_cohort);
+```
+
+### Supported Cost Domains
+* **Inpatient Visits** (`cost_domain_id = 'Visit'` and `visit_concept_id` in Inpatient/ICU concepts).
+* **Outpatient Visits** (`cost_domain_id = 'Visit'` and `visit_concept_id` in Outpatient concepts).
+* **Pharmacy** (`cost_domain_id = 'Drug'` linked via `drug_exposure_id`).
+* **Procedures & Diagnostics** (`cost_domain_id = 'Procedure'` or `'Measurement'`).
+* **Conditions** (`cost_domain_id = 'Condition'` linked via `condition_occurrence_id`).
+
+---
+
+## 4. Resilience & Fallback Rules
+
+1. **Missing Cost Table**: If the database schema lacks a `COST` table, a clear warning is emitted (`Missing 'cost' table in CDM`), and all cost columns are safely populated with `0.0` to prevent pipeline crashes.
+2. **Empty Cost Table**: If the table exists with 0 rows, subjects are retained with `0.0` expenditures.
+3. **Missing Subject Records**: Zero-utilization subjects in the cohort are preserved via left joins with coalesce to `0.0`, ensuring no patient attrition during cost enrichment.

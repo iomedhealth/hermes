@@ -2,48 +2,109 @@
 
 > Health Economic Resource Modeling & Evaluation System
 
-**HERMES** is an R-based framework designed for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis and Cost-Effectiveness Analysis (CEA) starting directly from observational data in the OMOP Common Data Model (CDM).
+**HERMES** is an R-based analytical ecosystem designed for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly from observational healthcare data in the OMOP Common Data Model (CDM).
 
-## Features
+---
 
-- **OMOP CDM Native**: Connects programmatically to OMOP CDM databases using [CDMConnector](https://darwin-eu.github.io/CDMConnector/) and [omopgenerics](https://darwin-eu.github.io/omopgenerics/).
-- **End-to-End Pipeline**: From cohort generation to economic simulation and decision analysis plots.
-- **Causal Inference**: Controls for baseline confounding using Propensity Scores (PS) with high-dimensional regularized logistic regression via [Cyclops](https://ohdsi.github.io/Cyclops/).
-- **Standardized Outputs**: Generates decision-analytic plots like CEACs (Cost-Effectiveness Acceptability Curves) powered by [BCEA](https://giabaio.github.io/BCEA/) to inform Health Technology Assessments (HTA).
+## The Modular Package Suite
 
-## Quick Start
+HERMES is structured as a **modular monorepo** containing three specialized domain packages conforming to the DARWIN EU standard, unified by the root `hermes` umbrella metapackage:
 
-> [!NOTE]
-> The following example uses DuckDB and the synthetic `Eunomia` dataset to demonstrate the complete 6-stage pipeline.
+| Package | Directory | Primary Scope & Key Verbs |
+| :--- | :--- | :--- |
+| **`CohortUtilisation`** | `packages/CohortUtilisation` | In-database HCRU extraction (`addInpatients`, `addEmergencyCare`, `addOutpatientVisits`, `addVisits`, `addPrescriptions`, `addProcedures`, `computeHospitalizationCohorts`, `computeInfusionCohorts`, `summariseUtilization`, `tableUtilization`, `plotUtilization`). |
+| **`CohortCosts`** | `packages/CohortCosts` | Direct medical expenditures and OMOP `COST` linkage (`addCosts`, `summariseCosts`, `tableCosts`, `plotCosts`). |
+| **`CohortEconomics`** | `packages/CohortEconomics` | Causal propensity scores, Markov state trajectories, microsimulations, and CEA (`init`, `summarise_baseline`, `extract_hcru`, `fit_ps`, `adjust_ps`, `compile_trajectories`, `simulate_economics`, `run_cea`). |
+| **`hermes`** | Root | Umbrella metapackage providing a unified entry point, startup banner, and full re-exports. |
+
+---
+
+## Installation
 
 ```R
-library(HERMES)
-library(CDMConnector)
-library(CohortConstructor)
+# Install the complete hermes ecosystem (recommended)
+pak::pkg_install("iomedhealth/hermes")
 
-# 0. Setup Connection (DuckDB Eunomia)
-Sys.setenv(EUNOMIA_DATA_FOLDER = file.path(tempdir(), "eunomia"))
-con <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomiaDir("GiBleed"))
-cdm <- CDMConnector::cdmFromCon(con, cdmSchema = "main", writeSchema = "main")
+# Or install individual standalone domain packages
+pak::pkg_install("iomedhealth/hermes/packages/CohortUtilisation")
+pak::pkg_install("iomedhealth/hermes/packages/CohortCosts")
+pak::pkg_install("iomedhealth/hermes/packages/CohortEconomics")
+```
 
-# Create cohorts (Target, Comparator, Outcome)
-cdm$target_cohort <- conceptCohort(cdm, list(target_cohort = 4285898L), "target_cohort")
-cdm$comparator_cohort <- conceptCohort(cdm, list(comparator_cohort = 4266809L), "comparator_cohort")
-cdm$outcome_cohort <- conceptCohort(cdm, list(outcome_cohort = 192671L), "outcome_cohort")
+---
+
+## Quick Starts
+
+### Workflow 1: In-Database Cohort Utilization & Cost Enrichment
+
+Enrich study cohorts in-database across configurable temporal windows (e.g. baseline `[-365, -1]`, 1-year follow-up `[0, 365]`, or full follow-up `[0, Inf]`) and generate publication-ready tables:
+
+```R
+library(hermes)
+library(dplyr)
+
+# 0. Connect to CDM (built-in synthetic mock database)
+cdm <- mockHERMES()
+
+# 1. Enrich cohort with visits, prescriptions, and direct costs in-database
+cdm$study_enriched <- cdm$target_cohort |>
+  addVisits(
+    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    settings = c("inpatient", "outpatient", "emergency"),
+    stratifySpecialty = TRUE,
+    readmissions = TRUE
+  ) |>
+  addPrescriptions(
+    window = list(followup = c(0, 365)),
+    daysSupply = TRUE,
+    pdc = TRUE
+  ) |>
+  addCosts(
+    window = list(followup = c(0, 365)),
+    costField = "total_paid",
+    name = "study_enriched"
+  )
+
+# 2. Summarise utilization and costs into standardised results
+util_summary <- summariseUtilization(cdm$study_enriched)
+cost_summary <- summariseCosts(cdm$study_enriched)
+
+# 3. Format publication tables (GT, Flextable, or Tibble)
+tableUtilization(util_summary)
+tableCosts(cost_summary)
+```
+
+---
+
+### Workflow 2: 6-Stage HEOR Causal & Decision-Analytic Simulation Pipeline
+
+Run the complete causal inference and economic simulation pipeline to compare a Target treatment arm against a Standard of Care Comparator:
+
+```R
+library(hermes)
+
+# 0. Setup Connection
+cdm <- mockHERMES()
 
 # 1-6. Run the End-to-End Pipeline
-study <- init(cdm, "target_cohort", "comparator_cohort", "outcome_cohort") |>
+study <- init(
+  cdm = cdm,
+  target_cohort = "target_cohort",
+  comparator_cohort = "comparator_cohort",
+  outcome_cohort = "outcome_cohort"
+) |>
   summarise_baseline() |>
   extract_hcru() |>
   fit_ps() |>
   adjust_ps() |>
   compile_trajectories() |>
-  simulate_economics() |>
+  simulate_economics(time_horizon = 10, n_samples = 100) |>
   run_cea()
 
-# Generate plots
+# Decision-Analytic Visualizations & Summary
 plot_ceac(study)
 plot_plane(study)
+table_summary(study)
 ```
 
 ### Outputs
@@ -56,10 +117,10 @@ plot_plane(study)
 ---
 
 <details>
-<summary><b>The 6-Stage Architecture</b></summary>
+<summary><b>The 6-Stage HEOR Architecture</b></summary>
 <br>
 
-HERMES relies on a strict 6-stage analytical framework to transition from observational data to actionable insights.
+HERMES relies on a strict 6-stage analytical framework to transition from observational data to actionable health technology assessment insights:
 
 ```mermaid
 graph TD
@@ -72,24 +133,23 @@ graph TD
     
     S6 --> P1[CEAC Plot]
     S6 --> P2[CE Plane Plot]
+    S6 --> P3[Summary Table]
 ```
 
-1. **Cohort Generation**: Define target treatment, comparator, and clinical outcome cohorts using standardized vocabularies.
-2. **Descriptive Baseline & HCRU Characterization**: Build unadjusted baseline tables, enrich with demographics (using [PatientProfiles](https://darwin-eu.github.io/PatientProfiles/)), and extract raw medical costs and care utilization.
-3. **Causal Propensity Score (PS) Adjustment**: Fit high-dimensional regularized logistic regression models based on baseline clinical features to estimate propensity scores and match populations.
-4. **Trajectory Compilation & State-Cost Extraction**: Compile balanced patient timelines into mutually exclusive health states over discrete time cycles, extracting state-specific expenditure distributions.
-5. **Economic Simulation**: Integrate probabilities and cost distributions into an economic state-transition model. Project long-term costs and Quality-Adjusted Life-Years (QALYs).
-6. **Decision Analysis & Post-Processing (CEA)**: Compute the Incremental Cost-Effectiveness Ratio (ICER) and Net Monetary Benefit (NMB), generating CEAC and cost-effectiveness plane plots.
+1. **Cohort Generation (`init`)**: Define target treatment, comparator, and clinical outcome cohorts.
+2. **Descriptive Baseline & HCRU Characterization (`summarise_baseline`, `extract_hcru`)**: Build unadjusted baseline tables, enrich with demographics (via [PatientProfiles](https://darwin-eu.github.io/PatientProfiles/)), and extract unadjusted care utilization and direct medical costs.
+3. **Causal Propensity Score Adjustment (`fit_ps`, `adjust_ps`, `assess_balance`)**: Fit regularized logistic regression models (via [Cyclops](https://ohdsi.github.io/Cyclops/)) based on baseline clinical features to estimate propensity scores and perform matching.
+4. **Trajectory Compilation & State-Cost Extraction (`compile_trajectories`)**: Slices patient timelines into discrete health states over uniform time cycles, extracting state-to-state transition probabilities and state-specific expenditure distributions.
+5. **Economic Simulation (`simulate_economics`)**: Runs a Markov state-transition microsimulation incorporating parametric uncertainty (PSA) to project lifetime costs and QALYs.
+6. **Decision Analysis & Post-Processing (`run_cea`)**: Computes the Incremental Cost-Effectiveness Ratio (ICER) and Net Monetary Benefit (NMB), generating CEAC and cost-effectiveness plane plots powered by [BCEA](https://giabaio.github.io/BCEA/).
 
 </details>
 
-<details>
-<summary><b>Documentation</b></summary>
-<br>
+---
 
-For a detailed technical overview, function signatures, S3 class object flow, and OMOP `COST` query strategies, please refer to the documentation:
+## Documentation & Vignettes
 
-- [API & Architecture Specification](vignettes/API_SPECIFICATION.Rmd)
-- [Agent Guidelines & Architecture Instructions](AGENTS.md)
-
-</details>
+* **[The HERMES Ecosystem & Modular Suite](vignettes/hermes-ecosystem.Rmd)**: Architecture, package separation, and workflow guide.
+* **[Introduction to HEOR for OMOP Users](vignettes/intro-to-heor.Rmd)**: Conceptual Rosetta Stone translating OHDSI concepts to Health Economics.
+* **[Cohort Utilization & Cost Enrichment](vignettes/cohort-utilization.Rmd)**: Step-by-step hands-on guide for `CohortUtilisation` and `CohortCosts` verbs.
+* **[HCRU Extraction Logic](vignettes/hcru_logic.Rmd)**: Deep dive into the OMOP `COST` table extraction and fallback rules.
