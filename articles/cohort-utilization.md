@@ -5,8 +5,8 @@
 In Health Economics and Outcomes Research (HEOR) and Real-World Evidence
 (RWE), evaluating Healthcare Resource Utilization (HCRU) and direct
 medical costs requires capturing granular patient encounters across
-multiple care settings (inpatient, outpatient, pharmacy, diagnostics,
-procedures, and financial claims).
+multiple care settings (inpatient, outpatient, emergency, pharmacy,
+diagnostics, procedures, and financial claims).
 
 Following the **DARWIN EU / OHDSI** package ecosystem standards
 (`CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`),
@@ -30,11 +30,13 @@ construction, in-database column enrichment, and standardized reporting.
  ─────────────────────────   ───────────────────────      ────────────────────────────
  Standalone episode cohorts  Appends windowed metric      Standardised result objects
  in write schema:            columns in-database:         for publication tables:
- • computeHospitalization*   • addHospitalizations()      • summariseUtilization()
- • computeInfusionCohorts()  • addOutpatientVisits()      • summariseCosts()
-                             • addPrescriptions()         • tableUtilization()
-                             • addProcedures()            • tableCosts()
-                             • addCosts()
+ • computeHospitalization*   • addInpatients()            • summariseUtilization()
+ • computeInfusionCohorts()  • addEmergencyCare()         • summariseCosts()
+                             • addOutpatientVisits()      • tableUtilization()
+                             • addPrescriptions()         • tableCosts()
+                             • addProcedures()            • plotUtilization()
+                             • addCosts()                 • plotCosts()
+                             • addVisits() (composite)
 ```
 
 ------------------------------------------------------------------------
@@ -82,8 +84,8 @@ cdm$hosp_episodes |>
 #>   cohort_definition_id subject_id cohort_start_date cohort_end_date
 #>                  <int>      <int> <date>            <date>         
 #> 1                    1          1 2010-02-01        2010-02-05     
-#> 2                    1          1 2010-02-20        2010-02-23     
-#> 3                    1          2 2010-03-10        2010-03-15     
+#> 2                    1          2 2010-03-10        2010-03-15     
+#> 3                    1          1 2010-02-20        2010-02-23     
 #> 4                    2          1 2010-02-20        2010-02-23
 ```
 
@@ -112,69 +114,175 @@ cdm$infusion_episodes |>
 
 Cohort enricher functions take an existing study cohort, execute
 database-side joins across configurable temporal windows (e.g., baseline
-`[-365, -1]` and follow-up `[0, 365]`), and append metric columns
-without dropping zero-utilization subjects.
+`[-365, -1]`, 1-year follow-up `[0, 365]`, or full follow-up
+`[0, Inf]`), and append metric columns without dropping zero-utilization
+subjects.
+
+#### Modular Enricher Pipeline
 
 ``` r
 
-# Pipe study cohort through all 5 domain enrichers
+# Pipe study cohort through all domain enrichers with fixed and open-ended windows
 cdm$study_enriched <- cdm$target_cohort |>
-  addHospitalizations(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
-    readmissions = TRUE
+  addInpatients(
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
+    readmissions = TRUE,
+    stratifySpecialty = TRUE,
+    specialties = list(cardiology = 38004453L)
+  ) |>
+  addEmergencyCare(
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf))
   ) |>
   addOutpatientVisits(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
-    stratifySpecialty = TRUE
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
+    stratifySpecialty = TRUE,
+    includeEmergency = FALSE
   ) |>
   addPrescriptions(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
     daysSupply = TRUE,
     pdc = TRUE
   ) |>
   addProcedures(
-    window = list(baseline = c(-365, -1), followup = c(0, 365))
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf))
   ) |>
   addCosts(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    window = list(baseline = c(-365, -1), followup = c(0, 365), all_followup = c(0, Inf)),
     costField = "total_paid",
     name = "study_enriched"
   )
 
 # Inspect enriched columns
 colnames(cdm$study_enriched)
-#>  [1] "cohort_definition_id"             "subject_id"                      
-#>  [3] "cohort_start_date"                "cohort_end_date"                 
-#>  [5] "inpatient_admissions_baseline"    "inpatient_los_days_baseline"     
-#>  [7] "icu_admissions_baseline"          "icu_los_days_baseline"           
-#>  [9] "readmissions_30d_baseline"        "readmissions_90d_baseline"       
-#> [11] "inpatient_admissions_followup"    "inpatient_los_days_followup"     
-#> [13] "icu_admissions_followup"          "icu_los_days_followup"           
-#> [15] "readmissions_30d_followup"        "readmissions_90d_followup"       
-#> [17] "emergency_visits_baseline"        "gp_visits_baseline"              
-#> [19] "specialist_visits_baseline"       "other_outpatient_visits_baseline"
-#> [21] "emergency_visits_followup"        "gp_visits_followup"              
-#> [23] "specialist_visits_followup"       "other_outpatient_visits_followup"
-#> [25] "rx_fills_baseline"                "days_supply_baseline"            
-#> [27] "infusions_baseline"               "pdc_baseline"                    
-#> [29] "rx_fills_followup"                "days_supply_followup"            
-#> [31] "infusions_followup"               "pdc_followup"                    
-#> [33] "lab_tests_count_baseline"         "procedures_count_baseline"       
-#> [35] "lab_tests_count_followup"         "procedures_count_followup"       
-#> [37] "cost_inpatient_baseline"          "cost_outpatient_baseline"        
-#> [39] "cost_drug_baseline"               "cost_procedure_baseline"         
-#> [41] "cost_total_baseline"              "cost_inpatient_followup"         
-#> [43] "cost_outpatient_followup"         "cost_drug_followup"              
-#> [45] "cost_procedure_followup"          "cost_total_followup"
+#>  [1] "cohort_definition_id"                        
+#>  [2] "subject_id"                                  
+#>  [3] "cohort_start_date"                           
+#>  [4] "cohort_end_date"                             
+#>  [5] "inpatient_admissions_baseline"               
+#>  [6] "inpatient_los_days_baseline"                 
+#>  [7] "icu_admissions_baseline"                     
+#>  [8] "icu_los_days_baseline"                       
+#>  [9] "readmissions_30d_baseline"                   
+#> [10] "readmissions_90d_baseline"                   
+#> [11] "cardiology_inpatient_admissions_baseline"    
+#> [12] "inpatient_admissions_followup"               
+#> [13] "inpatient_los_days_followup"                 
+#> [14] "icu_admissions_followup"                     
+#> [15] "icu_los_days_followup"                       
+#> [16] "readmissions_30d_followup"                   
+#> [17] "readmissions_90d_followup"                   
+#> [18] "cardiology_inpatient_admissions_followup"    
+#> [19] "inpatient_admissions_all_followup"           
+#> [20] "inpatient_los_days_all_followup"             
+#> [21] "icu_admissions_all_followup"                 
+#> [22] "icu_los_days_all_followup"                   
+#> [23] "readmissions_30d_all_followup"               
+#> [24] "readmissions_90d_all_followup"               
+#> [25] "cardiology_inpatient_admissions_all_followup"
+#> [26] "emergency_visits_baseline"                   
+#> [27] "emergency_visits_followup"                   
+#> [28] "emergency_visits_all_followup"               
+#> [29] "gp_visits_baseline"                          
+#> [30] "specialist_visits_baseline"                  
+#> [31] "other_outpatient_visits_baseline"            
+#> [32] "gp_visits_followup"                          
+#> [33] "specialist_visits_followup"                  
+#> [34] "other_outpatient_visits_followup"            
+#> [35] "gp_visits_all_followup"                      
+#> [36] "specialist_visits_all_followup"              
+#> [37] "other_outpatient_visits_all_followup"        
+#> [38] "rx_fills_baseline"                           
+#> [39] "days_supply_baseline"                        
+#> [40] "infusions_baseline"                          
+#> [41] "pdc_baseline"                                
+#> [42] "rx_fills_followup"                           
+#> [43] "days_supply_followup"                        
+#> [44] "infusions_followup"                          
+#> [45] "pdc_followup"                                
+#> [46] "rx_fills_all_followup"                       
+#> [47] "days_supply_all_followup"                    
+#> [48] "infusions_all_followup"                      
+#> [49] "pdc_all_followup"                            
+#> [50] "lab_tests_count_baseline"                    
+#> [51] "procedures_count_baseline"                   
+#> [52] "lab_tests_count_followup"                    
+#> [53] "procedures_count_followup"                   
+#> [54] "lab_tests_count_all_followup"                
+#> [55] "procedures_count_all_followup"               
+#> [56] "cost_inpatient_baseline"                     
+#> [57] "cost_outpatient_baseline"                    
+#> [58] "cost_drug_baseline"                          
+#> [59] "cost_procedure_baseline"                     
+#> [60] "cost_total_baseline"                         
+#> [61] "cost_inpatient_followup"                     
+#> [62] "cost_outpatient_followup"                    
+#> [63] "cost_drug_followup"                          
+#> [64] "cost_procedure_followup"                     
+#> [65] "cost_total_followup"                         
+#> [66] "cost_inpatient_all_followup"                 
+#> [67] "cost_outpatient_all_followup"                
+#> [68] "cost_drug_all_followup"                      
+#> [69] "cost_procedure_all_followup"                 
+#> [70] "cost_total_all_followup"
 ```
 
-``` text
-The enriched cohort table contains:
-• Inpatient: inpatient_admissions_*, inpatient_los_days_*, icu_admissions_*, icu_los_days_*, readmissions_30d_*
-• Outpatient: emergency_visits_*, gp_visits_*, specialist_visits_*, other_outpatient_visits_*
-• Pharmacy: rx_fills_*, days_supply_*, pdc_*, infusions_*
-• Diagnostics: lab_tests_count_*, procedures_count_*
-• Direct Costs: cost_inpatient_*, cost_outpatient_*, cost_drug_*, cost_procedure_*, cost_total_*
+#### All-In-One Multi-Setting Visits with `addVisits()`
+
+To extract Inpatient, Outpatient, and Emergency utilization in a single
+step with unified specialty stratification:
+
+``` r
+
+cdm$visits_enriched <- cdm$target_cohort |>
+  addVisits(
+    window = list(baseline = c(-365, -1), all_followup = c(0, Inf)),
+    settings = c("inpatient", "outpatient", "emergency"),
+    stratifySpecialty = TRUE,
+    specialties = list(
+      oncology = c(38004507L, 38004006L),
+      cardiology = 38004453L
+    ),
+    readmissions = TRUE,
+    name = "visits_enriched"
+  )
+
+colnames(cdm$visits_enriched)
+#>  [1] "cohort_definition_id"                        
+#>  [2] "subject_id"                                  
+#>  [3] "cohort_start_date"                           
+#>  [4] "cohort_end_date"                             
+#>  [5] "inpatient_admissions_baseline"               
+#>  [6] "inpatient_los_days_baseline"                 
+#>  [7] "icu_admissions_baseline"                     
+#>  [8] "icu_los_days_baseline"                       
+#>  [9] "readmissions_30d_baseline"                   
+#> [10] "readmissions_90d_baseline"                   
+#> [11] "oncology_inpatient_admissions_baseline"      
+#> [12] "cardiology_inpatient_admissions_baseline"    
+#> [13] "inpatient_admissions_all_followup"           
+#> [14] "inpatient_los_days_all_followup"             
+#> [15] "icu_admissions_all_followup"                 
+#> [16] "icu_los_days_all_followup"                   
+#> [17] "readmissions_30d_all_followup"               
+#> [18] "readmissions_90d_all_followup"               
+#> [19] "oncology_inpatient_admissions_all_followup"  
+#> [20] "cardiology_inpatient_admissions_all_followup"
+#> [21] "gp_visits_baseline"                          
+#> [22] "specialist_visits_baseline"                  
+#> [23] "other_outpatient_visits_baseline"            
+#> [24] "oncology_visits_baseline"                    
+#> [25] "cardiology_visits_baseline"                  
+#> [26] "gp_visits_all_followup"                      
+#> [27] "specialist_visits_all_followup"              
+#> [28] "other_outpatient_visits_all_followup"        
+#> [29] "oncology_visits_all_followup"                
+#> [30] "cardiology_visits_all_followup"              
+#> [31] "emergency_visits_baseline"                   
+#> [32] "oncology_emergency_visits_baseline"          
+#> [33] "cardiology_emergency_visits_baseline"        
+#> [34] "emergency_visits_all_followup"               
+#> [35] "oncology_emergency_visits_all_followup"      
+#> [36] "cardiology_emergency_visits_all_followup"
 ```
 
 ------------------------------------------------------------------------
@@ -318,8 +426,10 @@ plotCosts(
 
 | Domain | Metrics Extracted | Function Responsible | Output Columns |
 |:---|:---|:---|:---|
-| **\[Inpatient\]** | Admissions, ICU, LOS, Readmissions | [`addHospitalizations()`](../reference/addInpatients.md) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*` |
-| **\[Outpatient\]** | GP, Specialist, ER, Other Visits | [`addOutpatientVisits()`](../reference/addOutpatientVisits.md) | `gp_visits_*`, `specialist_visits_*`, `emergency_visits_*` |
+| **\[Inpatient\]** | Admissions, ICU, LOS, Readmissions, Specialties | [`addInpatients()`](../reference/addInpatients.md) ([`addHospitalizations()`](../reference/addInpatients.md)) | `inpatient_admissions_*`, `inpatient_los_days_*`, `icu_admissions_*`, `readmissions_30d_*`, `{specialty}_inpatient_admissions_*` |
+| **\[Emergency\]** | ER Visits & Specialist Acute Care | [`addEmergencyCare()`](../reference/addEmergencyCare.md) ([`addEmergency()`](../reference/addEmergencyCare.md)) | `emergency_visits_*`, `{specialty}_emergency_visits_*` |
+| **\[Outpatient\]** | GP, Specialist, Other Visits, Specialties | [`addOutpatientVisits()`](../reference/addOutpatientVisits.md) | `gp_visits_*`, `specialist_visits_*`, `other_outpatient_visits_*`, `{specialty}_visits_*` |
+| **\[Multi-Setting\]** | Inpatient + Outpatient + Emergency Visits | [`addVisits()`](../reference/addVisits.md) | Combined Inpatient, Outpatient, Emergency columns |
 | **\[Pharmacy\]** | Rx Fills, Days Supply, PDC, Infusions | [`addPrescriptions()`](../reference/addPrescriptions.md) | `rx_fills_*`, `days_supply_*`, `pdc_*`, `infusions_*` |
 | **\[Diagnostics/Proc\]** | Labs, Imaging, Procedures | [`addProcedures()`](../reference/addProcedures.md) | `lab_tests_count_*`, `procedures_count_*` |
 | **\[Direct Costs\]** | Inpatient, Outpatient, Drug, Total | [`addCosts()`](../reference/addCosts.md) | `cost_inpatient_*`, `cost_outpatient_*`, `cost_drug_*`, `cost_total_*` |
