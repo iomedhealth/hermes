@@ -6,6 +6,7 @@
 #' @param window A named or unnamed list of 2-element numeric vectors. Default: `list(c(-365, -1), c(0, 365))`.
 #' @param stratifySpecialty Logical; whether to partition visits by GP vs Specialist vs ED. Default: `TRUE`.
 #' @param gpSpecialtyConceptIds OMOP provider specialty concept IDs for General Practice. Default: `c(38004446L)`.
+#' @param specialties Optional named list of integer vectors of OMOP specialty concept IDs for granular specialty breakdown. Default: `NULL`.
 #' @param nameStyle Column naming pattern. Default: `"{setting}_visits_{window_name}"`.
 #' @param name Name of the new table in the write schema. If NULL, a temporary table is returned.
 #'
@@ -18,6 +19,7 @@ addOutpatientVisits <- function(
   window = list(c(-365, -1), c(0, 365)),
   stratifySpecialty = TRUE,
   gpSpecialtyConceptIds = c(38004446L),
+  specialties = NULL,
   nameStyle = "{setting}_visits_{window_name}",
   name = NULL
 ) {
@@ -33,6 +35,12 @@ addOutpatientVisits <- function(
   name <- validateName(name)
 
   gpSpecialtyConceptIds <- as.integer(gpSpecialtyConceptIds)
+  if (!is.null(specialties)) {
+    if (!is.list(specialties) || is.null(names(specialties)) || any(names(specialties) == "")) {
+      cli::cli_abort("Argument 'specialties' must be a named list of integer vectors.")
+    }
+  }
+
   x_cols <- colnames(x)
   person_col <- if ("person_id" %in% x_cols) "person_id" else "subject_id"
 
@@ -80,7 +88,17 @@ addOutpatientVisits <- function(
       is_other = .data$visit_concept_id %in% c(9202L, 581477L) & !.data$is_gp & !.data$is_spec
     )
 
+  if (!is.null(specialties) && length(specialties) > 0) {
+    for (s_name in names(specialties)) {
+      s_ids <- as.integer(specialties[[s_name]])
+      visit_df[[paste0("is_", s_name)]] <- visit_df$visit_concept_id %in% c(9202L, 581477L) &
+        !is.na(visit_df$specialty_concept_id) &
+        visit_df$specialty_concept_id %in% s_ids
+    }
+  }
+
   res_list <- list(cohort_df)
+  spec_is_cols <- if (!is.null(specialties)) paste0("is_", names(specialties)) else character()
 
   for (win_name in names(clean_window)) {
     win_range <- clean_window[[win_name]]
@@ -107,6 +125,10 @@ addOutpatientVisits <- function(
         gp_cnt = sum(ifelse(.data$is_gp, 1L, 0L), na.rm = TRUE),
         spec_cnt = sum(ifelse(.data$is_spec, 1L, 0L), na.rm = TRUE),
         other_cnt = sum(ifelse(.data$is_other, 1L, 0L), na.rm = TRUE),
+        dplyr::across(
+          dplyr::all_of(spec_is_cols),
+          ~ sum(ifelse(.x, 1L, 0L), na.rm = TRUE)
+        ),
         .groups = "drop"
       )
 
@@ -119,6 +141,14 @@ addOutpatientVisits <- function(
     names(win_summary)[names(win_summary) == "gp_cnt"] <- c_gp
     names(win_summary)[names(win_summary) == "spec_cnt"] <- c_spec
     names(win_summary)[names(win_summary) == "other_cnt"] <- c_other
+
+    if (!is.null(specialties)) {
+      for (s_name in names(specialties)) {
+        orig_col <- paste0("is_", s_name)
+        target_col <- paste0(s_name, "_visits_", win_name)
+        names(win_summary)[names(win_summary) == orig_col] <- target_col
+      }
+    }
 
     res_list <- c(res_list, list(win_summary))
   }

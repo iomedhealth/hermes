@@ -11,6 +11,7 @@ addOutpatientVisits(
   window = list(c(-365, -1), c(0, 365)),
   stratifySpecialty = TRUE,
   gpSpecialtyConceptIds = c(38004446L),
+  specialties = NULL,
   nameStyle = "{setting}_visits_{window_name}",
   name = NULL
 )
@@ -27,6 +28,8 @@ addOutpatientVisits(
 \item{stratifySpecialty}{Logical; whether to partition visits by GP vs Specialist vs ED. Default: \code{TRUE}.}
 
 \item{gpSpecialtyConceptIds}{OMOP provider specialty concept IDs for General Practice. Default: \code{c(38004446L)}.}
+
+\item{specialties}{Optional named list of integer vectors of OMOP specialty concept IDs for granular specialty breakdown. Default: \code{NULL}.}
 
 \item{nameStyle}{Column naming pattern. Default: \code{"{setting}_visits_{window_name}"}.}
 
