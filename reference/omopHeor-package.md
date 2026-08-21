@@ -12,13 +12,13 @@ on Observational Medical Outcomes Partnership (OMOP) Common Data Model
 
 Useful links:
 
-- <https://iomedhealth.github.io/hermes/>
+- <https://iomedhealth.github.io/omopHeor/>
 
 - <https://www.iomed.health/>
 
-- <https://github.com/iomedhealth/hermes>
+- <https://github.com/iomedhealth/omopHeor>
 
-- Report bugs at <https://github.com/iomedhealth/hermes/issues>
+- Report bugs at <https://github.com/iomedhealth/omopHeor/issues>
 
 ## Author
 

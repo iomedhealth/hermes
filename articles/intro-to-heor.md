@@ -111,11 +111,11 @@ and the Cost-Effectiveness Acceptability Curve (CEAC), powered by
 ## Next Steps
 
 - **[The HERMES Ecosystem & Modular
-  Suite](https://iomedhealth.github.io/hermes/articles/hermes-ecosystem.md)**:
+  Suite](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.md)**:
   Overview of the 3 standalone packages and architecture.
 - **[Cohort Utilization & Cost
-  Enrichment](https://iomedhealth.github.io/hermes/articles/cohort-utilization.md)**:
+  Enrichment](https://iomedhealth.github.io/omopHeor/articles/cohort-utilization.md)**:
   Deep dive into the 3-layer in-database cohort enrichers.
 - **[HCRU Extraction
-  Logic](https://iomedhealth.github.io/hermes/articles/hcru_logic.md)**:
+  Logic](https://iomedhealth.github.io/omopHeor/articles/hcru_logic.md)**:
   Technical rules for OMOP `COST` table linkage and zero-fill fallbacks.

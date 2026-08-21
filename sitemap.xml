@@ -1,19 +1,19 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>https://iomedhealth.github.io/hermes/404.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/AGENTS.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/CONTRIBUTING.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/LICENSE-text.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/articles/cohort-utilization.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/articles/hcru_logic.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/articles/hermes-ecosystem.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/articles/index.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/articles/intro-to-heor.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/authors.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/index.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/news/index.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/reference/index.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/reference/mockHERMES.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/reference/omopHeor-package.html</loc></url>
-<url><loc>https://iomedhealth.github.io/hermes/reference/reexports.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/404.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/AGENTS.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/CONTRIBUTING.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/LICENSE-text.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/articles/cohort-utilization.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/articles/hcru_logic.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/articles/index.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/authors.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/index.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/news/index.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/reference/index.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/reference/mockHERMES.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/reference/omopHeor-package.html</loc></url>
+<url><loc>https://iomedhealth.github.io/omopHeor/reference/reexports.html</loc></url>
 </urlset>
 

@@ -1,8 +1,8 @@
 # HERMES: Health Economic Resource Modeling & Evaluation System
 
-[![R-CMD-check](https://github.com/iomedhealth/hermes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/hermes/actions/workflows/R-CMD-check.yaml)
-[![pkgdown](https://github.com/iomedhealth/hermes/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/hermes/)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/hermes/releases)
+[![R-CMD-check](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/omopHeor/)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -31,7 +31,7 @@ Model (CDM)**.
   (`Cyclops`), Markov state-transition models, and CEA visualizations
   (`BCEA`).
 - **Instant Prototyping**: Includes
-  [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md)
+  [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockHERMES.md)
   providing an in-memory synthetic DuckDB OMOP CDM database.
 
 ## Getting Started
@@ -46,12 +46,12 @@ Model (CDM)**.
 ``` r
 
 # Install the complete omopHeor metapackage (recommended)
-pak::pkg_install("iomedhealth/hermes")
+pak::pkg_install("iomedhealth/omopHeor")
 
 # Or install individual standalone domain packages
-pak::pkg_install("iomedhealth/hermes/packages/CohortUtilisation")
-pak::pkg_install("iomedhealth/hermes/packages/CohortCosts")
-pak::pkg_install("iomedhealth/hermes/packages/CohortEconomics")
+pak::pkg_install("iomedhealth/omopHeor/packages/CohortUtilisation")
+pak::pkg_install("iomedhealth/omopHeor/packages/CohortCosts")
+pak::pkg_install("iomedhealth/omopHeor/packages/CohortEconomics")
 ```
 
 ### Quick Start 1: In-Database Cohort Utilization & Cost Enrichment
@@ -141,33 +141,33 @@ For in-depth architecture, tutorials, and technical specifications,
 explore the documentation articles:
 
 - **[The HERMES Ecosystem & Modular
-  Architecture](https://iomedhealth.github.io/hermes/articles/hermes-ecosystem.html)**:
+  Architecture](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.html)**:
   Comprehensive breakdown of `CohortUtilisation`, `CohortCosts`,
   `CohortEconomics`, technology stack, and package design.
 - **[Introduction to HEOR for OMOP
-  Users](https://iomedhealth.github.io/hermes/articles/intro-to-heor.html)**:
+  Users](https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.html)**:
   Conceptual guide translating OMOP CDM vocabulary to Health Economics
   (ICER, QALY, Markov health states).
 - **[Cohort Utilization & Cost
-  Enrichment](https://iomedhealth.github.io/hermes/articles/cohort-utilization.html)**:
+  Enrichment](https://iomedhealth.github.io/omopHeor/articles/cohort-utilization.html)**:
   Step-by-step hands-on tutorial for the 3-layer in-database cohort
   enrichers.
 - **[HCRU & Direct Cost Extraction
-  Logic](https://iomedhealth.github.io/hermes/articles/hcru_logic.html)**:
+  Logic](https://iomedhealth.github.io/omopHeor/articles/hcru_logic.html)**:
   Deep dive into OMOP `COST` polymorphic linkage, schema checks, and
   zero-fill fallback rules.
 
 ## Contributing
 
 We welcome contributions! Please review
-[`.github/CONTRIBUTING.md`](https://iomedhealth.github.io/hermes/CONTRIBUTING.md)
-and [`AGENTS.md`](https://iomedhealth.github.io/hermes/AGENTS.md) for
+[`.github/CONTRIBUTING.md`](https://iomedhealth.github.io/omopHeor/CONTRIBUTING.md)
+and [`AGENTS.md`](https://iomedhealth.github.io/omopHeor/AGENTS.md) for
 coding standards, styling conventions, and test procedures.
 
 ## License
 
 This project is licensed under the MIT License - see the
-[LICENSE](https://iomedhealth.github.io/hermes/LICENSE) file for
+[LICENSE](https://iomedhealth.github.io/omopHeor/LICENSE) file for
 details.
 
 Copyright © 2026 [IOMED Medical Solutions

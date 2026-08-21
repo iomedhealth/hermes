@@ -86,7 +86,7 @@ strictly verify the following conformance checks:
 
 1.  **Package Name Case Sensitivity**:
     - The metapackage name is strictly `omopHeor`. Always write
-      [`library(omopHeor)`](https://iomedhealth.github.io/hermes/) and
+      [`library(omopHeor)`](https://iomedhealth.github.io/omopHeor/) and
       `test_check("omopHeor")`. Never use variants that fail on
       case-sensitive Linux CI runners.
 2.  **Local Monorepo Subpackage Resolution**:

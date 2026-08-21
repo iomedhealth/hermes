@@ -10,7 +10,7 @@
     (`hermes` for RNA-Seq QC).
   - Dynamic startup hook updated to display `omopHeor` version and
     attached packages upon
-    [`library(omopHeor)`](https://iomedhealth.github.io/hermes/).
+    [`library(omopHeor)`](https://iomedhealth.github.io/omopHeor/).
   - Verified 100% namespace availability across CRAN and Bioconductor.
 - **CRAN Policy & Package Footprint Compliance**:
   - **`CohortCosts` Size Reduction**: Removed 46.2 MB of static catalog
