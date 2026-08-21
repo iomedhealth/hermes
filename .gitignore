@@ -5,7 +5,6 @@
 .Rapp.history
 *.Rproj
 *.Rcheck/
-.Rbuildignore
 tests/testthat/Rplots.pdf
 packrat/
 renv/
