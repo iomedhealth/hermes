@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/iomedhealth/hermes/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/iomedhealth/hermes/blob/v0.6.0/inst/CITATION)
 
 Maeztu, G. (2026). omopHeor: Health Economics and Outcomes Research
 Pipeline on OMOP CDM. Developed by IOMED. R package version 0.6.0.
