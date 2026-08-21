@@ -29,54 +29,48 @@ reference:
   - title: "Stage 1: Cohort Generation"
     desc: "Functions for defining, initializing, and building care episodes."
     contents:
-      - init
-      - compute_hospitalization_cohorts
-      - computeHospitalizationCohorts
-      - computeInfusionCohorts
+      - CohortEconomics::init
+      - CohortUtilisation::compute_hospitalization_cohorts
+      - CohortUtilisation::computeInfusionCohorts
   - title: "Stage 2: Cohort Utilization & Cost Enrichers"
     desc: "In-database cohort enrichment verbs following PatientProfiles patterns."
     contents:
-      - addInpatients
-      - addHospitalizations
-      - addInpatient
-      - addEmergencyCare
-      - addEmergency
-      - addEmergencyVisits
-      - addOutpatientVisits
-      - addVisits
-      - addPrescriptions
-      - addProcedures
-      - addCosts
+      - CohortUtilisation::addInpatients
+      - CohortUtilisation::addEmergencyCare
+      - CohortUtilisation::addOutpatientVisits
+      - CohortUtilisation::addVisits
+      - CohortUtilisation::addPrescriptions
+      - CohortUtilisation::addProcedures
+      - CohortCosts::addCosts
   - title: "Stage 2: Summarisation & Reporting"
     desc: "Standardised result summaries and publication-ready table & plot formatters."
     contents:
-      - summariseUtilization
-      - summariseCosts
-      - tableUtilization
-      - tableCosts
-      - plotUtilization
-      - plotCosts
-      - summarise_baseline
-      - extract_hcru
-      - extractHcru
+      - CohortUtilisation::summariseUtilization
+      - CohortCosts::summariseCosts
+      - CohortUtilisation::tableUtilization
+      - CohortCosts::tableCosts
+      - CohortUtilisation::plotUtilization
+      - CohortCosts::plotCosts
+      - CohortEconomics::summarise_baseline
+      - CohortEconomics::extract_hcru
   - title: "Stage 3: Propensity Score"
     desc: "Causal adjustment and matching."
     contents:
-      - fit_ps
-      - adjust_ps
-      - assess_balance
+      - CohortEconomics::fit_ps
+      - CohortEconomics::adjust_ps
+      - CohortEconomics::assess_balance
   - title: "Stage 4: Trajectories"
     desc: "State-cost extraction and transitions."
     contents:
-      - compile_trajectories
+      - CohortEconomics::compile_trajectories
   - title: "Stage 5 & 6: Simulation & CEA"
     desc: "Economic simulation and decision analysis."
     contents:
-      - simulate_economics
-      - run_cea
-      - plot_ceac
-      - plot_plane
-      - table_summary
+      - CohortEconomics::simulate_economics
+      - CohortEconomics::run_cea
+      - CohortEconomics::plot_ceac
+      - CohortEconomics::plot_plane
+      - CohortEconomics::table_summary
   - title: "Mock Data & Testing Utilities"
     desc: "Helpers for creating synthetic in-memory OMOP CDM test references."
     contents:
