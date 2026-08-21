@@ -39,7 +39,6 @@ reference:
       - addInpatients
       - addHospitalizations
       - addInpatient
-      - addIcuStays
       - addEmergencyCare
       - addEmergency
       - addEmergencyVisits

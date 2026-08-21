@@ -46,3 +46,13 @@ devtools::document() # Use roxygen to document a package.
 # make cran-wave1          # Submit CohortUtilisation & CohortCosts
 # make cran-wave2          # Submit CohortEconomics (after wave 1 acceptance)
 # make cran-wave3          # Submit omopHeor root (after wave 2 acceptance)
+
+# 12) Python & Airflow ETL Pipelines (CohortCosts)
+# make venv                # Initialize Python virtual environment (.venv)
+# make py-deps             # Install Python requirements
+# make dag-test            # Local test of cost_extraction_dag without Airflow scheduler
+# make dag-run             # Airflow CLI DAG test run
+# make etl-download        # Download raw gazettes & INE series
+# make etl-scrape          # Run cost scraping & normalization
+# make etl-report          # Generate EDA markdown report & HTML dashboard
+# make etl-all             # End-to-end data pipeline

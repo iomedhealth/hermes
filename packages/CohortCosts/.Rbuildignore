@@ -1,11 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md$
-^data/specs$
-^data/raw$
-^data/intermediate$
-^data/external$
-^data/processed$
-^data$
-^dags$
-^scripts$
+^data(/.*)?$
+^dags(/.*)?$
+^scripts(/.*)?$
+^packages(/.*)?$
+^\.venv(/.*)?$
+^requirements\.txt$

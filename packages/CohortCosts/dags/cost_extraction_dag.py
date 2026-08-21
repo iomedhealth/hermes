@@ -14,7 +14,7 @@ import sys
 from datetime import datetime, timedelta
 
 # Ensure repo root is on sys.path
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
@@ -92,7 +92,7 @@ def hermes_cost_catalogs_pipeline():
         output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/data/external")
         deflators = fetch_ine_deflators(cache_path=raw_path)
         export_ine_tables(output_dir=output_dir, raw_path=raw_path)
-        return deflators
+        return {str(k): float(v) for k, v in deflators.items()}
 
     @task
     def extract_single_source_task(downloaded_item: dict, deflators: dict) -> list:
