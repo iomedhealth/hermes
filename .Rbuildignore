@@ -20,6 +20,7 @@
 ^LICENSE\.md$
 ^generate_plots\.R$
 ^_pkgdown\.yml$
+^Makefile$
 ^AGENTS\.md$
 ^reports$
 ^packages$

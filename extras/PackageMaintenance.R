@@ -40,3 +40,9 @@ devtools::document() # Use roxygen to document a package.
 
 # 10) Check website locally (if pkgdown configured)
 # pkgdown::build_site()
+
+# 11) Phased CRAN Submission via extras/submitCran.R (or make targets)
+# make cran-dry-run        # Verify all tarballs & cran-comments
+# make cran-wave1          # Submit CohortUtilisation & CohortCosts
+# make cran-wave2          # Submit CohortEconomics (after wave 1 acceptance)
+# make cran-wave3          # Submit omopHeor root (after wave 2 acceptance)
