@@ -78,7 +78,7 @@ class IneIndexRecord:
 
 
 def fetch_ine_deflators(
-    cache_path: str = "packages/CohortCosts/external/ine-ipc-medicina.json", force: bool = False
+    cache_path: str = "packages/CohortCosts/data/external/ine-ipc-medicina.json", force: bool = False
 ) -> Dict[int, float]:
     """Fetch healthcare CPI index series from INE API (Table 50913 - ECOICOP 06 Sanidad) or fallback."""
     url = "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/50913"
@@ -132,8 +132,8 @@ def fetch_ine_deflators(
 
 
 def export_ine_tables(
-    output_dir: str = "packages/CohortCosts/external",
-    raw_path: str = "packages/CohortCosts/external/ine-ipc-medicina.json",
+    output_dir: str = "packages/CohortCosts/data/external",
+    raw_path: str = "packages/CohortCosts/data/external/ine-ipc-medicina.json",
 ) -> pd.DataFrame:
     """Parse and export official INE Table 50913 ECOICOP 06 series to CSV, Parquet, and JSON."""
     deflators = fetch_ine_deflators(cache_path=raw_path)
@@ -172,7 +172,7 @@ def export_ine_tables(
 
 
 def download_source(
-    src: Dict[str, Any], raw_dir: str = "packages/CohortCosts/raw", force: bool = False
+    src: Dict[str, Any], raw_dir: str = "packages/CohortCosts/data/raw", force: bool = False
 ) -> str:
     """Download a single ground source document to raw_dir/<id>.<fmt>."""
     os.makedirs(raw_dir, exist_ok=True)
@@ -229,8 +229,8 @@ def download_source(
 
 
 def download_all_sources(
-    registry_path: str = "packages/CohortCosts/specs/registries.yml",
-    raw_dir: str = "packages/CohortCosts/raw",
+    registry_path: str = "packages/CohortCosts/data/specs/registries.yml",
+    raw_dir: str = "packages/CohortCosts/data/raw",
     force: bool = False,
     source_id: Optional[str] = None,
     ccaa: Optional[str] = None,
@@ -264,11 +264,13 @@ def main():
     )
     parser.add_argument(
         "--registry",
-        default="packages/CohortCosts/specs/registries.yml",
+        default="packages/CohortCosts/data/specs/registries.yml",
         help="Path to registries.yml",
     )
     parser.add_argument(
-        "--raw-dir", default="packages/CohortCosts/raw", help="Directory for raw cache"
+        "--raw-dir",
+        default="packages/CohortCosts/data/raw",
+        help="Directory for raw cache",
     )
     parser.add_argument("--source-id", default=None, help="Download only a specific source ID")
     parser.add_argument("--ccaa", default=None, help="Download only sources for a specific CCAA")

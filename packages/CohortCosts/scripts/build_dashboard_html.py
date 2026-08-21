@@ -11,8 +11,9 @@ from pathlib import Path
 
 PKG_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = PKG_DIR.parent.parent
-PROCESSED_DIR = PKG_DIR / "processed"
-EXTERNAL_DIR = PKG_DIR / "external"
+DATA_DIR = PKG_DIR / "data"
+PROCESSED_DIR = DATA_DIR / "processed"
+EXTERNAL_DIR = DATA_DIR / "external"
 AUDIT_DIR = REPO_ROOT / "audit"
 AUDIT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE = AUDIT_DIR / "dashboard.html"

@@ -1241,9 +1241,9 @@ def extract_source_records(
 
 def consolidate_and_export(
     records: List[CostRecord],
-    output_csv: str = "packages/CohortCosts/processed/costs_spain.csv",
-    output_parquet: str = "packages/CohortCosts/processed/costs_spain.parquet",
-    output_json: str = "packages/CohortCosts/processed/costs_spain.json",
+    output_csv: str = "packages/CohortCosts/data/processed/costs_spain.csv",
+    output_parquet: str = "packages/CohortCosts/data/processed/costs_spain.parquet",
+    output_json: str = "packages/CohortCosts/data/processed/costs_spain.json",
 ) -> pd.DataFrame:
     """Deduplicate, assign sequential cost_ids, validate invariants, and write catalog artifacts."""
     if not records:
@@ -1305,11 +1305,11 @@ def consolidate_and_export(
 
 
 def run_pipeline(
-    registry_path: str = "packages/CohortCosts/specs/registries.yml",
-    raw_dir: str = "packages/CohortCosts/raw",
-    output_csv: str = "packages/CohortCosts/processed/costs_spain.csv",
-    output_parquet: str = "packages/CohortCosts/processed/costs_spain.parquet",
-    output_json: str = "packages/CohortCosts/processed/costs_spain.json",
+    registry_path: str = "packages/CohortCosts/data/specs/registries.yml",
+    raw_dir: str = "packages/CohortCosts/data/raw",
+    output_csv: str = "packages/CohortCosts/data/processed/costs_spain.csv",
+    output_parquet: str = "packages/CohortCosts/data/processed/costs_spain.parquet",
+    output_json: str = "packages/CohortCosts/data/processed/costs_spain.json",
     download_fresh: bool = False,
     source_id: Optional[str] = None,
     ccaa: Optional[str] = None,
@@ -1344,7 +1344,7 @@ def run_pipeline(
     # Export canonical INE index datasets
     external_dir = os.path.join(os.path.dirname(output_csv), "..", "external")
     if not os.path.exists(external_dir):
-        external_dir = os.path.dirname(output_csv) or "packages/CohortCosts/external"
+        external_dir = os.path.dirname(output_csv) or "packages/CohortCosts/data/external"
     df_ine = export_ine_tables(output_dir=os.path.abspath(external_dir))
 
     all_records: List[CostRecord] = []
@@ -1395,29 +1395,29 @@ def main():
     parser = argparse.ArgumentParser(description="Spanish Healthcare Cost Offline Scraper & Catalog Extractor.")
     parser.add_argument(
         "--registry",
-        default="packages/CohortCosts/specs/registries.yml",
+        default="packages/CohortCosts/data/specs/registries.yml",
         help="Path to registries.yml",
     )
     parser.add_argument(
         "--raw-dir",
-        default="packages/CohortCosts/raw",
+        default="packages/CohortCosts/data/raw",
         help="Directory containing cached raw files",
     )
     parser.add_argument("--source-id", default=None, help="Extract only a specific source ID")
     parser.add_argument("--ccaa", default=None, help="Extract only sources for a specific CCAA")
     parser.add_argument(
         "--output-csv",
-        default="packages/CohortCosts/processed/costs_spain.csv",
+        default="packages/CohortCosts/data/processed/costs_spain.csv",
         help="Destination CSV catalog",
     )
     parser.add_argument(
         "--output-parquet",
-        default="packages/CohortCosts/processed/costs_spain.parquet",
+        default="packages/CohortCosts/data/processed/costs_spain.parquet",
         help="Destination Parquet catalog",
     )
     parser.add_argument(
         "--output-json",
-        default="packages/CohortCosts/processed/costs_spain.json",
+        default="packages/CohortCosts/data/processed/costs_spain.json",
         help="Destination JSON catalog",
     )
     parser.add_argument("--limit-preview", type=int, default=None, help="Preview N records without writing files")

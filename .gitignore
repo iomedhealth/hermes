@@ -22,8 +22,8 @@ pkgdown/
 __pycache__/
 *.pyc
 .venv/
-packages/CohortCosts/raw/
-packages/CohortCosts/intermediate/
-packages/CohortCosts/external/ine-ipc-medicina.*
+packages/CohortCosts/data/raw/
+packages/CohortCosts/data/intermediate/
+packages/CohortCosts/data/external/ine-ipc-medicina.*
 tests/data/
 reports/*.html

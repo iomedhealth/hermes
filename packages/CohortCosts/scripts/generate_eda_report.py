@@ -13,9 +13,10 @@ from datetime import datetime
 # Set up paths
 PKG_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = PKG_DIR.parent.parent
-PROCESSED_DIR = PKG_DIR / "processed"
-EXTERNAL_DIR = PKG_DIR / "external"
-SPECS_DIR = PKG_DIR / "specs"
+DATA_DIR = PKG_DIR / "data"
+PROCESSED_DIR = DATA_DIR / "processed"
+EXTERNAL_DIR = DATA_DIR / "external"
+SPECS_DIR = DATA_DIR / "specs"
 AUDIT_DIR = REPO_ROOT / "audit"
 AUDIT_DIR.mkdir(parents=True, exist_ok=True)
 

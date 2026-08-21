@@ -27,11 +27,11 @@ except ImportError:
 # Support both Airflow 2.x and 3.x Dataset/Asset definitions
 try:
     from airflow.datasets import Dataset
-    SPAIN_COSTS_DATASET = Dataset(f"file://{os.path.join(REPO_ROOT, 'packages/CohortCosts/processed/costs_spain.parquet')}")
+    SPAIN_COSTS_DATASET = Dataset(f"file://{os.path.join(REPO_ROOT, 'packages/CohortCosts/data/processed/costs_spain.parquet')}")
 except (ImportError, AttributeError):
     try:
         from airflow.sdk.definitions.asset import Asset
-        SPAIN_COSTS_DATASET = Asset(f"file://{os.path.join(REPO_ROOT, 'packages/CohortCosts/processed/costs_spain.parquet')}")
+        SPAIN_COSTS_DATASET = Asset(f"file://{os.path.join(REPO_ROOT, 'packages/CohortCosts/data/processed/costs_spain.parquet')}")
     except Exception:
         SPAIN_COSTS_DATASET = None
 
@@ -63,7 +63,7 @@ def hermes_cost_catalogs_pipeline():
         import yaml
 
         registry_path = os.path.join(
-            REPO_ROOT, "packages/CohortCosts/specs/registries.yml"
+            REPO_ROOT, "packages/CohortCosts/data/specs/registries.yml"
         )
         with open(registry_path, "r", encoding="utf-8") as f:
             registry = yaml.safe_load(f)
@@ -71,10 +71,10 @@ def hermes_cost_catalogs_pipeline():
 
     @task(retries=3, retry_delay=timedelta(seconds=20))
     def download_source_task(src: dict) -> dict:
-        """Download or verify a single raw source in packages/CohortCosts/raw/."""
+        """Download or verify a single raw source in packages/CohortCosts/data/raw/."""
         from packages.CohortCosts.scripts.download_costs_sources import download_source
 
-        raw_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/raw")
+        raw_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/data/raw")
         file_path = download_source(src, raw_dir=raw_dir)
         return {"source": src, "file_path": file_path}
 
@@ -87,9 +87,9 @@ def hermes_cost_catalogs_pipeline():
         )
 
         raw_path = os.path.join(
-            REPO_ROOT, "packages/CohortCosts/external/ine-ipc-medicina.json"
+            REPO_ROOT, "packages/CohortCosts/data/external/ine-ipc-medicina.json"
         )
-        output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/external")
+        output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/data/external")
         deflators = fetch_ine_deflators(cache_path=raw_path)
         export_ine_tables(output_dir=output_dir, raw_path=raw_path)
         return deflators
@@ -124,13 +124,13 @@ def hermes_cost_catalogs_pipeline():
                 all_records.append(CostRecord(**item))
 
         output_csv = os.path.join(
-            REPO_ROOT, "packages/CohortCosts/processed/costs_spain.csv"
+            REPO_ROOT, "packages/CohortCosts/data/processed/costs_spain.csv"
         )
         output_parquet = os.path.join(
-            REPO_ROOT, "packages/CohortCosts/processed/costs_spain.parquet"
+            REPO_ROOT, "packages/CohortCosts/data/processed/costs_spain.parquet"
         )
         output_json = os.path.join(
-            REPO_ROOT, "packages/CohortCosts/processed/costs_spain.json"
+            REPO_ROOT, "packages/CohortCosts/data/processed/costs_spain.json"
         )
 
         df = consolidate_and_export(
@@ -168,17 +168,17 @@ if __name__ == "__main__":
     )
 
     registry_path = os.path.join(
-        REPO_ROOT, "packages/CohortCosts/specs/registries.yml"
+        REPO_ROOT, "packages/CohortCosts/data/specs/registries.yml"
     )
     with open(registry_path, "r", encoding="utf-8") as f:
         registry = yaml.safe_load(f)
 
-    raw_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/raw")
+    raw_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/data/raw")
     raw_path = os.path.join(
-        REPO_ROOT, "packages/CohortCosts/external/ine-ipc-medicina.json"
+        REPO_ROOT, "packages/CohortCosts/data/external/ine-ipc-medicina.json"
     )
-    output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/processed")
-    external_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/external")
+    output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/data/processed")
+    external_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/data/external")
 
     deflators = fetch_ine_deflators(cache_path=raw_path)
     export_ine_tables(output_dir=external_dir, raw_path=raw_path)
