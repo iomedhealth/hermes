@@ -147,7 +147,46 @@
 <strong>Clean <code>R CMD check</code></strong>:
 <ul><li>Ensure <code>rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")</code> passes with 0 errors and 0 warnings on all 3 subpackages and root.</li>
 </ul></li>
-</ol><hr><!-- SPECKIT START --><p>For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan: specs/005-hcru-domain-extraction/plan.md <!-- SPECKIT END --></p>
+</ol><hr></div>
+<div class="section level2">
+<h2 id="id_4-release--version-management">4. Release &amp; Version Management<a class="anchor" aria-label="anchor" href="#id_4-release--version-management"></a></h2>
+<ul><li>
+<strong>Monorepo Version Synchronization Rule</strong>:
+<ul><li>The root metapackage <code>omopHeor</code> and all 3 subpackages (<code>CohortUtilisation</code>, <code>CohortCosts</code>, <code>CohortEconomics</code>) must strictly maintain synchronized semantic versioning across all <code>DESCRIPTION</code> files and internal dependency bounds (<code>CohortUtilisation (&gt;= X.Y.Z)</code>).</li>
+</ul></li>
+<li>
+<strong>Automated Version Bumping</strong>:
+<ul><li>
+<p>Agents must use <code>extras/bumpVersion.R</code> to bump versions:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Bump patch (e.g. 0.6.1 -&gt; 0.6.2)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">Rscript</span> extras/bumpVersion.R patch</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Bump minor (e.g. 0.6.1 -&gt; 0.7.0)</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="ex">Rscript</span> extras/bumpVersion.R minor</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Bump major (e.g. 0.6.1 -&gt; 1.0.0)</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="ex">Rscript</span> extras/bumpVersion.R major</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Set explicit version</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="ex">Rscript</span> extras/bumpVersion.R 0.7.0</span></code></pre></div>
+</li>
+<li><p>Can also be sourced and invoked within R: <code>bumpVersion("patch")</code>.</p></li>
+</ul></li>
+<li>
+<strong>Release Checklist</strong>:
+<ol style="list-style-type: decimal"><li><p><strong>Bump Version</strong>: Run <code>Rscript extras/bumpVersion.R &lt;patch|minor|major&gt;</code> to update all 4 <code>DESCRIPTION</code> files and refresh documentation.</p></li>
+<li><p><strong>Verify Conformance</strong>: Run local tests (<code>devtools::test()</code>) and package checks (<code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code>).</p></li>
+<li>
+<p><strong>Commit</strong>: Stage and commit release changes:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-am</span> <span class="st">"chore(release): bump version to X.Y.Z"</span></span></code></pre></div>
+</li>
+<li>
+<p><strong>Tag &amp; Publish Release</strong>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">git</span> tag vX.Y.Z</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">gh</span> release create vX.Y.Z <span class="at">--title</span> <span class="st">"vX.Y.Z"</span> <span class="at">--notes</span> <span class="st">"Release notes for vX.Y.Z"</span></span></code></pre></div>
+</li>
+</ol></li>
+</ul><hr><!-- SPECKIT START --><p>For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan: specs/005-hcru-domain-extraction/plan.md <!-- SPECKIT END --></p>
 </div>
 </div>
 

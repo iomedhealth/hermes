@@ -127,6 +127,56 @@ strictly verify the following conformance checks:
 
 ------------------------------------------------------------------------
 
+## 4. Release & Version Management
+
+- **Monorepo Version Synchronization Rule**:
+  - The root metapackage `omopHeor` and all 3 subpackages
+    (`CohortUtilisation`, `CohortCosts`, `CohortEconomics`) must
+    strictly maintain synchronized semantic versioning across all
+    `DESCRIPTION` files and internal dependency bounds
+    (`CohortUtilisation (>= X.Y.Z)`).
+- **Automated Version Bumping**:
+  - Agents must use `extras/bumpVersion.R` to bump versions:
+
+    ``` bash
+    # Bump patch (e.g. 0.6.1 -> 0.6.2)
+    Rscript extras/bumpVersion.R patch
+
+    # Bump minor (e.g. 0.6.1 -> 0.7.0)
+    Rscript extras/bumpVersion.R minor
+
+    # Bump major (e.g. 0.6.1 -> 1.0.0)
+    Rscript extras/bumpVersion.R major
+
+    # Set explicit version
+    Rscript extras/bumpVersion.R 0.7.0
+    ```
+
+  - Can also be sourced and invoked within R: `bumpVersion("patch")`.
+- **Release Checklist**:
+  1.  **Bump Version**: Run
+      `Rscript extras/bumpVersion.R <patch|minor|major>` to update all 4
+      `DESCRIPTION` files and refresh documentation.
+
+  2.  **Verify Conformance**: Run local tests (`devtools::test()`) and
+      package checks
+      ([`rcmdcheck::rcmdcheck()`](http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.md)).
+
+  3.  **Commit**: Stage and commit release changes:
+
+      ``` bash
+      git commit -am "chore(release): bump version to X.Y.Z"
+      ```
+
+  4.  **Tag & Publish Release**:
+
+      ``` bash
+      git tag vX.Y.Z
+      gh release create vX.Y.Z --title "vX.Y.Z" --notes "Release notes for vX.Y.Z"
+      ```
+
+------------------------------------------------------------------------
+
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 specs/005-hcru-domain-extraction/plan.md
