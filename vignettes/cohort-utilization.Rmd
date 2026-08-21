@@ -56,7 +56,7 @@ Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstruc
 We initialize an OMOP CDM reference (such as the mock HERMES test database):
 
 ```{r setup}
-library(hermes)
+library(omopHeor)
 library(dplyr)
 library(omopgenerics)
 

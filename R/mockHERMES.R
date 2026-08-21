@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' \donttest{
-#' library(hermes)
+#' library(omopHeor)
 #' cdm <- mockHERMES()
 #' }
 mockHERMES <- function(numberIndividuals = 10) {

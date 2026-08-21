@@ -1,24 +1,29 @@
 Package: CohortEconomics
 Title: Causal Propensity Scores, Health-State Trajectories, and Cost-Effectiveness Analysis on OMOP CDM
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: c(
     person(given = "Gabriel",
            family = "Maeztu",
            role = c("aut", "cre"),
            email = "gabriel@iomed.health")
   )
-Description: Comprehensive Health Economics and Outcomes Research (HEOR) pipeline for OMOP CDM cohorts, featuring high-dimensional propensity score adjustment, longitudinal health-state trajectory modeling, Markov microsimulations, and Cost-Effectiveness Analysis (CEA).
+Description: Comprehensive Health Economics and Outcomes Research (HEOR) pipeline
+    for Observational Medical Outcomes Partnership (OMOP) Common Data Model
+    (CDM) cohorts, featuring high-dimensional propensity score adjustment,
+    longitudinal health-state trajectory modeling, Markov microsimulations,
+    and Cost-Effectiveness Analysis (CEA) using 'BCEA'.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
 URL: https://www.iomed.health/, https://github.com/iomedhealth/hermes
+BugReports: https://github.com/iomedhealth/hermes/issues
 Depends: 
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
-Imports:
+Imports: 
     CDMConnector (>= 1.4.0),
     omopgenerics (>= 0.3.0),
-    CohortUtilisation (>= 0.5.0),
-    CohortCosts (>= 0.5.0),
+    CohortUtilisation (>= 0.6.0),
+    CohortCosts (>= 0.6.0),
     BCEA,
     dbplyr (>= 2.4.0),
     dplyr (>= 1.1.0),
@@ -35,8 +40,6 @@ Suggests:
     visOmopResults,
     CohortMethod,
     Cyclops,
-    Cohort2Trajectory,
-    TrajectoryMarkovAnalysis,
     hesim,
     heemod,
     Eunomia,
@@ -44,9 +47,6 @@ Suggests:
     testthat (>= 3.0.0),
     covr,
     withr
-Remotes: 
-    HealthInformaticsUT/Cohort2Trajectory,
-    HealthInformaticsUT/TrajectoryMarkovAnalysis
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 Encoding: UTF-8

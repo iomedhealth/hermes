@@ -6,13 +6,14 @@
 \alias{CohortUtilisation-package}
 \title{CohortUtilisation: Healthcare Resource Utilization on OMOP CDM Cohorts}
 \description{
-In-database healthcare resource utilization (HCRU) extraction across inpatient, emergency, outpatient, pharmacy, and procedure domains for OMOP CDM cohorts following DARWIN EU standards.
+In-database healthcare resource utilization (HCRU) extraction across inpatient, emergency, outpatient, pharmacy, and procedure domains for Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) cohorts following DARWIN EU standards.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://www.iomed.health/}
   \item \url{https://github.com/iomedhealth/hermes}
+  \item Report bugs at \url{https://github.com/iomedhealth/hermes/issues}
 }
 
 }

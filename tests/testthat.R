@@ -1,4 +1,4 @@
 library(testthat)
-library(hermes)
+library(omopHeor)
 
-test_check("hermes")
+test_check("omopHeor")

@@ -1,23 +1,29 @@
-Package: hermes
-Title: Health Economics and Outcomes Research Pipeline on OMOP CDM (Metapackage)
-Version: 0.5.0
+Package: omopHeor
+Title: Health Economics and Outcomes Research Pipeline on OMOP CDM
+Version: 0.6.0
 Authors@R: c(
     person(given = "Gabriel",
            family = "Maeztu",
            role = c("aut", "cre"),
            email = "gabriel@iomed.health")
   )
-Description: An R metapackage providing an end-to-end analytical ecosystem for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). Unifies CohortUtilisation (HCRU), CohortCosts (direct medical expenditures), and CohortEconomics (propensity scores, Markov simulation, and Cost-Effectiveness Analysis) on OMOP CDM data. Developed by IOMED.
+Description: An R metapackage providing an end-to-end analytical ecosystem for
+    Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR).
+    Unifies 'CohortUtilisation' (Healthcare Resource Utilization), 'CohortCosts'
+    (direct medical expenditures), and 'CohortEconomics' (propensity scores,
+    Markov simulation, and Cost-Effectiveness Analysis) on Observational Medical
+    Outcomes Partnership (OMOP) Common Data Model (CDM) data.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
 URL: https://iomedhealth.github.io/hermes/, https://www.iomed.health/, https://github.com/iomedhealth/hermes
+BugReports: https://github.com/iomedhealth/hermes/issues
 Depends: 
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
-Imports:
-    CohortUtilisation (>= 0.5.0),
-    CohortCosts (>= 0.5.0),
-    CohortEconomics (>= 0.5.0),
+Imports: 
+    CohortUtilisation (>= 0.6.0),
+    CohortCosts (>= 0.6.0),
+    CohortEconomics (>= 0.6.0),
     CDMConnector (>= 1.4.0),
     omopgenerics (>= 0.3.0),
     dbplyr (>= 2.4.0),
@@ -38,8 +44,6 @@ Suggests:
     visOmopResults,
     CohortMethod,
     Cyclops,
-    Cohort2Trajectory,
-    TrajectoryMarkovAnalysis,
     hesim,
     BCEA,
     heemod,
@@ -48,9 +52,6 @@ Suggests:
     testthat (>= 3.0.0),
     covr,
     withr
-Remotes: 
-    HealthInformaticsUT/Cohort2Trajectory,
-    HealthInformaticsUT/TrajectoryMarkovAnalysis
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 Encoding: UTF-8

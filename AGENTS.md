@@ -60,7 +60,7 @@ Agents developing functions or modules in HERMES must align their implementation
 Before staging, committing, or pushing any changes, every agent must strictly verify the following conformance checks:
 
 1. **Package Name Case Sensitivity**:
-   - The metapackage name is strictly lowercase `hermes`. Always write `library(hermes)` and `test_check("hermes")`. Never use `library(HERMES)` or uppercase variants, which fail on case-sensitive Linux CI runners.
+   - The metapackage name is strictly `omopHeor`. Always write `library(omopHeor)` and `test_check("omopHeor")`. Never use variants that fail on case-sensitive Linux CI runners.
 2. **Local Monorepo Subpackage Resolution**:
    - Subpackages (`CohortUtilisation`, `CohortCosts`, `CohortEconomics`) must be installed and documented locally before building the root metapackage:
      ```r

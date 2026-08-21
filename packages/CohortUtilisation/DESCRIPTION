@@ -1,16 +1,20 @@
 Package: CohortUtilisation
 Title: Healthcare Resource Utilization on OMOP CDM Cohorts
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: c(
     person(given = "Gabriel",
            family = "Maeztu",
            role = c("aut", "cre"),
            email = "gabriel@iomed.health")
   )
-Description: In-database healthcare resource utilization (HCRU) extraction across inpatient, emergency, outpatient, pharmacy, and procedure domains for OMOP CDM cohorts following DARWIN EU standards.
+Description: In-database healthcare resource utilization (HCRU) extraction across
+    inpatient, emergency, outpatient, pharmacy, and procedure domains for
+    Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM)
+    cohorts following DARWIN EU standards.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
 URL: https://www.iomed.health/, https://github.com/iomedhealth/hermes
+BugReports: https://github.com/iomedhealth/hermes/issues
 Depends: 
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)

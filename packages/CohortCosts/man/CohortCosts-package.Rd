@@ -6,13 +6,14 @@
 \alias{CohortCosts-package}
 \title{CohortCosts: Direct Medical Cost Extraction and Health Economics Costing on OMOP CDM}
 \description{
-Links polymorphic OMOP COST records to clinical events and tracks medical expenditures, unit cost tariffs, and healthcare price indices for OMOP CDM cohorts.
+Links polymorphic Observational Medical Outcomes Partnership (OMOP) COST records to clinical events and tracks medical expenditures, unit cost tariffs, and healthcare price indices for OMOP Common Data Model (CDM) cohorts following DARWIN EU standards.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://www.iomed.health/}
   \item \url{https://github.com/iomedhealth/hermes}
+  \item Report bugs at \url{https://github.com/iomedhealth/hermes/issues}
 }
 
 }

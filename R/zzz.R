@@ -18,7 +18,7 @@
   if (length(attached_status) > 0 && interactive()) {
     header <- cli::rule(
       left = cli::style_bold("Attaching packages"),
-      right = paste0("hermes ", utils::packageVersion("hermes")),
+      right = paste0("omopHeor ", utils::packageVersion("omopHeor")),
       line = 1
     )
     packageStartupMessage(header)

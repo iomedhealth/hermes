@@ -5,6 +5,7 @@ export(plotCosts)
 export(summariseCosts)
 export(tableCosts)
 importFrom(CDMConnector,cdmName)
+importFrom(dbplyr,in_schema)
 importFrom(rlang,
   .data,
   .env

@@ -73,6 +73,9 @@ importFrom(CohortUtilisation,
   summariseUtilization,
   tableUtilization
 )
+importFrom(dbplyr,in_schema)
+importFrom(dplyr,select)
+importFrom(glue,glue)
 importFrom(rlang,
   .data,
   .env

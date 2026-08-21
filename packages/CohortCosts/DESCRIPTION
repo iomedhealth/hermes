@@ -1,16 +1,20 @@
 Package: CohortCosts
 Title: Direct Medical Cost Extraction and Health Economics Costing on OMOP CDM
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: c(
     person(given = "Gabriel",
            family = "Maeztu",
            role = c("aut", "cre"),
            email = "gabriel@iomed.health")
   )
-Description: Links polymorphic OMOP COST records to clinical events and tracks medical expenditures, unit cost tariffs, and healthcare price indices for OMOP CDM cohorts.
+Description: Links polymorphic Observational Medical Outcomes Partnership (OMOP)
+    COST records to clinical events and tracks medical expenditures, unit cost
+    tariffs, and healthcare price indices for OMOP Common Data Model (CDM)
+    cohorts following DARWIN EU standards.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
 URL: https://www.iomed.health/, https://github.com/iomedhealth/hermes
+BugReports: https://github.com/iomedhealth/hermes/issues
 Depends: 
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)

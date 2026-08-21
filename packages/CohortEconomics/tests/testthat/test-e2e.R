@@ -98,12 +98,12 @@ test_that("End-to-End pipeline produces valid CEA plots", {
 
   # Test modular cohort enricher pipeline
   cdm$target_cohort_enriched <- cdm$target_cohort |>
-    addInpatients(window = list(baseline = c(-365, -1), followup = c(0, 365))) |>
-    addOutpatientVisits(window = list(followup = c(0, 365))) |>
-    addEmergencyCare(window = list(followup = c(0, 365))) |>
-    addPrescriptions(window = list(followup = c(0, 365))) |>
-    addProcedures(window = list(followup = c(0, 365))) |>
-    addCosts(window = list(followup = c(0, 365)), name = "target_cohort_enriched")
+    CohortUtilisation::addInpatients(window = list(baseline = c(-365, -1), followup = c(0, 365))) |>
+    CohortUtilisation::addOutpatientVisits(window = list(followup = c(0, 365))) |>
+    CohortUtilisation::addEmergencyCare(window = list(followup = c(0, 365))) |>
+    CohortUtilisation::addPrescriptions(window = list(followup = c(0, 365))) |>
+    CohortUtilisation::addProcedures(window = list(followup = c(0, 365))) |>
+    CohortCosts::addCosts(window = list(followup = c(0, 365)), name = "target_cohort_enriched")
 
   expect_true(inherits(cdm$target_cohort_enriched, "cohort_table"))
   enriched_df <- cdm$target_cohort_enriched |> dplyr::collect()
@@ -111,10 +111,10 @@ test_that("End-to-End pipeline produces valid CEA plots", {
   expect_true("inpatient_admissions_followup" %in% colnames(enriched_df))
   expect_true("cost_total_followup" %in% colnames(enriched_df))
 
-  util_sum <- summariseUtilization(cdm$target_cohort_enriched)
+  util_sum <- CohortUtilisation::summariseUtilization(cdm$target_cohort_enriched)
   expect_true(inherits(util_sum, "summarised_result"))
   omopgenerics::validateResultArgument(util_sum)
 
-  tbl_util <- tableUtilization(util_sum, type = "tibble")
+  tbl_util <- CohortUtilisation::tableUtilization(util_sum, type = "tibble")
   expect_true(is.data.frame(tbl_util))
 })

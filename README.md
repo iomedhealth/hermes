@@ -2,15 +2,15 @@
 
 [![R-CMD-check](https://github.com/iomedhealth/hermes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/hermes/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/iomedhealth/hermes/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/hermes/)
-[![Version](https://img.shields.io/badge/version-0.5.0-blue.svg)](https://github.com/iomedhealth/hermes/releases)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/hermes/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**HERMES** is an R-based analytical ecosystem developed by [IOMED](https://iomed.health) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
+**HERMES** is an R-based analytical ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
 
 ## Key Features
 
 - **OMOP CDM Native**: Connects directly to OMOP CDM databases via `CDMConnector` and `omopgenerics`.
-- **Modular Monorepo Architecture**: Decouples lightweight HCRU extraction (`CohortUtilisation`), direct costing (`CohortCosts`), and HEOR modeling (`CohortEconomics`) under a unified metapackage (`hermes`).
+- **Modular Monorepo Architecture**: Decouples lightweight HCRU extraction (`CohortUtilisation`), direct costing (`CohortCosts`), and HEOR modeling (`CohortEconomics`) under a unified metapackage (`omopHeor`).
 - **3-Layer Care Utilization Suite**: Episode constructors, in-database column enrichers, and standardized GT / Flextable reporting.
 - **Direct Medical Cost Extraction**: Polymorphic OMOP `COST` table linkage across visits, drugs, and procedures with automated zero-fill handling.
 - **End-to-End Decision Science**: Propensity score adjustment (`Cyclops`), Markov state-transition models, and CEA visualizations (`BCEA`).
@@ -26,7 +26,7 @@
 ### Installation
 
 ```R
-# Install the complete hermes metapackage (recommended)
+# Install the complete omopHeor metapackage (recommended)
 pak::pkg_install("iomedhealth/hermes")
 
 # Or install individual standalone domain packages
@@ -40,7 +40,7 @@ pak::pkg_install("iomedhealth/hermes/packages/CohortEconomics")
 Enrich study cohorts in-database across configurable temporal windows (e.g., baseline `[-365, -1]`, follow-up `[0, 365]`, or full follow-up `[0, Inf]`) and produce publication tables:
 
 ```R
-library(hermes)
+library(omopHeor)
 library(dplyr)
 
 # 0. Connect to CDM (built-in synthetic mock database)
@@ -79,7 +79,7 @@ tableCosts(cost_summary)
 Run the complete causal inference, Markov state-transition modeling, and economic simulation pipeline:
 
 ```R
-library(hermes)
+library(omopHeor)
 
 # 0. Setup Connection
 cdm <- mockHERMES()
@@ -129,4 +129,4 @@ We welcome contributions! Please review [`.github/CONTRIBUTING.md`](.github/CONT
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Copyright © 2026 [IOMED Medical Solutions S.L.](https://iomed.health)
+Copyright © 2026 [IOMED Medical Solutions S.L.](https://www.iomed.health/)

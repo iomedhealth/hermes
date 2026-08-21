@@ -6,13 +6,14 @@
 \alias{CohortEconomics-package}
 \title{CohortEconomics: Causal Propensity Scores, Health-State Trajectories, and Cost-Effectiveness Analysis on OMOP CDM}
 \description{
-Comprehensive Health Economics and Outcomes Research (HEOR) pipeline for OMOP CDM cohorts, featuring high-dimensional propensity score adjustment, longitudinal health-state trajectory modeling, Markov microsimulations, and Cost-Effectiveness Analysis (CEA).
+Comprehensive Health Economics and Outcomes Research (HEOR) pipeline for Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) cohorts, featuring high-dimensional propensity score adjustment, longitudinal health-state trajectory modeling, Markov microsimulations, and Cost-Effectiveness Analysis (CEA) using 'BCEA'.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://www.iomed.health/}
   \item \url{https://github.com/iomedhealth/hermes}
+  \item Report bugs at \url{https://github.com/iomedhealth/hermes/issues}
 }
 
 }

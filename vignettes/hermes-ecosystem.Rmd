@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 # The HERMES Ecosystem
 
-**HERMES** (Health Economic Resource Modeling & Evaluation System) is an R package ecosystem developed by [IOMED](https://iomed.health) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
+**HERMES** (Health Economic Resource Modeling & Evaluation System) is an R package ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
 
 Starting in version 0.5.0, HERMES adopts a **modular monorepo architecture** composed of three standalone domain packages under the DARWIN EU standard, unified by the root `hermes` umbrella metapackage.
 
@@ -99,7 +99,7 @@ It implements a **3-layer architecture** aligned with DARWIN EU standards (`Coho
 ### Example: Cohort Enrichment
 
 ```{r cu_demo}
-library(hermes)
+library(omopHeor)
 library(dplyr)
 
 # Load synthetic mock CDM
@@ -209,12 +209,12 @@ table_summary(study)
 
 ---
 
-## 6. The `hermes` Umbrella Metapackage
+## 6. The `omopHeor` Umbrella Metapackage
 
-The root **`hermes`** package unifies `CohortUtilisation`, `CohortCosts`, and `CohortEconomics` into a single, cohesive developer experience:
+The root **`omopHeor`** package unifies `CohortUtilisation`, `CohortCosts`, and `CohortEconomics` into a single, cohesive developer experience:
 
 * **One-Step Installation**: `pak::pkg_install("iomedhealth/hermes")` installs all subpackages and dependencies.
-* **Unified Attachment**: `library(hermes)` attaches all three packages and re-exports all analytical functions.
+* **Unified Attachment**: `library(omopHeor)` attaches all three packages and re-exports all analytical functions.
 * **Built-in Mock Data**: `mockHERMES()` provides a self-contained in-memory DuckDB OMOP CDM database for testing and demonstrations.
 
 ---
@@ -226,4 +226,4 @@ The root **`hermes`** package unifies `CohortUtilisation`, `CohortCosts`, and `C
 | **`CohortUtilisation`** | In-database HCRU extraction across care settings | `addInpatients()`, `addEmergencyCare()`, `addOutpatientVisits()`, `addVisits()`, `addPrescriptions()`, `addProcedures()`, `computeHospitalizationCohorts()`, `summariseUtilization()`, `tableUtilization()` | Epidemiologists, Data Analysts |
 | **`CohortCosts`** | Direct medical costs & OMOP COST table linkage | `addCosts()`, `summariseCosts()`, `tableCosts()`, `plotCosts()` | Health Economists, Financial Analysts |
 | **`CohortEconomics`** | Propensity scores, trajectories, simulation & CEA | `init()`, `summarise_baseline()`, `extract_hcru()`, `fit_ps()`, `adjust_ps()`, `compile_trajectories()`, `simulate_economics()`, `run_cea()`, `plot_ceac()`, `plot_plane()` | Health Economists, HTA Researchers |
-| **`hermes`** | Umbrella metapackage & unified developer interface | All verbs re-exported + `mockHERMES()` | All RWE / HEOR Practitioners |
+| **`omopHeor`** | Umbrella metapackage & unified developer interface | All verbs re-exported + `mockHERMES()` | All RWE / HEOR Practitioners |
