@@ -3,7 +3,7 @@
 ## The HERMES Ecosystem
 
 **HERMES** (Health Economic Resource Modeling & Evaluation System) is an
-R package ecosystem developed by [IOMED](https://iomed.health) for
+R package ecosystem developed by [IOMED](https://www.iomed.health/) for
 Real-World Evidence (RWE) and Health Economics and Outcomes Research
 (HEOR) on observational healthcare data structured in the **OMOP Common
 Data Model (CDM)**.
@@ -125,7 +125,7 @@ standards (`CohortConstructor`, `PatientProfiles`,
 
 ``` r
 
-library(hermes)
+library(omopHeor)
 library(dplyr)
 
 # Load synthetic mock CDM
@@ -328,16 +328,16 @@ table_summary(study)
 
 ------------------------------------------------------------------------
 
-### 6. The `hermes` Umbrella Metapackage
+### 6. The `omopHeor` Umbrella Metapackage
 
-The root **`hermes`** package unifies `CohortUtilisation`,
+The root **`omopHeor`** package unifies `CohortUtilisation`,
 `CohortCosts`, and `CohortEconomics` into a single, cohesive developer
 experience:
 
 - **One-Step Installation**: `pak::pkg_install("iomedhealth/hermes")`
   installs all subpackages and dependencies.
 - **Unified Attachment**:
-  [`library(hermes)`](https://iomedhealth.github.io/hermes/) attaches
+  [`library(omopHeor)`](https://iomedhealth.github.io/hermes/) attaches
   all three packages and re-exports all analytical functions.
 - **Built-in Mock Data**:
   [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md)
@@ -353,4 +353,4 @@ experience:
 | **`CohortUtilisation`** | In-database HCRU extraction across care settings | [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html), [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html), [`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html), [`addVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html), [`addPrescriptions()`](https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html), [`addProcedures()`](https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html), [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html), [`summariseUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/summariseUtilization.html), [`tableUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html) | Epidemiologists, Data Analysts |
 | **`CohortCosts`** | Direct medical costs & OMOP COST table linkage | [`addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html), [`summariseCosts()`](https://rdrr.io/pkg/CohortCosts/man/summariseCosts.html), [`tableCosts()`](https://rdrr.io/pkg/CohortCosts/man/tableCosts.html), [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html) | Health Economists, Financial Analysts |
 | **`CohortEconomics`** | Propensity scores, trajectories, simulation & CEA | [`init()`](https://rdrr.io/pkg/CohortEconomics/man/init.html), [`summarise_baseline()`](https://rdrr.io/pkg/CohortEconomics/man/summarise_baseline.html), [`extract_hcru()`](https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html), [`fit_ps()`](https://rdrr.io/pkg/CohortEconomics/man/fit_ps.html), [`adjust_ps()`](https://rdrr.io/pkg/CohortEconomics/man/adjust_ps.html), [`compile_trajectories()`](https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html), [`simulate_economics()`](https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html), [`run_cea()`](https://rdrr.io/pkg/CohortEconomics/man/run_cea.html), [`plot_ceac()`](https://rdrr.io/pkg/CohortEconomics/man/plot_ceac.html), [`plot_plane()`](https://rdrr.io/pkg/CohortEconomics/man/plot_plane.html) | Health Economists, HTA Researchers |
-| **`hermes`** | Umbrella metapackage & unified developer interface | All verbs re-exported + [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md) | All RWE / HEOR Practitioners |
+| **`omopHeor`** | Umbrella metapackage & unified developer interface | All verbs re-exported + [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md) | All RWE / HEOR Practitioners |

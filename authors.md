@@ -9,14 +9,14 @@
 Source:
 [`inst/CITATION`](https://github.com/iomedhealth/hermes/blob/main/inst/CITATION)
 
-Maeztu, G. (2026). HERMES: Health Economic Resource Modeling &
-Evaluation System. Developed by IOMED. R package version 0.5.0.
+Maeztu, G. (2026). omopHeor: Health Economics and Outcomes Research
+Pipeline on OMOP CDM. Developed by IOMED. R package version 0.6.0.
 https://github.com/iomedhealth/hermes
 
     @Manual{,
-      title = {HERMES: Health Economic Resource Modeling & Evaluation System},
+      title = {omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM},
       author = {Gabriel Maeztu},
       year = {2026},
-      note = {Developed by IOMED Medical Solutions SL. R package version 0.5.0.},
+      note = {Developed by IOMED Medical Solutions SL. R package version 0.6.0.},
       url = {https://github.com/iomedhealth/hermes},
     }
