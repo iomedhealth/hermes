@@ -1,4 +1,4 @@
-# omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM
+# omopHeor: HEOR & HCRU on OMOP
 
 [![R-CMD-check](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/omopHeor/)
