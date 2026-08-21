@@ -7,15 +7,15 @@
 summarise_baseline(study)
 }
 \arguments{
-\item{study}{A \code{hermes_study} object, typically the output of \code{init()}.}
+\item{study}{An \code{omopheor_study} (\code{hermes_study}) object, typically the output of \code{init()}.}
 }
 \value{
-A \code{hermes_hcru} S3 object containing the original study data plus a new
+An \code{omopheor_hcru} (\code{hermes_hcru}) S3 object containing the original study data plus a new
 \code{baseline_summary} attribute.
 }
 \description{
 \code{summarise_baseline()} computes unadjusted baseline characteristics for the
-cohorts defined in the \code{hermes_study} object.
+cohorts defined in the \code{omopheor_study} (\code{hermes_study}) object.
 
 In HEOR, understanding the baseline characteristics of the Treatment and
 Standard of Care arms is crucial. If the populations are systematically different

@@ -7,12 +7,12 @@
 fit_ps(hcru_obj, ...)
 }
 \arguments{
-\item{hcru_obj}{A \code{hermes_hcru} object containing the cohort data.}
+\item{hcru_obj}{An \code{omopheor_hcru} (\code{hermes_hcru}) object containing the cohort data.}
 
 \item{...}{Additional arguments passed to the underlying model fitting functions.}
 }
 \value{
-A \code{hermes_ps} object containing the propensity score model and covariate data.
+An \code{omopheor_ps} (\code{hermes_ps}) object containing the propensity score model and covariate data.
 }
 \description{
 \code{fit_ps()} estimates the probability (propensity score) of a patient being

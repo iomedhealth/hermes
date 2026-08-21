@@ -32,7 +32,7 @@ extractHcru(
 )
 }
 \arguments{
-\item{study}{A \code{hermes_study} or \code{hermes_hcru} object.}
+\item{study}{An \code{omopheor_study} (\code{hermes_study}) or \code{omopheor_hcru} (\code{hermes_hcru}) object.}
 
 \item{baseline_window}{Relative days from cohort start date defining baseline (default \code{c(-365, -1)}).}
 
@@ -65,7 +65,7 @@ extractHcru(
 \item{calculateReadmissions}{Logical, whether to compute 30-day and 90-day readmissions (default \code{FALSE}).}
 }
 \value{
-A \code{hermes_hcru} object enriched with \code{study$costs} and \code{study$hcru}.
+An \code{omopheor_hcru} (\code{hermes_hcru}) object enriched with \code{study$costs} and \code{study$hcru}.
 }
 \description{
 \code{extract_hcru()} queries the OMOP CDM to extract direct medical costs and

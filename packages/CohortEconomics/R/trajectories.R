@@ -10,9 +10,9 @@
 #' aggregates the total costs incurred by patients while residing in each specific
 #' health state.
 #'
-#' @param ps_obj A `hermes_ps` object containing the matched population and cost data.
+#' @param ps_obj An `omopheor_ps` (`hermes_ps`) object containing the matched population and cost data.
 #'
-#' @return A `hermes_trajectories` object containing transition matrices and state-specific cost summaries.
+#' @return An `omopheor_trajectories` (`hermes_trajectories`) object containing transition matrices and state-specific cost summaries.
 #'
 #' @export
 compile_trajectories <- function(ps_obj) {
@@ -104,13 +104,12 @@ compile_trajectories <- function(ps_obj) {
     }
   }
 
-  structure(
+  new_omopheor_trajectories(
     list(
       ps_obj = ps_obj,
       matrices = matrices,
       costs = costs_summary,
       utilities = data.frame()
-    ),
-    class = "hermes_trajectories"
+    )
   )
 }

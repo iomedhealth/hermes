@@ -12,7 +12,7 @@ simulate_economics(
 )
 }
 \arguments{
-\item{traj_obj}{A \code{hermes_trajectories} object containing transition and cost data.}
+\item{traj_obj}{An \code{omopheor_trajectories} (\code{hermes_trajectories}) object containing transition and cost data.}
 
 \item{time_horizon}{Numeric. The time horizon for the simulation in years (e.g., 10 for a 10-year model, or ~80 for a lifetime horizon). Default is 10.}
 
@@ -21,7 +21,7 @@ simulate_economics(
 \item{n_samples}{Integer. The number of probabilistic iterations (PSA samples) to run. Default is 100.}
 }
 \value{
-A \code{hermes_sim} object containing the simulated total costs and QALYs across all samples.
+An \code{omopheor_sim} (\code{hermes_sim}) object containing the simulated total costs and QALYs across all samples.
 }
 \description{
 \code{simulate_economics()} runs a Probabilistic Sensitivity Analysis (PSA) using a

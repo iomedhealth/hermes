@@ -35,5 +35,5 @@ jobs:
       - name: Check CohortEconomics
         run: Rscript -e "rcmdcheck::rcmdcheck('packages/CohortEconomics', args = c('--no-manual', '--as-cran'), error_on = 'warning')"
 
-      - name: Check root hermes
+      - name: Check root omopHeor
         uses: r-lib/actions/check-r-package@v2

@@ -1,4 +1,5 @@
-test_that("hermes metapackage re-exports functions from all 3 sub-packages", {
+test_that("omopHeor metapackage re-exports functions from all 3 sub-packages", {
+  library(omopHeor)
   # CohortUtilisation
   expect_true(exists("addInpatients", mode = "function"))
   expect_true(exists("addEmergencyCare", mode = "function"))
@@ -19,10 +20,13 @@ test_that("hermes metapackage re-exports functions from all 3 sub-packages", {
   expect_true(exists("compile_trajectories", mode = "function"))
   expect_true(exists("simulate_economics", mode = "function"))
   expect_true(exists("run_cea", mode = "function"))
+  expect_true(exists("mockOmopHeor", mode = "function"))
+  expect_true(exists("mockHERMES", mode = "function"))
 })
 
-test_that("hermes end-to-end multi-domain workflow executes cleanly", {
-  cdm <- mockHERMES()
+test_that("omopHeor end-to-end multi-domain workflow executes cleanly", {
+  library(omopHeor)
+  cdm <- mockOmopHeor()
 
   # Full pipeline using re-exported functions
   cohortEnriched <- cdm$target_cohort |>

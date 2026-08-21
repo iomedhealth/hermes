@@ -7,12 +7,12 @@
 assess_balance(ps_obj, ...)
 }
 \arguments{
-\item{ps_obj}{A \code{hermes_ps} object returned by \code{adjust_ps()}.}
+\item{ps_obj}{An \code{omopheor_ps} (\code{hermes_ps}) object returned by \code{adjust_ps()}.}
 
 \item{...}{Additional arguments.}
 }
 \value{
-A \code{hermes_ps} object updated with an \code{smd_summary} attribute.
+An \code{omopheor_ps} (\code{hermes_ps}) object updated with an \code{smd_summary} attribute.
 }
 \description{
 \code{assess_balance()} calculates the Standardized Mean Differences (SMD) for covariates

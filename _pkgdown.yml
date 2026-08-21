@@ -18,7 +18,7 @@ articles:
   - title: "Getting Started"
     navbar: "Getting Started"
     contents:
-      - hermes-ecosystem
+      - omopheor-ecosystem
       - intro-to-heor
       - cohort-utilization
   - title: "Deep Dives"
@@ -74,4 +74,5 @@ reference:
   - title: "Mock Data & Testing Utilities"
     desc: "Helpers for creating synthetic in-memory OMOP CDM test references."
     contents:
+      - mockOmopHeor
       - mockHERMES

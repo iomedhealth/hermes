@@ -7,7 +7,7 @@
 plot_plane(study)
 }
 \arguments{
-\item{study}{A \code{hermes_cea} object.}
+\item{study}{An \code{omopheor_cea} (\code{hermes_cea}) object.}
 }
 \value{
 A \code{ggplot2} object representing the CE plane.

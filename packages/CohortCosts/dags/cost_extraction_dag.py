@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-dags/cost_extraction_dag.py - Modern TaskFlow Airflow DAG for HERMES Spanish Healthcare Cost ETL Pipeline.
+dags/cost_extraction_dag.py - Modern TaskFlow Airflow DAG for omopHeor Spanish Healthcare Cost ETL Pipeline.
 
 Features:
 - TaskFlow API (@dag, @task) with deferred scheduler-safe imports.

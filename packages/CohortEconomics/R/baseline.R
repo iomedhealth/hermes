@@ -2,7 +2,7 @@
 #'
 #' @description
 #' `summarise_baseline()` computes unadjusted baseline characteristics for the
-#' cohorts defined in the `hermes_study` object.
+#' cohorts defined in the `omopheor_study` (`hermes_study`) object.
 #'
 #' In HEOR, understanding the baseline characteristics of the Treatment and
 #' Standard of Care arms is crucial. If the populations are systematically different
@@ -22,9 +22,9 @@
 #' 5 Sex           Female         percentage    45.0
 #' ```
 #'
-#' @param study A `hermes_study` object, typically the output of `init()`.
+#' @param study An `omopheor_study` (`hermes_study`) object, typically the output of `init()`.
 #'
-#' @return A `hermes_hcru` S3 object containing the original study data plus a new
+#' @return An `omopheor_hcru` (`hermes_hcru`) S3 object containing the original study data plus a new
 #' `baseline_summary` attribute.
 #'
 #' @export

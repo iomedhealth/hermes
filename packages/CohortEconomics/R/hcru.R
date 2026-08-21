@@ -11,7 +11,7 @@
 #' links OMOP `cost` records to clinical events and tags costs with the patient's
 #' health state (e.g., before or after the outcome event).
 #'
-#' @param study A `hermes_study` or `hermes_hcru` object.
+#' @param study An `omopheor_study` (`hermes_study`) or `omopheor_hcru` (`hermes_hcru`) object.
 #' @param baseline_window Relative days from cohort start date defining baseline (default `c(-365, -1)`).
 #' @param followup_window Relative days from cohort start date defining follow-up (default `c(0, 365)`).
 #' @param cost_field Column name in `cost` table to aggregate (default `"total_paid"`).
@@ -22,7 +22,7 @@
 #' @param calculate_readmissions Logical, whether to compute 30-day and 90-day readmissions (default `FALSE`).
 #' @param persistence Logical, whether to calculate Proportion of Days Covered (PDC) (default `FALSE`).
 #'
-#' @return A `hermes_hcru` object enriched with `study$costs` and `study$hcru`.
+#' @return An `omopheor_hcru` (`hermes_hcru`) object enriched with `study$costs` and `study$hcru`.
 #'
 #' @export
 extract_hcru <- function(
@@ -38,8 +38,9 @@ extract_hcru <- function(
   persistence = FALSE
 ) {
   # ponytail: database-side filtering by cohort subjects and windowed aggregation
-  if (!inherits(study, "hermes_study") && !inherits(study, "hermes_hcru")) {
-    stop("Argument 'study' must be a hermes_study or hermes_hcru object")
+  if (!inherits(study, "omopheor_study") && !inherits(study, "hermes_study") &&
+      !inherits(study, "omopheor_hcru") && !inherits(study, "hermes_hcru")) {
+    stop("Argument 'study' must be an omopheor_study or omopheor_hcru object")
   }
   if (!is.numeric(baseline_window) || length(baseline_window) != 2 || baseline_window[1] > baseline_window[2]) {
     stop("Argument 'baseline_window' must be a numeric vector of length 2 with start <= end")

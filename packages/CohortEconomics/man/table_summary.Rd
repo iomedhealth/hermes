@@ -7,7 +7,7 @@
 table_summary(study)
 }
 \arguments{
-\item{study}{A \code{hermes_cea} object}
+\item{study}{An \code{omopheor_cea} (\code{hermes_cea}) object}
 }
 \description{
 Returns a statistical summary table of the CEA results, detailing incremental costs,

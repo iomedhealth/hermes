@@ -11,10 +11,10 @@
 #' similar baseline characteristics. This function currently uses regularized logistic
 #' regression via the `Cyclops` package.
 #'
-#' @param hcru_obj A `hermes_hcru` object containing the cohort data.
+#' @param hcru_obj An `omopheor_hcru` (`hermes_hcru`) object containing the cohort data.
 #' @param ... Additional arguments passed to the underlying model fitting functions.
 #'
-#' @return A `hermes_ps` object containing the propensity score model and covariate data.
+#' @return An `omopheor_ps` (`hermes_ps`) object containing the propensity score model and covariate data.
 #'
 #' @export
 #' @importFrom stats predict
@@ -75,13 +75,12 @@ fit_ps <- function(hcru_obj, ...) {
     )
   }
 
-  structure(
+  new_omopheor_ps(
     list(
       cm_data = cm_data,
       model = model_fit,
       hcru_obj = hcru_obj
-    ),
-    class = "hermes_ps"
+    )
   )
 }
 
@@ -96,12 +95,12 @@ fit_ps <- function(hcru_obj, ...) {
 #' unmatched patients. The resulting matched population is less biased and suitable
 #' for generating the transition probabilities and costs used in the economic simulation.
 #'
-#' @param ps_obj A `hermes_ps` object returned by `fit_ps()`.
+#' @param ps_obj An `omopheor_ps` (`hermes_ps`) object returned by `fit_ps()`.
 #' @param caliper A numeric value specifying the maximum allowed distance between matched
 #' propensity scores. Default is 0.2.
 #' @param ... Additional arguments passed to the matching function.
 #'
-#' @return A `hermes_ps` object updated with a `matched_pop` attribute containing the matched cohort.
+#' @return An `omopheor_ps` (`hermes_ps`) object updated with a `matched_pop` attribute containing the matched cohort.
 #'
 #' @export
 adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
@@ -148,7 +147,7 @@ adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
   }
 
   ps_obj$matched_pop <- matched
-  structure(ps_obj, class = "hermes_ps")
+  new_omopheor_ps(ps_obj)
 }
 
 #' Assess Covariate Balance (Stage 3: Causal Adjustment)
@@ -161,10 +160,10 @@ adjust_ps <- function(ps_obj, caliper = 0.2, ...) {
 #' should balance the baseline covariates between the treatment and comparator arms,
 #' resulting in SMDs close to zero (typically < 0.1).
 #'
-#' @param ps_obj A `hermes_ps` object returned by `adjust_ps()`.
+#' @param ps_obj An `omopheor_ps` (`hermes_ps`) object returned by `adjust_ps()`.
 #' @param ... Additional arguments.
 #'
-#' @return A `hermes_ps` object updated with an `smd_summary` attribute.
+#' @return An `omopheor_ps` (`hermes_ps`) object updated with an `smd_summary` attribute.
 #'
 #' @export
 assess_balance <- function(ps_obj, ...) {
@@ -177,5 +176,5 @@ assess_balance <- function(ps_obj, ...) {
   }
 
   ps_obj$smd_summary <- smd
-  structure(ps_obj, class = "hermes_ps")
+  new_omopheor_ps(ps_obj)
 }

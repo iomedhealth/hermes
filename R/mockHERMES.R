@@ -4,13 +4,15 @@
 #'
 #' @return A `cdm_reference` object connected to an in-memory DuckDB database.
 #' @export
+#' @rdname mockOmopHeor
+#' @aliases mockHERMES
 #'
 #' @examples
 #' \donttest{
 #' library(omopHeor)
-#' cdm <- mockHERMES()
+#' cdm <- mockOmopHeor()
 #' }
-mockHERMES <- function(numberIndividuals = 10) {
+mockOmopHeor <- function(numberIndividuals = 10) {
   # ponytail: self-contained mock duckdb CDM reference for vignettes and examples
   con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
 
@@ -150,4 +152,10 @@ mockHERMES <- function(numberIndividuals = 10) {
   cdm$outcome_cohort <- omopgenerics::newCohortTable(cdm$outcome_cohort, .softValidation = TRUE)
 
   cdm
+}
+
+#' @rdname mockOmopHeor
+#' @export
+mockHERMES <- function(numberIndividuals = 10) {
+  mockOmopHeor(numberIndividuals = numberIndividuals)
 }

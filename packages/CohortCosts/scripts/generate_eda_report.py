@@ -380,8 +380,8 @@ sev4_ratio = sev_summary.loc[sev_summary['severity'] == 4, 'relative_to_sev1'].v
 report_md = f"""# Exploratory Data Analysis (EDA) & HEOR Statistical Audit: Spanish Ground-Source Healthcare Cost Catalogs and INE Inflation Series
 
 **Document Control:**
-- **Product:** HERMES (Health Economic Resource Modeling & Evaluation System)
-- **Document ID:** `HERMES-EDA-COSTS-ES-001`
+- **Product:** omopHeor (Health Economics and Outcomes Research Pipeline on OMOP CDM)
+- **Document ID:** `OMOPHEOR-EDA-COSTS-ES-001`
 - **Audit Date:** August 19, 2026
 - **Lead Evaluator:** Expert Health Economics and Outcomes Research (HEOR) Data Analyst & Epidemiologist
 - **Data Scope:** Canonical Spanish Healthcare Cost Catalog (`data/costs_spain.parquet`), INE Health Sector Deflator (`data/ine_indices_sanidad.parquet`), and Source Registry (`data/specs/registries.yml`).
@@ -391,13 +391,13 @@ report_md = f"""# Exploratory Data Analysis (EDA) & HEOR Statistical Audit: Span
 
 ## Executive Summary
 
-This report delivers a comprehensive, mathematically rigorous Exploratory Data Analysis (EDA) and Health Economics and Outcomes Research (HEOR) validation of the canonical Spanish ground-source healthcare cost database in **HERMES**.
+This report delivers a comprehensive, mathematically rigorous Exploratory Data Analysis (EDA) and Health Economics and Outcomes Research (HEOR) validation of the canonical Spanish ground-source healthcare cost database in **omopHeor**.
 
 The database unifies **{total_records:,} standardized cost line-items** extracted from official regional gazettes (*Boletines Oficiales*) across all **17 Autonomous Communities**, the autonomous cities of **Ceuta and Melilla (INGESA)**, and the **Ministry of Health National Casemix (SNS APR-GRD)**, linked to the official **Instituto Nacional de Estadística (INE) ECOICOP 06 Sanidad** deflator series (Base 2021 = 100).
 
 ```
 ========================================================================================
-                              HERMES COST DATABASE AT A GLANCE
+                              OMOPHEOR COST DATABASE AT A GLANCE
 ========================================================================================
   • Total Catalog Records:          {total_records:,} line items (100% complete across 15 attributes)
   • Jurisdictional Entities:       {n_jurisdictions} (17 Autonomous Communities + INGESA + National Casemix)
@@ -422,7 +422,7 @@ The database unifies **{total_records:,} standardized cost line-items** extracte
    - **Severity 2 (Moderate)**: Mean €{sev2_mean:,.2f} (**+{sev2_step:.2f}%** over Sev 1 | Median €{sev2_med:,.2f})
    - **Severity 3 (Major)**: Mean €{sev3_mean:,.2f} (**+{sev3_step:.2f}%** over Sev 2 | Median €{sev3_med:,.2f})
    - **Severity 4 (Extreme)**: Mean €{sev4_mean:,.2f} (**+{sev4_step:.2f}%** over Sev 3 | Median €{sev4_med:,.2f}; **{sev4_ratio:.2f}x** Severity 1).
-   This empirical step-function provides statistical validation for Stage 4 health state cost modeling in HERMES.
+   This empirical step-function provides statistical validation for Stage 4 health state cost modeling in omopHeor.
 
 3. **High Regional Price Disparities Across Clinical Benchmarks**:
    Substantial inter-regional coefficient of variation ($CV = \\sigma / \\mu$) is observed across standard HEOR benchmarks:
@@ -433,7 +433,7 @@ The database unifies **{total_records:,} standardized cost line-items** extracte
 4. **Inflation Escalation Dynamics (INE ECOICOP 06 Sanidad)**:
    Healthcare sector inflation between 2013 and 2024 lagged general headline CPI during 2014–2020 before accelerating post-2021. Escalating legacy tariffs (2013–2014 decrees from Castilla y León, Galicia, Castilla-La Mancha, INGESA) to constant 2026 values requires a **+12.52% to +12.68% upward adjustment**, whereas recent decrees (2024 from Andalucía, Canarias, Murcia, País Vasco, Extremadura) require **+4.13%**.
 
-5. **Data Hygiene & Cleansing Directives for HERMES**:
+5. **Data Hygiene & Cleansing Directives for omopHeor**:
    Sub-Euro line items correspond to per-kilometer transport fees and laboratory tests. The scraper distinguishes `per_km` transport tariffs and filters out non-tariff glossary definitions.
 
 ---
@@ -461,7 +461,7 @@ Regional Decree Vintage Distribution (Publication Years)
 ```
 
 - **Freshness Profile**: The vast majority of catalog items originate from decrees published in **2023 or 2024**, ensuring modern baseline valuation.
-- **Aging Gazettes**: Catalogs from **Castilla y León (2013)**, **INGESA (2013)**, **Galicia (2014)**, **Castilla-La Mancha (2014)**, and **Cantabria (2017)** have not been re-gazetted comprehensively in over 7–13 years. In these jurisdictions, health systems apply annual percentage indexing by default; HERMES explicitly models this through the INE ECOICOP 06 deflator engine.
+- **Aging Gazettes**: Catalogs from **Castilla y León (2013)**, **INGESA (2013)**, **Galicia (2014)**, **Castilla-La Mancha (2014)**, and **Cantabria (2017)** have not been re-gazetted comprehensively in over 7–13 years. In these jurisdictions, health systems apply annual percentage indexing by default; omopHeor explicitly models this through the INE ECOICOP 06 deflator engine.
 - **Catalog Structure Types**:
   - *Full Micro-Costing Catalogs* (Cataluña, Andalucía, Extremadura, Baleares, Murcia): Granular line-item pricing for individual diagnostic tests, laboratory determinations, and specialized procedures.
   - *DRG / All-Inclusive Catalogs* (País Vasco, Navarra, La Rioja, Nacional Casemix): Structured around APR-GRD episodes and standard inpatient/outpatient encounters.
@@ -481,7 +481,7 @@ Each catalog item is mapped to a standardized clinical `setting` and target `omo
 - **Procedure Domain**: Specialized surgical and interventional procedures billed outside of standardized DRG bundles.
 
 ### 2.2 Setting vs. Unit Type Cross-Tabulation
-Tariff granularity is governed by `unit_type`, dictating how health economic models in HERMES multiply utilization frequencies by unit costs.
+Tariff granularity is governed by `unit_type`, dictating how health economic models in omopHeor multiply utilization frequencies by unit costs.
 
 {df_to_markdown(xtab_unit)}
 
@@ -624,7 +624,7 @@ Official annual indices from the Instituto Nacional de Estadística (INE) for EC
 
 ---
 
-## 7. Strategic Implications & Architecture Readiness for HERMES
+## 7. Strategic Implications & Architecture Readiness for omopHeor
 
 ### 7.1 Integration with Stage 2: Descriptive Baseline & HCRU Characterization
 - **Direct Matching on OMOP Tables**: The `costs_spain` catalog provides comprehensive coverage across all 5 HCRU domains extracted by `extract_hcru()`:
@@ -633,7 +633,7 @@ Official annual indices from the Instituto Nacional de Estadística (INE) for EC
   - Outpatient: General and specialty consultation rates.
   - Emergency: Emergency episode tariffs.
   - Diagnostics: Laboratory and imaging test codes.
-- **National Casemix Fallback**: For regions with sparse catalogs (e.g. Asturias, Castilla-La Mancha), HERMES can seamlessly fallback to `ccaa == 'Nacional'` (SNS APR-GRD catalog) with zero loss of clinical validity.
+- **National Casemix Fallback**: For regions with sparse catalogs (e.g. Asturias, Castilla-La Mancha), omopHeor can seamlessly fallback to `ccaa == 'Nacional'` (SNS APR-GRD catalog) with zero loss of clinical validity.
 
 ### 7.2 Integration with Stage 4: Trajectory Compilation & State-Cost Extraction
 - **Severity-Adjusted Markov States**: The verified monotonic escalation of APR-GRD costs across Severities 1 through 4 allows Stage 4 to assign authentic, disease-severity-calibrated costs to progressive Markov health states.
@@ -652,7 +652,7 @@ Official annual indices from the Instituto Nacional de Estadística (INE) for EC
 | **5. HEOR Benchmarks** | **PASS** | 10 benchmark procedures analyzed across 17 CCAA with exact CV computation. |
 | **6. INE Inflation Engine** | **PASS** | 2002–2026 series validated; baseline-to-2026 escalation factors operational. |
 
-**Audit Verdict**: **PRODUCTION READY FOR HERMES STAGE 2 AND STAGE 4 COSTING PIPELINES.**
+**Audit Verdict**: **PRODUCTION READY FOR OMOPHEOR STAGE 2 AND STAGE 4 COSTING PIPELINES.**
 """
 
 with open(OUTPUT_FILE, "w", encoding="utf-8") as f:

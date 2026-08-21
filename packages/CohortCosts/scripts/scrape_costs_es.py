@@ -3,7 +3,7 @@
 scripts/scrape_costs_es.py - Comprehensive ground-source healthcare cost extractor for Spain.
 
 Downloads, extracts, normalizes, inflates, and validates public healthcare tariffs
-from all 17 Autonomous Communities, INGESA, and National sources into HERMES catalogs.
+from all 17 Autonomous Communities, INGESA, and National sources into omopHeor catalogs.
 Persists official INE Table 50913 (ECOICOP 06 Sanidad) series as canonical dataset artifacts.
 """
 

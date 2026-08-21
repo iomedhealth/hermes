@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 In Health Economics and Outcomes Research (HEOR) and Real-World Evidence (RWE), evaluating Healthcare Resource Utilization (HCRU) and direct medical costs requires capturing granular patient encounters across multiple care settings (inpatient, outpatient, emergency, pharmacy, diagnostics, procedures, and financial claims).
 
-Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`), **HERMES** provides a pipe-friendly, 3-layer architecture for cohort construction, in-database column enrichment, and standardized reporting.
+Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`), **omopHeor** provides a pipe-friendly, 3-layer architecture for cohort construction, in-database column enrichment, and standardized reporting.
 
 ---
 
@@ -53,7 +53,7 @@ Following the **DARWIN EU / OHDSI** package ecosystem standards (`CohortConstruc
 
 ## 1. Setup & CDM Connection
 
-We initialize an OMOP CDM reference (such as the mock HERMES test database):
+We initialize an OMOP CDM reference (such as the mock omopHeor test database):
 
 ```{r setup}
 library(omopHeor)
@@ -61,7 +61,7 @@ library(dplyr)
 library(omopgenerics)
 
 # Connect to OMOP CDM
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 ```
 
 ---
@@ -220,7 +220,7 @@ tableUtilization(
 
 ## 5. Visualizing Care Utilization & Costs (`visOmopResults` Style)
 
-HERMES provides `plotUtilization()` and `plotCosts()` for rapid exploratory and publication visualization, leveraging standard `visOmopResults` ggplot themes and facets.
+`CohortUtilisation` and `CohortCosts` provide `plotUtilization()` and `plotCosts()` for rapid exploratory and publication visualization, leveraging standard `visOmopResults` ggplot themes and facets.
 
 ### Bar Plots for Care Utilization
 

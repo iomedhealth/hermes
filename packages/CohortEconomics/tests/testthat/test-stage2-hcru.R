@@ -9,7 +9,7 @@ test_that("baseline demographics and comorbidity generation", {
 
 test_that("T005 [US1] extract_hcru validates arguments correctly", {
   study <- hermes_test_study()
-  expect_error(extract_hcru(list()), "Argument 'study' must be a hermes_study or hermes_hcru object")
+  expect_error(extract_hcru(list()), "Argument 'study' must be an omopheor_study")
   expect_error(extract_hcru(study, baseline_window = c(0, -100)), "Argument 'baseline_window' must be a numeric vector of length 2 with start <= end")
   expect_error(extract_hcru(study, followup_window = c(100, 50)), "Argument 'followup_window' must be a numeric vector of length 2 with start <= end")
   expect_error(extract_hcru(study, cost_field = 123), "Argument 'cost_field' must be a single string")

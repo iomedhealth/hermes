@@ -7,7 +7,7 @@
 adjust_ps(ps_obj, caliper = 0.2, ...)
 }
 \arguments{
-\item{ps_obj}{A \code{hermes_ps} object returned by \code{fit_ps()}.}
+\item{ps_obj}{An \code{omopheor_ps} (\code{hermes_ps}) object returned by \code{fit_ps()}.}
 
 \item{caliper}{A numeric value specifying the maximum allowed distance between matched
 propensity scores. Default is 0.2.}
@@ -15,7 +15,7 @@ propensity scores. Default is 0.2.}
 \item{...}{Additional arguments passed to the matching function.}
 }
 \value{
-A \code{hermes_ps} object updated with a \code{matched_pop} attribute containing the matched cohort.
+An \code{omopheor_ps} (\code{hermes_ps}) object updated with a \code{matched_pop} attribute containing the matched cohort.
 }
 \description{
 \code{adjust_ps()} applies a matching algorithm based on the propensity scores calculated

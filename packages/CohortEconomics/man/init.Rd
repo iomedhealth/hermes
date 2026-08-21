@@ -2,7 +2,7 @@
 % Please edit documentation in R/init.R
 \name{init}
 \alias{init}
-\title{Initialize a HERMES study (Stage 1: Cohort Generation)}
+\title{Initialize an omopHeor study (Stage 1: Cohort Generation)}
 \usage{
 init(cdm, target_cohort, comparator_cohort, outcome_cohort)
 }
@@ -16,11 +16,11 @@ init(cdm, target_cohort, comparator_cohort, outcome_cohort)
 \item{outcome_cohort}{A string specifying the name of the outcome cohort table in the CDM.}
 }
 \value{
-A \code{hermes_study} S3 object containing the CDM reference and cohort metadata,
+An \code{omopheor_study} (\code{hermes_study}) S3 object containing the CDM reference and cohort metadata,
 ready to be piped into \code{summarise_baseline()}.
 }
 \description{
-\code{init()} is the entry point for the HERMES 6-stage pipeline. It takes an existing
+\code{init()} is the entry point for the omopHeor 6-stage pipeline. It takes an existing
 OMOP Common Data Model (CDM) reference and the names of pre-generated cohort tables,
 validating their existence and calculating baseline cohort counts.
 

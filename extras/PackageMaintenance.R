@@ -4,7 +4,7 @@
 devtools::test()
 
 # 2) check code coverage - are all functions covered 100%?
-# detach("package:HERMES", unload = TRUE)
+# detach("package:omopHeor", unload = TRUE)
 # devtools::test_coverage()
 # for more coverage details uncomment the following
 # covr::report()

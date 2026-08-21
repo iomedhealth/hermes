@@ -4,13 +4,13 @@
 \alias{run_cea}
 \title{Run Cost-Effectiveness Analysis (Stage 6: Decision Analysis)}
 \usage{
-run_cea(hermes_sim)
+run_cea(sim_obj)
 }
 \arguments{
-\item{hermes_sim}{A \code{hermes_sim} object output by \code{simulate_economics()}.}
+\item{sim_obj}{An \code{omopheor_sim} (\code{hermes_sim}) object output by \code{simulate_economics()}.}
 }
 \value{
-A \code{hermes_cea} object containing the full BCEA results.
+An \code{omopheor_cea} (\code{hermes_cea}) object containing the full BCEA results.
 }
 \description{
 \code{run_cea()} calculates the core metrics of a Cost-Effectiveness Analysis based

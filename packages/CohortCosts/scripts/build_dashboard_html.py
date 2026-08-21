@@ -247,7 +247,7 @@ html_content = f"""<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HERMES — Spanish Healthcare Costs & INE Inflation EDA Dashboard</title>
+  <title>omopHeor — Spanish Healthcare Costs & INE Inflation EDA Dashboard</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
@@ -305,7 +305,7 @@ html_content = f"""<!DOCTYPE html>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-lg font-bold tracking-tight text-white">HERMES HEOR Analytics</h1>
+            <h1 class="text-lg font-bold tracking-tight text-white">omopHeor Analytics</h1>
             <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v0.1.0 Live</span>
           </div>
           <p class="text-xs text-slate-400">Spanish Ground-Source Healthcare Cost Catalogs & INE Sanidad Deflators (2002–2026)</p>
@@ -692,7 +692,7 @@ html_content = f"""<!DOCTYPE html>
 
   <!-- Footer -->
   <footer class="border-t border-slate-800/80 bg-slate-950 px-6 py-6 text-center text-xs text-slate-500">
-    <p>HERMES — Real-World Evidence & Health Economic Resource Modeling Ecosystem | Ground-Source Data Audit</p>
+    <p>omopHeor — Real-World Evidence & Health Economic Resource Modeling Ecosystem | Ground-Source Data Audit</p>
     <p class="mt-1">Generated: August 19, 2026 | Compliant with DARWIN-EU & OMOP CDM Standards</p>
   </footer>
 

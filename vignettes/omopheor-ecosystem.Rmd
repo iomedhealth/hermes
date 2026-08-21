@@ -1,8 +1,8 @@
 ---
-title: "The HERMES Ecosystem: Modular Architecture & Package Suite"
+title: "The omopHeor Ecosystem: Modular Architecture & Package Suite"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The HERMES Ecosystem: Modular Architecture & Package Suite}
+  %\VignetteIndexEntry{The omopHeor Ecosystem: Modular Architecture & Package Suite}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,11 +17,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# The HERMES Ecosystem
+# The omopHeor Ecosystem
 
-**HERMES** (Health Economic Resource Modeling & Evaluation System) is an R package ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
+**omopHeor** is an R package ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR) on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
 
-Starting in version 0.5.0, HERMES adopts a **modular monorepo architecture** composed of three standalone domain packages under the DARWIN EU standard, unified by the root `hermes` umbrella metapackage.
+The framework adopts a **modular monorepo architecture** composed of three standalone domain packages under the DARWIN EU standard, unified by the root `omopHeor` umbrella metapackage.
 
 ---
 
@@ -32,7 +32,7 @@ In real-world HEOR workflows, analytical tasks often fall into two distinct para
 1. **Healthcare Resource Utilization & Direct Costing**: Epidemiologists and data scientists need to enrich OMOP cohorts with inpatient admissions, emergency care, outpatient visits, prescriptions, procedures, and claims costs in-database using lightweight dependencies.
 2. **Health Economics Modeling & Decision Simulation**: Health economists need causal propensity score matching, longitudinal health-state transitions, Markov microsimulations, and Bayesian Cost-Effectiveness Analysis (CEA) using specialized statistical packages (`Cyclops`, `BCEA`, `CohortMethod`).
 
-Decoupling these domains allows users to install only the dependencies required for their specific workflow while maintaining a single, unified interface through the `hermes` metapackage.
+Decoupling these domains allows users to install only the dependencies required for their specific workflow while maintaining a single, unified interface through the `omopHeor` metapackage.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -42,7 +42,7 @@ Decoupling these domains allows users to install only the dependencies required 
                                             │
                                             ▼
                     ┌───────────────────────────────────────────────┐
-                    │               hermes Metapackage              │
+                    │               omopHeor Metapackage            │
                     │      (Unified entry point & re-exports)       │
                     └───────────────────────┬───────────────────────┘
                                             │
@@ -103,7 +103,7 @@ library(omopHeor)
 library(dplyr)
 
 # Load synthetic mock CDM
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 
 # Enrich cohort across baseline [-365, -1] and 1-year follow-up [0, 365]
 cdm$target_enriched <- cdm$target_cohort |>
@@ -215,7 +215,7 @@ The root **`omopHeor`** package unifies `CohortUtilisation`, `CohortCosts`, and 
 
 * **One-Step Installation**: `pak::pkg_install("iomedhealth/omopHeor")` installs all subpackages and dependencies.
 * **Unified Attachment**: `library(omopHeor)` attaches all three packages and re-exports all analytical functions.
-* **Built-in Mock Data**: `mockHERMES()` provides a self-contained in-memory DuckDB OMOP CDM database for testing and demonstrations.
+* **Built-in Mock Data**: `mockOmopHeor()` provides a self-contained in-memory DuckDB OMOP CDM database for testing and demonstrations.
 
 ---
 
@@ -226,4 +226,4 @@ The root **`omopHeor`** package unifies `CohortUtilisation`, `CohortCosts`, and 
 | **`CohortUtilisation`** | In-database HCRU extraction across care settings | `addInpatients()`, `addEmergencyCare()`, `addOutpatientVisits()`, `addVisits()`, `addPrescriptions()`, `addProcedures()`, `computeHospitalizationCohorts()`, `summariseUtilization()`, `tableUtilization()` | Epidemiologists, Data Analysts |
 | **`CohortCosts`** | Direct medical costs & OMOP COST table linkage | `addCosts()`, `summariseCosts()`, `tableCosts()`, `plotCosts()` | Health Economists, Financial Analysts |
 | **`CohortEconomics`** | Propensity scores, trajectories, simulation & CEA | `init()`, `summarise_baseline()`, `extract_hcru()`, `fit_ps()`, `adjust_ps()`, `compile_trajectories()`, `simulate_economics()`, `run_cea()`, `plot_ceac()`, `plot_plane()` | Health Economists, HTA Researchers |
-| **`omopHeor`** | Umbrella metapackage & unified developer interface | All verbs re-exported + `mockHERMES()` | All RWE / HEOR Practitioners |
+| **`omopHeor`** | Umbrella metapackage & unified developer interface | All verbs re-exported + `mockOmopHeor()` | All RWE / HEOR Practitioners |

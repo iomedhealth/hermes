@@ -7,10 +7,10 @@
 compile_trajectories(ps_obj)
 }
 \arguments{
-\item{ps_obj}{A \code{hermes_ps} object containing the matched population and cost data.}
+\item{ps_obj}{An \code{omopheor_ps} (\code{hermes_ps}) object containing the matched population and cost data.}
 }
 \value{
-A \code{hermes_trajectories} object containing transition matrices and state-specific cost summaries.
+An \code{omopheor_trajectories} (\code{hermes_trajectories}) object containing transition matrices and state-specific cost summaries.
 }
 \description{
 \code{compile_trajectories()} aggregates the longitudinal patient timelines from the

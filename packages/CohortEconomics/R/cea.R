@@ -11,14 +11,16 @@
 #' to compute the Incremental Cost-Effectiveness Ratio (ICER) and Net Monetary
 #' Benefit (NMB), and to generate standard HEOR plots.
 #'
-#' @param hermes_sim A `hermes_sim` object output by `simulate_economics()`.
+#' @param sim_obj An `omopheor_sim` (`hermes_sim`) object output by `simulate_economics()`.
 #'
-#' @return A `hermes_cea` object containing the full BCEA results.
+#' @return An `omopheor_cea` (`hermes_cea`) object containing the full BCEA results.
 #'
 #' @export
-run_cea <- function(hermes_sim) {
+run_cea <- function(sim_obj) {
+  # Support both sim_obj and legacy hermes_sim argument
+  hermes_sim <- sim_obj
   if (is.null(hermes_sim$hesim_ce)) {
-    stop("hermes_sim must contain a hesim_ce object")
+    stop("sim_obj must contain a hesim_ce object")
   }
 
   # ponytail: xtabs for one-liner reshape without tidyr dependency
@@ -33,9 +35,7 @@ run_cea <- function(hermes_sim) {
 
   out <- hermes_sim
   out$cea_results <- bcea_res
-  class(out) <- c("hermes_cea", class(out))
-
-  return(out)
+  new_omopheor_cea(out)
 }
 
 #' Plot Cost-Effectiveness Acceptability Curve (CEAC)
@@ -47,7 +47,7 @@ run_cea <- function(hermes_sim) {
 #'
 #' \figure{ceac.png}
 #'
-#' @param study A `hermes_cea` object.
+#' @param study An `omopheor_cea` (`hermes_cea`) object.
 #'
 #' @return A `ggplot2` object representing the CEAC.
 #'
@@ -63,7 +63,7 @@ plot_ceac <- function(study) BCEA::ceac.plot(study$cea_results)
 #'
 #' \figure{ceplane.png}
 #'
-#' @param study A `hermes_cea` object.
+#' @param study An `omopheor_cea` (`hermes_cea`) object.
 #'
 #' @return A `ggplot2` object representing the CE plane.
 #'
@@ -92,6 +92,6 @@ plot_plane <- function(study) BCEA::ceplane.plot(study$cea_results)
 #' ICER: 5000 / QALY
 #' ```
 #'
-#' @param study A `hermes_cea` object
+#' @param study An `omopheor_cea` (`hermes_cea`) object
 #' @export
 table_summary <- function(study) summary(study$cea_results)

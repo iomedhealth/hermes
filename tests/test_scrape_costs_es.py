@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tests/test_scrape_costs_es.py - Automated Unit & Integration Tests for HERMES Spanish Cost Pipeline.
+tests/test_scrape_costs_es.py - Automated Unit & Integration Tests for omopHeor Spanish Cost Pipeline.
 """
 
 import os

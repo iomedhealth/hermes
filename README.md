@@ -1,11 +1,11 @@
-# HERMES: Health Economic Resource Modeling & Evaluation System
+# omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM
 
 [![R-CMD-check](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/omopHeor/)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
+[![Version](https://img.shields.io/badge/version-0.6.1-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**HERMES** is an R-based analytical ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
+**omopHeor** is an R-based analytical ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
 
 ## Key Features
 
@@ -14,7 +14,7 @@
 - **3-Layer Care Utilization Suite**: Episode constructors, in-database column enrichers, and standardized GT / Flextable reporting.
 - **Direct Medical Cost Extraction**: Polymorphic OMOP `COST` table linkage across visits, drugs, and procedures with automated zero-fill handling.
 - **End-to-End Decision Science**: Propensity score adjustment (`Cyclops`), Markov state-transition models, and CEA visualizations (`BCEA`).
-- **Instant Prototyping**: Includes `mockHERMES()` providing an in-memory synthetic DuckDB OMOP CDM database.
+- **Instant Prototyping**: Includes `mockOmopHeor()` providing an in-memory synthetic DuckDB OMOP CDM database.
 
 ## Getting Started
 
@@ -44,7 +44,7 @@ library(omopHeor)
 library(dplyr)
 
 # 0. Connect to CDM (built-in synthetic mock database)
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 
 # 1. Enrich cohort with visits, prescriptions, and direct costs in-database
 cdm$study_enriched <- cdm$target_cohort |>
@@ -82,7 +82,7 @@ Run the complete causal inference, Markov state-transition modeling, and economi
 library(omopHeor)
 
 # 0. Setup Connection
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 
 # 1-6. Run the End-to-End Pipeline
 study <- init(
@@ -116,7 +116,7 @@ table_summary(study)
 
 For in-depth architecture, tutorials, and technical specifications, explore the documentation articles:
 
-- **[The HERMES Ecosystem & Modular Architecture](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.html)**: Comprehensive breakdown of `CohortUtilisation`, `CohortCosts`, `CohortEconomics`, technology stack, and package design.
+- **[The omopHeor Ecosystem & Modular Architecture](https://iomedhealth.github.io/omopHeor/articles/omopheor-ecosystem.html)**: Comprehensive breakdown of `CohortUtilisation`, `CohortCosts`, `CohortEconomics`, technology stack, and package design.
 - **[Introduction to HEOR for OMOP Users](https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.html)**: Conceptual guide translating OMOP CDM vocabulary to Health Economics (ICER, QALY, Markov health states).
 - **[Cohort Utilization & Cost Enrichment](https://iomedhealth.github.io/omopHeor/articles/cohort-utilization.html)**: Step-by-step hands-on tutorial for the 3-layer in-database cohort enrichers.
 - **[HCRU & Direct Cost Extraction Logic](https://iomedhealth.github.io/omopHeor/articles/hcru_logic.html)**: Deep dive into OMOP `COST` polymorphic linkage, schema checks, and zero-fill fallback rules.

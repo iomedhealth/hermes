@@ -14,11 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Welcome to HERMES
+## Welcome to omopHeor
 
 If you are reading this, you are likely familiar with the Observational Medical Outcomes Partnership (OMOP) Common Data Model (CDM) and the OHDSI ecosystem. You know how to define cohorts, run incidence rate analyses, and perhaps perform population-level effect estimation.
 
-**HERMES** (Health Economic Resource Modeling & Evaluation System) bridges the gap between the OMOP world and **Health Economics and Outcomes Research (HEOR)**. This guide will help translate the concepts you already know into the framework of Cost-Effectiveness Analysis (CEA).
+**omopHeor** bridges the gap between the OMOP world and **Health Economics and Outcomes Research (HEOR)**. This guide will help translate the concepts you already know into the framework of Cost-Effectiveness Analysis (CEA).
 
 ## What is HEOR and CEA?
 
@@ -41,7 +41,7 @@ If a new drug costs $50,000 more than the standard of care but provides 1 additi
 
 How do we build these economic models using observational data in the OMOP CDM? We map OHDSI concepts to HEOR concepts.
 
-| OMOP / OHDSI Concept | HEOR / CEA Concept | HERMES Stage | Package Responsible |
+| OMOP / OHDSI Concept | HEOR / CEA Concept | omopHeor Stage | Package Responsible |
 | :--- | :--- | :--- | :--- |
 | **Target Cohort** (e.g., new users of Drug A) | **Treatment Arm** (The new intervention being evaluated) | Stage 1 | `CohortEconomics` (`init()`) |
 | **Comparator Cohort** (e.g., new users of Drug B) | **Standard of Care Arm** (The baseline intervention) | Stage 1 | `CohortEconomics` (`init()`) |
@@ -52,30 +52,30 @@ How do we build these economic models using observational data in the OMOP CDM? 
 | **Longitudinal Transitions** (Markov model matrices) | **State-Transition Simulation** | Stage 5 | `CohortEconomics` (`simulate_economics()`) |
 | **Incremental Costs & Effects** (PSA iterations) | **Decision Analysis (ICER, CEAC, NMB)** | Stage 6 | `CohortEconomics` (`run_cea()`, `plot_ceac()`) |
 
-## The HERMES 6-Stage Pipeline
+## The omopHeor 6-Stage Pipeline
 
-To get from raw OMOP data to a finalized ICER and decision-analytic plots, HERMES enforces a strict 6-stage pipeline:
+To get from raw OMOP data to a finalized ICER and decision-analytic plots, omopHeor enforces a strict 6-stage pipeline:
 
 ### 1. Cohort Generation (`init()`)
 You define your `target_cohort`, `comparator_cohort`, and `outcome_cohort` using standard OHDSI tools (like Atlas, Capr, or CohortConstructor) and instantiate them in the database.
 
 ### 2. Descriptive Baseline & HCRU Characterization (`summarise_baseline()`, `extract_hcru()`)
-HERMES profiles the cohorts, extracting demographics and calculating unadjusted care utilization (hospitalizations, outpatient visits) and direct medical costs by directly querying the OMOP `COST` table.
+omopHeor profiles the cohorts, extracting demographics and calculating unadjusted care utilization (hospitalizations, outpatient visits) and direct medical costs by directly querying the OMOP `COST` table.
 
 ### 3. Causal Propensity Score (PS) Adjustment (`fit_ps()`, `adjust_ps()`, `assess_balance()`)
-Observational data is biased. Patients prescribed the new expensive drug might be sicker (or healthier) than those on the standard of care. HERMES uses high-dimensional regularized logistic regression (via `Cyclops`) to calculate Propensity Scores and match/weight the cohorts, creating a pseudo-randomized population.
+Observational data is biased. Patients prescribed the new expensive drug might be sicker (or healthier) than those on the standard of care. omopHeor uses high-dimensional regularized logistic regression (via `Cyclops`) to calculate Propensity Scores and match/weight the cohorts, creating a pseudo-randomized population.
 
 ### 4. Trajectory Compilation & State-Cost Extraction (`compile_trajectories()`)
-Patient timelines are sliced into discrete time cycles (e.g., months). HERMES tracks how patients transition between different health states (e.g., from "Healthy" to "Outcome Event" to "Dead") and extracts the specific costs accrued while in those states.
+Patient timelines are sliced into discrete time cycles (e.g., months). omopHeor tracks how patients transition between different health states (e.g., from "Healthy" to "Outcome Event" to "Dead") and extracts the specific costs accrued while in those states.
 
 ### 5. Economic Simulation (`simulate_economics()`)
-Using the transition probabilities and cost distributions derived in Stage 4, HERMES simulates a decision-analytic Markov model. This projects the long-term costs and QALYs over a lifetime horizon with probabilistic sensitivity analysis (PSA).
+Using the transition probabilities and cost distributions derived in Stage 4, omopHeor simulates a decision-analytic Markov model. This projects the long-term costs and QALYs over a lifetime horizon with probabilistic sensitivity analysis (PSA).
 
 ### 6. Decision Analysis & Post-Processing (`run_cea()`, `plot_ceac()`, `plot_plane()`)
-Finally, HERMES calculates the ICER and Net Monetary Benefit (NMB), generating standardized visualizations like the Cost-Effectiveness Plane and the Cost-Effectiveness Acceptability Curve (CEAC), powered by `BCEA`.
+Finally, omopHeor calculates the ICER and Net Monetary Benefit (NMB), generating standardized visualizations like the Cost-Effectiveness Plane and the Cost-Effectiveness Acceptability Curve (CEAC), powered by `BCEA`.
 
 ## Next Steps
 
-* **[The HERMES Ecosystem & Modular Suite](hermes-ecosystem.html)**: Overview of the 3 standalone packages and architecture.
+* **[The omopHeor Ecosystem & Modular Suite](omopheor-ecosystem.html)**: Overview of the 3 standalone packages and architecture.
 * **[Cohort Utilization & Cost Enrichment](cohort-utilization.html)**: Deep dive into the 3-layer in-database cohort enrichers.
 * **[HCRU Extraction Logic](hcru_logic.html)**: Technical rules for OMOP `COST` table linkage and zero-fill fallbacks.
