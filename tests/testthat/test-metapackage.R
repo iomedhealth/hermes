@@ -22,7 +22,7 @@ test_that("hermes metapackage re-exports functions from all 3 sub-packages", {
 })
 
 test_that("hermes end-to-end multi-domain workflow executes cleanly", {
-  cdm <- hermesTestCdm()
+  cdm <- mockHERMES()
 
   # Full pipeline using re-exported functions
   cohortEnriched <- cdm$target_cohort |>
