@@ -27,11 +27,11 @@ except ImportError:
 # Support both Airflow 2.x and 3.x Dataset/Asset definitions
 try:
     from airflow.datasets import Dataset
-    SPAIN_COSTS_DATASET = Dataset(f"file://{os.path.join(REPO_ROOT, 'data/costs_spain.parquet')}")
+    SPAIN_COSTS_DATASET = Dataset(f"file://{os.path.join(REPO_ROOT, 'packages/CohortCosts/processed/costs_spain.parquet')}")
 except (ImportError, AttributeError):
     try:
         from airflow.sdk.definitions.asset import Asset
-        SPAIN_COSTS_DATASET = Asset(f"file://{os.path.join(REPO_ROOT, 'data/costs_spain.parquet')}")
+        SPAIN_COSTS_DATASET = Asset(f"file://{os.path.join(REPO_ROOT, 'packages/CohortCosts/processed/costs_spain.parquet')}")
     except Exception:
         SPAIN_COSTS_DATASET = None
 
@@ -62,27 +62,34 @@ def hermes_cost_catalogs_pipeline():
         """Read source metadata from registries.yml."""
         import yaml
 
-        registry_path = os.path.join(REPO_ROOT, "data/specs/registries.yml")
+        registry_path = os.path.join(
+            REPO_ROOT, "packages/CohortCosts/specs/registries.yml"
+        )
         with open(registry_path, "r", encoding="utf-8") as f:
             registry = yaml.safe_load(f)
         return registry.get("sources", [])
 
     @task(retries=3, retry_delay=timedelta(seconds=20))
     def download_source_task(src: dict) -> dict:
-        """Download or verify a single raw source in data/raw/."""
-        from scripts.download_costs_sources import download_source
+        """Download or verify a single raw source in packages/CohortCosts/raw/."""
+        from packages.CohortCosts.scripts.download_costs_sources import download_source
 
-        raw_dir = os.path.join(REPO_ROOT, "data/raw")
+        raw_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/raw")
         file_path = download_source(src, raw_dir=raw_dir)
         return {"source": src, "file_path": file_path}
 
     @task
     def compute_ine_deflators_task() -> dict:
         """Fetch INE ECOICOP 06 Sanidad price indices and export canonical datasets."""
-        from scripts.download_costs_sources import export_ine_tables, fetch_ine_deflators
+        from packages.CohortCosts.scripts.download_costs_sources import (
+            export_ine_tables,
+            fetch_ine_deflators,
+        )
 
-        raw_path = os.path.join(REPO_ROOT, "data/raw/ine-ipc-medicina.json")
-        output_dir = os.path.join(REPO_ROOT, "data")
+        raw_path = os.path.join(
+            REPO_ROOT, "packages/CohortCosts/external/ine-ipc-medicina.json"
+        )
+        output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/external")
         deflators = fetch_ine_deflators(cache_path=raw_path)
         export_ine_tables(output_dir=output_dir, raw_path=raw_path)
         return deflators
@@ -91,7 +98,7 @@ def hermes_cost_catalogs_pipeline():
     def extract_single_source_task(downloaded_item: dict, deflators: dict) -> list:
         """Extract and normalize cost records from a single downloaded file."""
         from dataclasses import asdict
-        from scripts.scrape_costs_es import extract_source_records
+        from packages.CohortCosts.scripts.scrape_costs_es import extract_source_records
 
         src = downloaded_item["source"]
         file_path = downloaded_item["file_path"]
@@ -109,16 +116,22 @@ def hermes_cost_catalogs_pipeline():
     @task(outlets=outlets)
     def consolidate_and_export_task(extracted_batches: list, deflators: dict) -> int:
         """Consolidate mapped extractions, apply deduplication, validate invariants, and export catalogs."""
-        from scripts.scrape_costs_es import CostRecord, consolidate_and_export
+        from packages.CohortCosts.scripts.scrape_costs_es import CostRecord, consolidate_and_export
 
         all_records = []
         for batch in extracted_batches:
             for item in batch:
                 all_records.append(CostRecord(**item))
 
-        output_csv = os.path.join(REPO_ROOT, "data/costs_spain.csv")
-        output_parquet = os.path.join(REPO_ROOT, "data/costs_spain.parquet")
-        output_json = os.path.join(REPO_ROOT, "data/costs_spain.json")
+        output_csv = os.path.join(
+            REPO_ROOT, "packages/CohortCosts/processed/costs_spain.csv"
+        )
+        output_parquet = os.path.join(
+            REPO_ROOT, "packages/CohortCosts/processed/costs_spain.parquet"
+        )
+        output_json = os.path.join(
+            REPO_ROOT, "packages/CohortCosts/processed/costs_spain.json"
+        )
 
         df = consolidate_and_export(
             records=all_records,
@@ -144,26 +157,31 @@ dag_instance = hermes_cost_catalogs_pipeline()
 if __name__ == "__main__":
     print("[RUN] Executing Airflow TaskFlow DAG locally (sequential test mode)...")
     import yaml
-    from scripts.download_costs_sources import (
+    from packages.CohortCosts.scripts.download_costs_sources import (
         download_source,
         export_ine_tables,
         fetch_ine_deflators,
     )
-    from scripts.scrape_costs_es import (
+    from packages.CohortCosts.scripts.scrape_costs_es import (
         consolidate_and_export,
         extract_source_records,
     )
 
-    registry_path = os.path.join(REPO_ROOT, "data/specs/registries.yml")
+    registry_path = os.path.join(
+        REPO_ROOT, "packages/CohortCosts/specs/registries.yml"
+    )
     with open(registry_path, "r", encoding="utf-8") as f:
         registry = yaml.safe_load(f)
 
-    raw_dir = os.path.join(REPO_ROOT, "data/raw")
-    raw_path = os.path.join(raw_dir, "ine-ipc-medicina.json")
-    output_dir = os.path.join(REPO_ROOT, "data")
+    raw_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/raw")
+    raw_path = os.path.join(
+        REPO_ROOT, "packages/CohortCosts/external/ine-ipc-medicina.json"
+    )
+    output_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/processed")
+    external_dir = os.path.join(REPO_ROOT, "packages/CohortCosts/external")
 
     deflators = fetch_ine_deflators(cache_path=raw_path)
-    export_ine_tables(output_dir=output_dir, raw_path=raw_path)
+    export_ine_tables(output_dir=external_dir, raw_path=raw_path)
 
     all_records = []
     for src in registry.get("sources", []):

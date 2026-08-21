@@ -8,14 +8,14 @@ import tempfile
 import unittest
 import pandas as pd
 
-from scripts.download_costs_sources import (
+from packages.CohortCosts.scripts.download_costs_sources import (
     DEFAULT_SANIDAD_INDICES as DL_DEFAULT_INDICES,
     TARGET_YEAR as DL_TARGET_YEAR,
     download_source,
     export_ine_tables as dl_export_ine,
     fetch_ine_deflators as dl_fetch_ine,
 )
-from scripts.scrape_costs_es import (
+from packages.CohortCosts.scripts.scrape_costs_es import (
     DEFAULT_SANIDAD_INDICES,
     TARGET_YEAR,
     export_ine_tables,
@@ -161,7 +161,7 @@ class TestScrapeCostsEs(unittest.TestCase):
 
     def test_bench_05_emergency_dispersion(self):
         """Verify BENCH-05 Emergency Department Episode has CV < 0.80 and realistic ranges."""
-        df = pd.read_parquet("data/costs_spain.parquet")
+        df = pd.read_parquet("packages/CohortCosts/processed/costs_spain.parquet")
         b5_filter = (
             (df["setting"] == "Emergency")
             & (df["unit_type"] == "per_visit")
@@ -188,7 +188,7 @@ class TestScrapeCostsEs(unittest.TestCase):
 
     def test_canonical_catalog_invariants(self):
         """Verify canonical parquet output satisfies all production quality invariants."""
-        parquet_path = "data/costs_spain.parquet"
+        parquet_path = "packages/CohortCosts/processed/costs_spain.parquet"
         self.assertTrue(os.path.exists(parquet_path), "Catalog parquet file must exist")
 
         df = pd.read_parquet(parquet_path)
@@ -233,7 +233,7 @@ class TestScrapeCostsEs(unittest.TestCase):
             "legal_title": "Tarifas SAS 2024",
             "url_pdf": "",
         }
-        raw_file = "data/raw/and-2024-precios.pdf"
+        raw_file = "packages/CohortCosts/raw/and-2024-precios.pdf"
         if os.path.exists(raw_file):
             records = extract_source_records(sample_src, raw_file)
             self.assertGreater(len(records), 1000)
@@ -242,8 +242,11 @@ class TestScrapeCostsEs(unittest.TestCase):
         # Test run_pipeline single source offline preview
         if os.path.exists(raw_file):
             df_preview, _ = run_pipeline(
-                registry_path="data/specs/registries.yml",
-                raw_dir="data/raw",
+                registry_path="packages/CohortCosts/specs/registries.yml",
+                raw_dir="packages/CohortCosts/raw",
+                output_csv="packages/CohortCosts/processed/costs_spain.csv",
+                output_parquet="packages/CohortCosts/processed/costs_spain.parquet",
+                output_json="packages/CohortCosts/processed/costs_spain.json",
                 source_id="and-2024-precios",
                 limit_preview=5,
             )

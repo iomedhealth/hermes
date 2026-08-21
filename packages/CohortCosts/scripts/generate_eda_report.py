@@ -11,17 +11,20 @@ from pathlib import Path
 from datetime import datetime
 
 # Set up paths
-ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT_DIR / "data"
-AUDIT_DIR = ROOT_DIR / "audit"
+PKG_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = PKG_DIR.parent.parent
+PROCESSED_DIR = PKG_DIR / "processed"
+EXTERNAL_DIR = PKG_DIR / "external"
+SPECS_DIR = PKG_DIR / "specs"
+AUDIT_DIR = REPO_ROOT / "audit"
 AUDIT_DIR.mkdir(parents=True, exist_ok=True)
 
 OUTPUT_FILE = AUDIT_DIR / "eda_costs_spain_report.md"
 
 # Load datasets
-costs_df = pd.read_parquet(DATA_DIR / "costs_spain.parquet")
-ine_df = pd.read_parquet(DATA_DIR / "ine_indices_sanidad.parquet")
-with open(DATA_DIR / "specs" / "registries.yml", "r", encoding="utf-8") as f:
+costs_df = pd.read_parquet(PROCESSED_DIR / "costs_spain.parquet")
+ine_df = pd.read_parquet(EXTERNAL_DIR / "ine_indices_sanidad.parquet")
+with open(SPECS_DIR / "registries.yml", "r", encoding="utf-8") as f:
     reg_yaml = yaml.safe_load(f)
 
 # Helper function to convert dataframe to markdown table

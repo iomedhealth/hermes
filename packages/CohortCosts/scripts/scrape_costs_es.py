@@ -24,7 +24,7 @@ import yaml
 from bs4 import BeautifulSoup
 
 try:
-    from scripts.download_costs_sources import (
+    from packages.CohortCosts.scripts.download_costs_sources import (
         DEFAULT_SANIDAD_INDICES,
         TARGET_YEAR,
         IneIndexRecord,
@@ -34,15 +34,26 @@ try:
         fetch_ine_deflators,
     )
 except ImportError:
-    from download_costs_sources import (
-        DEFAULT_SANIDAD_INDICES,
-        TARGET_YEAR,
-        IneIndexRecord,
-        download_all_sources,
-        download_source,
-        export_ine_tables,
-        fetch_ine_deflators,
-    )
+    try:
+        from download_costs_sources import (
+            DEFAULT_SANIDAD_INDICES,
+            TARGET_YEAR,
+            IneIndexRecord,
+            download_all_sources,
+            download_source,
+            export_ine_tables,
+            fetch_ine_deflators,
+        )
+    except ImportError:
+        from scripts.download_costs_sources import (
+            DEFAULT_SANIDAD_INDICES,
+            TARGET_YEAR,
+            IneIndexRecord,
+            download_all_sources,
+            download_source,
+            export_ine_tables,
+            fetch_ine_deflators,
+        )
 
 SPANISH_WORDS_7 = {
     "DRENAJE",
@@ -1230,9 +1241,9 @@ def extract_source_records(
 
 def consolidate_and_export(
     records: List[CostRecord],
-    output_csv: str = "data/costs_spain.csv",
-    output_parquet: str = "data/costs_spain.parquet",
-    output_json: str = "data/costs_spain.json",
+    output_csv: str = "packages/CohortCosts/processed/costs_spain.csv",
+    output_parquet: str = "packages/CohortCosts/processed/costs_spain.parquet",
+    output_json: str = "packages/CohortCosts/processed/costs_spain.json",
 ) -> pd.DataFrame:
     """Deduplicate, assign sequential cost_ids, validate invariants, and write catalog artifacts."""
     if not records:
@@ -1294,11 +1305,11 @@ def consolidate_and_export(
 
 
 def run_pipeline(
-    registry_path: str = "data/specs/registries.yml",
-    raw_dir: str = "data/raw",
-    output_csv: str = "data/costs_spain.csv",
-    output_parquet: str = "data/costs_spain.parquet",
-    output_json: str = "data/costs_spain.json",
+    registry_path: str = "packages/CohortCosts/specs/registries.yml",
+    raw_dir: str = "packages/CohortCosts/raw",
+    output_csv: str = "packages/CohortCosts/processed/costs_spain.csv",
+    output_parquet: str = "packages/CohortCosts/processed/costs_spain.parquet",
+    output_json: str = "packages/CohortCosts/processed/costs_spain.json",
     download_fresh: bool = False,
     source_id: Optional[str] = None,
     ccaa: Optional[str] = None,
@@ -1320,13 +1331,21 @@ def run_pipeline(
             raise ValueError(f"[ERROR] No sources found matching CCAA '{ccaa}'.")
 
     if deflators is None:
-        deflators = fetch_ine_deflators()
+        raw_ine = os.path.join(
+            os.path.dirname(raw_dir), "external", "ine-ipc-medicina.json"
+        )
+        if not os.path.exists(os.path.dirname(raw_ine)):
+            raw_ine = os.path.join(raw_dir, "ine-ipc-medicina.json")
+        deflators = fetch_ine_deflators(cache_path=raw_ine)
     print(
         f"[INFO] Initialized INE Deflators (Target {TARGET_YEAR} Index = {deflators.get(TARGET_YEAR, 109.43)})"
     )
 
     # Export canonical INE index datasets
-    df_ine = export_ine_tables(output_dir=os.path.dirname(output_csv) or "data")
+    external_dir = os.path.join(os.path.dirname(output_csv), "..", "external")
+    if not os.path.exists(external_dir):
+        external_dir = os.path.dirname(output_csv) or "packages/CohortCosts/external"
+    df_ine = export_ine_tables(output_dir=os.path.abspath(external_dir))
 
     all_records: List[CostRecord] = []
 
@@ -1374,13 +1393,33 @@ def run_pipeline(
 
 def main():
     parser = argparse.ArgumentParser(description="Spanish Healthcare Cost Offline Scraper & Catalog Extractor.")
-    parser.add_argument("--registry", default="data/specs/registries.yml", help="Path to registries.yml")
-    parser.add_argument("--raw-dir", default="data/raw", help="Directory containing cached raw files")
+    parser.add_argument(
+        "--registry",
+        default="packages/CohortCosts/specs/registries.yml",
+        help="Path to registries.yml",
+    )
+    parser.add_argument(
+        "--raw-dir",
+        default="packages/CohortCosts/raw",
+        help="Directory containing cached raw files",
+    )
     parser.add_argument("--source-id", default=None, help="Extract only a specific source ID")
     parser.add_argument("--ccaa", default=None, help="Extract only sources for a specific CCAA")
-    parser.add_argument("--output-csv", default="data/costs_spain.csv", help="Destination CSV catalog")
-    parser.add_argument("--output-parquet", default="data/costs_spain.parquet", help="Destination Parquet catalog")
-    parser.add_argument("--output-json", default="data/costs_spain.json", help="Destination JSON catalog")
+    parser.add_argument(
+        "--output-csv",
+        default="packages/CohortCosts/processed/costs_spain.csv",
+        help="Destination CSV catalog",
+    )
+    parser.add_argument(
+        "--output-parquet",
+        default="packages/CohortCosts/processed/costs_spain.parquet",
+        help="Destination Parquet catalog",
+    )
+    parser.add_argument(
+        "--output-json",
+        default="packages/CohortCosts/processed/costs_spain.json",
+        help="Destination JSON catalog",
+    )
     parser.add_argument("--limit-preview", type=int, default=None, help="Preview N records without writing files")
     parser.add_argument("--fresh", action="store_true", default=False, help="Force fresh download if missing")
     args = parser.parse_args()

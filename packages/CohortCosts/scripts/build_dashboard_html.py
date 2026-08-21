@@ -9,15 +9,17 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT_DIR / "data"
-AUDIT_DIR = ROOT_DIR / "audit"
+PKG_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = PKG_DIR.parent.parent
+PROCESSED_DIR = PKG_DIR / "processed"
+EXTERNAL_DIR = PKG_DIR / "external"
+AUDIT_DIR = REPO_ROOT / "audit"
 AUDIT_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_FILE = AUDIT_DIR / "dashboard.html"
 
 # Load Parquet Data
-costs_df = pd.read_parquet(DATA_DIR / "costs_spain.parquet")
-ine_df = pd.read_parquet(DATA_DIR / "ine_indices_sanidad.parquet")
+costs_df = pd.read_parquet(PROCESSED_DIR / "costs_spain.parquet")
+ine_df = pd.read_parquet(EXTERNAL_DIR / "ine_indices_sanidad.parquet")
 
 # 1. KPI Summary
 kpi = {
