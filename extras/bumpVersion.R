@@ -4,14 +4,16 @@
 findRepoRoot <- function(startDir = getwd()) {
   curr <- normalizePath(startDir, winslash = "/", mustWork = FALSE)
   while (curr != "/" && curr != "") {
-    if (file.exists(file.path(curr, "DESCRIPTION")) && dir.exists(file.path(curr, "packages"))) {
+    hasRootDesc <- file.exists(file.path(curr, "DESCRIPTION"))
+    hasPackages <- dir.exists(file.path(curr, "packages"))
+    if (hasRootDesc && hasPackages) {
       return(curr)
     }
     parent <- dirname(curr)
     if (parent == curr) break
     curr <- parent
   }
-  stop("Could not find monorepo root (must contain root DESCRIPTION and packages/).")
+  stop("Could not find monorepo root (needs DESCRIPTION and packages/).")
 }
 
 #' Parse and compute new semantic version
@@ -38,7 +40,7 @@ calculateNewVersion <- function(currentVer, type) {
     type
   } else {
     stop("Unknown bump type or invalid version: '", type, "'.\n",
-         "Expected 'patch', 'minor', 'major', or explicit SemVer string (e.g. '0.7.0').")
+         "Expected 'patch', 'minor', 'major', or explicit SemVer string.")
   }
 }
 
@@ -73,7 +75,11 @@ updateDescriptionFile <- function(filePath, newVer, internalPkgs = NULL) {
 #' @return Invisibly returns the new version string.
 #' @export
 bumpVersion <- function(type = "patch", rootDir = NULL, document = TRUE) {
-  repoRoot <- if (is.null(rootDir)) findRepoRoot() else normalizePath(rootDir, winslash = "/")
+  repoRoot <- if (is.null(rootDir)) {
+    findRepoRoot()
+  } else {
+    normalizePath(rootDir, winslash = "/")
+  }
 
   rootDescPath <- file.path(repoRoot, "DESCRIPTION")
   rootDescLines <- readLines(rootDescPath, warn = FALSE)
@@ -91,7 +97,7 @@ bumpVersion <- function(type = "patch", rootDir = NULL, document = TRUE) {
   # 1. Update root DESCRIPTION
   internalAll <- c("CohortUtilisation", "CohortCosts", "CohortEconomics")
   updateDescriptionFile(rootDescPath, newVer, internalPkgs = internalAll)
-  cat(sprintf(" [OK] Updated root DESCRIPTION -> Version %s & internal dependencies\n", newVer))
+  cat(sprintf(" [OK] Root DESCRIPTION -> Version %s & internal deps\n", newVer))
 
   # 2. Update subpackages
   subpkgs <- list(
@@ -103,7 +109,7 @@ bumpVersion <- function(type = "patch", rootDir = NULL, document = TRUE) {
   for (pkg in names(subpkgs)) {
     pkgDescPath <- file.path(repoRoot, "packages", pkg, "DESCRIPTION")
     updateDescriptionFile(pkgDescPath, newVer, internalPkgs = subpkgs[[pkg]])
-    cat(sprintf(" [OK] Updated packages/%s/DESCRIPTION -> Version %s\n", pkg, newVer))
+    cat(sprintf(" [OK] packages/%s/DESCRIPTION -> Version %s\n", pkg, newVer))
   }
 
   # 3. Run devtools::document()
@@ -124,8 +130,12 @@ bumpVersion <- function(type = "patch", rootDir = NULL, document = TRUE) {
 }
 
 # Run when invoked directly via Rscript
-if (sys.nframe() == 0L) {
-  args <- commandArgs(trailingOnly = TRUE)
-  bumpType <- if (length(args) > 0) args[1] else "patch"
-  bumpVersion(type = bumpType)
+if (sys.nframe() == 0L && !interactive()) {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  fileArg <- grep("^--file=", cmdArgs, value = TRUE)
+  if (length(fileArg) > 0 && grepl("bumpVersion\\.R$", fileArg[1])) {
+    args <- commandArgs(trailingOnly = TRUE)
+    bumpType <- if (length(args) > 0) args[1] else "patch"
+    bumpVersion(type = bumpType)
+  }
 }

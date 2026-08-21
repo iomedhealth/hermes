@@ -1,5 +1,6 @@
 test_that("calculateNewVersion computes correct semantic versions", {
-  bumpScript <- file.path(testthat::test_path("../.."), "extras", "bumpVersion.R")
+  rootPath <- testthat::test_path("../..")
+  bumpScript <- file.path(rootPath, "extras", "bumpVersion.R")
   skip_if_not(file.exists(bumpScript), "bumpVersion.R script not found")
   source(bumpScript, local = TRUE)
 
@@ -24,8 +25,9 @@ test_that("calculateNewVersion computes correct semantic versions", {
   expect_error(calculateNewVersion("invalid_ver", "patch"))
 })
 
-test_that("updateDescriptionFile updates Version and internal dependency bounds", {
-  bumpScript <- file.path(testthat::test_path("../.."), "extras", "bumpVersion.R")
+test_that("updateDescriptionFile updates Version & internal bounds", {
+  rootPath <- testthat::test_path("../..")
+  bumpScript <- file.path(rootPath, "extras", "bumpVersion.R")
   skip_if_not(file.exists(bumpScript), "bumpVersion.R script not found")
   source(bumpScript, local = TRUE)
 
