@@ -14,22 +14,142 @@ medical costing, and Cost-Effectiveness Analysis (CEA) directly on
 observational healthcare data structured in the **OMOP Common Data Model
 (CDM)**.
 
-------------------------------------------------------------------------
+## Key Features
 
-## Technology Stack
+- **OMOP CDM Native**: Connects directly to OMOP CDM databases via
+  `CDMConnector` and `omopgenerics`.
+- **3-Layer Care Utilization Suite (`CohortUtilisation`)**:
+  - *Layer 1 (Episodes)*:
+    [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html),
+    [`computeInfusionCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/computeInfusionCohorts.html).
+  - *Layer 2 (Enrichers)*:
+    [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html),
+    [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html),
+    [`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html),
+    [`addVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html),
+    [`addPrescriptions()`](https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html),
+    [`addProcedures()`](https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html).
+  - *Layer 3 (Reporting)*:
+    [`summariseUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/summariseUtilization.html),
+    [`tableUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html),
+    [`plotUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html).
+- **Direct Medical Cost Extraction (`CohortCosts`)**:
+  - [`addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html),
+    [`summariseCosts()`](https://rdrr.io/pkg/CohortCosts/man/summariseCosts.html),
+    [`tableCosts()`](https://rdrr.io/pkg/CohortCosts/man/tableCosts.html),
+    [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html)
+    linking polymorphic OMOP `COST` records.
+- **Decision Science & Simulation (`CohortEconomics`)**:
+  - End-to-end HEOR simulation from propensity score matching to Markov
+    modeling and CEAC visualizations.
+- **Instant Prototyping**: Includes
+  [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md)
+  providing an in-memory synthetic DuckDB OMOP CDM database.
 
-| Layer | Technologies & Dependencies | Description |
-|:---|:---|:---|
-| **Language & Core** | `R (>= 4.1.0)`, `rlang`, `cli`, `glue` | Base R execution engine and tidy evaluation framework. |
-| **OMOP / DARWIN EU** | `omopgenerics (>= 0.3.0)`, `CDMConnector (>= 1.4.0)`, `PatientProfiles`, `CohortConstructor`, `CohortCharacteristics`, `visOmopResults` | Database-agnostic cohort manipulation, patient profiling, and standardized result schemas. |
-| **Database & SQL Engine** | `duckdb`, `dbplyr (>= 2.4.0)`, `DBI`, `dplyr (>= 1.1.0)` | High-performance in-database SQL translation and in-memory analytical querying. |
-| **Causal & HEOR Engines** | `Cyclops`, `CohortMethod`, `hesim`, `BCEA`, `stats` | High-dimensional regularized logistic regression, Markov microsimulations, and Bayesian CEA. |
-| **Reporting & Formatting** | `ggplot2`, `gt`, `flextable`, `tibble` | Publication-ready summary tables, cost-effectiveness acceptability curves, and planes. |
-| **Tooling & Maintenance** | `testthat (>= 3.0.0)`, `pkgdown`, `knitr`, `rmarkdown`, `styler`, `lintr` | Monorepo package checking, continuous integration, and automated documentation. |
+## Getting Started
 
-------------------------------------------------------------------------
+### Prerequisites
 
-## Project Architecture
+- R (\>= 4.1.0)
+- `pak` package manager (`install.packages("pak")`)
+
+### Installation
+
+``` r
+
+# Install the complete hermes metapackage (recommended)
+pak::pkg_install("iomedhealth/hermes")
+
+# Or install individual standalone domain packages
+pak::pkg_install("iomedhealth/hermes/packages/CohortUtilisation")
+pak::pkg_install("iomedhealth/hermes/packages/CohortCosts")
+pak::pkg_install("iomedhealth/hermes/packages/CohortEconomics")
+```
+
+### Quick Start 1: In-Database Cohort Utilization & Cost Enrichment
+
+Enrich study cohorts in-database across configurable temporal windows
+(e.g., baseline `[-365, -1]`, follow-up `[0, 365]`, or full follow-up
+`[0, Inf]`) and produce publication tables:
+
+``` r
+
+library(hermes)
+library(dplyr)
+
+# 0. Connect to CDM (built-in synthetic mock database)
+cdm <- mockHERMES()
+
+# 1. Enrich cohort with visits, prescriptions, and direct costs in-database
+cdm$study_enriched <- cdm$target_cohort |>
+  addVisits(
+    window = list(baseline = c(-365, -1), followup = c(0, 365)),
+    settings = c("inpatient", "outpatient", "emergency"),
+    stratifySpecialty = TRUE,
+    readmissions = TRUE
+  ) |>
+  addPrescriptions(
+    window = list(followup = c(0, 365)),
+    daysSupply = TRUE,
+    pdc = TRUE
+  ) |>
+  addCosts(
+    window = list(followup = c(0, 365)),
+    costField = "total_paid",
+    name = "study_enriched"
+  )
+
+# 2. Summarise utilization and costs into standardised results
+util_summary <- summariseUtilization(cdm$study_enriched)
+cost_summary <- summariseCosts(cdm$study_enriched)
+
+# 3. Format publication tables (GT, Flextable, or Tibble)
+tableUtilization(util_summary)
+tableCosts(cost_summary)
+```
+
+### Quick Start 2: 6-Stage HEOR Causal & Decision-Analytic Simulation
+
+Run the complete causal inference, Markov state-transition modeling, and
+economic simulation pipeline:
+
+``` r
+
+library(hermes)
+
+# 0. Setup Connection
+cdm <- mockHERMES()
+
+# 1-6. Run the End-to-End Pipeline
+study <- init(
+  cdm = cdm,
+  target_cohort = "target_cohort",
+  comparator_cohort = "comparator_cohort",
+  outcome_cohort = "outcome_cohort"
+) |>
+  summarise_baseline() |>
+  extract_hcru() |>
+  fit_ps() |>
+  adjust_ps() |>
+  compile_trajectories() |>
+  simulate_economics(time_horizon = 10, n_samples = 100) |>
+  run_cea()
+
+# Decision-Analytic Visualizations & Summary
+plot_ceac(study)
+plot_plane(study)
+table_summary(study)
+```
+
+### Outputs
+
+![Cost-Effectiveness
+Plane](reference/figures/ceplane.png)![Cost-Effectiveness Acceptability
+Curve](reference/figures/ceac.png)
+
+**Project Architecture**
+
+  
 
 HERMES is structured as a **modular monorepo** consisting of three
 specialized domain packages conforming to DARWIN EU standards, unified
@@ -99,150 +219,22 @@ graph TD
     Monetary Benefit (NMB), generating CEAC and cost-effectiveness plane
     plots powered by `BCEA`.
 
-------------------------------------------------------------------------
+**Technology Stack**
 
-## Key Features
+  
 
-- **OMOP CDM Native**: Connects directly to OMOP CDM databases via
-  `CDMConnector` and `omopgenerics`.
-- **3-Layer Care Utilization Suite (`CohortUtilisation`)**:
-  - *Layer 1 (Episodes)*:
-    [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html),
-    [`computeInfusionCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/computeInfusionCohorts.html).
-  - *Layer 2 (Enrichers)*:
-    [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html),
-    [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html),
-    [`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html),
-    [`addVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html),
-    [`addPrescriptions()`](https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html),
-    [`addProcedures()`](https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html).
-  - *Layer 3 (Reporting)*:
-    [`summariseUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/summariseUtilization.html),
-    [`tableUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html),
-    [`plotUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html).
-- **Direct Medical Cost Extraction (`CohortCosts`)**:
-  - [`addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html),
-    [`summariseCosts()`](https://rdrr.io/pkg/CohortCosts/man/summariseCosts.html),
-    [`tableCosts()`](https://rdrr.io/pkg/CohortCosts/man/tableCosts.html),
-    [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html)
-    linking polymorphic OMOP `COST` records.
-- **Decision Science & Simulation (`CohortEconomics`)**:
-  - End-to-end HEOR simulation from propensity score matching to Markov
-    modeling and CEAC visualizations.
-- **Instant Prototyping**: Includes
-  [`mockHERMES()`](https://iomedhealth.github.io/hermes/reference/mockHERMES.md)
-  providing an in-memory synthetic DuckDB OMOP CDM database.
+| Layer | Technologies & Dependencies | Description |
+|:---|:---|:---|
+| **Language & Core** | `R (>= 4.1.0)`, `rlang`, `cli`, `glue` | Base R execution engine and tidy evaluation framework. |
+| **OMOP / DARWIN EU** | `omopgenerics (>= 0.3.0)`, `CDMConnector (>= 1.4.0)`, `PatientProfiles`, `CohortConstructor`, `CohortCharacteristics`, `visOmopResults` | Database-agnostic cohort manipulation, patient profiling, and standardized result schemas. |
+| **Database & SQL Engine** | `duckdb`, `dbplyr (>= 2.4.0)`, `DBI`, `dplyr (>= 1.1.0)` | High-performance in-database SQL translation and in-memory analytical querying. |
+| **Causal & HEOR Engines** | `Cyclops`, `CohortMethod`, `hesim`, `BCEA`, `stats` | High-dimensional regularized logistic regression, Markov microsimulations, and Bayesian CEA. |
+| **Reporting & Formatting** | `ggplot2`, `gt`, `flextable`, `tibble` | Publication-ready summary tables, cost-effectiveness acceptability curves, and planes. |
+| **Tooling & Maintenance** | `testthat (>= 3.0.0)`, `pkgdown`, `knitr`, `rmarkdown`, `styler`, `lintr` | Monorepo package checking, continuous integration, and automated documentation. |
 
-------------------------------------------------------------------------
+**Project Structure**
 
-## Getting Started
-
-### Prerequisites
-
-- R (\>= 4.1.0)
-- `pak` package manager (`install.packages("pak")`)
-
-### Installation
-
-``` r
-
-# Install the complete hermes metapackage (recommended)
-pak::pkg_install("iomedhealth/hermes")
-
-# Or install individual standalone domain packages
-pak::pkg_install("iomedhealth/hermes/packages/CohortUtilisation")
-pak::pkg_install("iomedhealth/hermes/packages/CohortCosts")
-pak::pkg_install("iomedhealth/hermes/packages/CohortEconomics")
-```
-
-------------------------------------------------------------------------
-
-### Quick Start 1: In-Database Cohort Utilization & Cost Enrichment
-
-Enrich study cohorts in-database across configurable temporal windows
-(e.g., baseline `[-365, -1]`, follow-up `[0, 365]`, or full follow-up
-`[0, Inf]`) and produce publication tables:
-
-``` r
-
-library(hermes)
-library(dplyr)
-
-# 0. Connect to CDM (built-in synthetic mock database)
-cdm <- mockHERMES()
-
-# 1. Enrich cohort with visits, prescriptions, and direct costs in-database
-cdm$study_enriched <- cdm$target_cohort |>
-  addVisits(
-    window = list(baseline = c(-365, -1), followup = c(0, 365)),
-    settings = c("inpatient", "outpatient", "emergency"),
-    stratifySpecialty = TRUE,
-    readmissions = TRUE
-  ) |>
-  addPrescriptions(
-    window = list(followup = c(0, 365)),
-    daysSupply = TRUE,
-    pdc = TRUE
-  ) |>
-  addCosts(
-    window = list(followup = c(0, 365)),
-    costField = "total_paid",
-    name = "study_enriched"
-  )
-
-# 2. Summarise utilization and costs into standardised results
-util_summary <- summariseUtilization(cdm$study_enriched)
-cost_summary <- summariseCosts(cdm$study_enriched)
-
-# 3. Format publication tables (GT, Flextable, or Tibble)
-tableUtilization(util_summary)
-tableCosts(cost_summary)
-```
-
-------------------------------------------------------------------------
-
-### Quick Start 2: 6-Stage HEOR Causal & Decision-Analytic Simulation
-
-Run the complete causal inference, Markov state-transition modeling, and
-economic simulation pipeline:
-
-``` r
-
-library(hermes)
-
-# 0. Setup Connection
-cdm <- mockHERMES()
-
-# 1-6. Run the End-to-End Pipeline
-study <- init(
-  cdm = cdm,
-  target_cohort = "target_cohort",
-  comparator_cohort = "comparator_cohort",
-  outcome_cohort = "outcome_cohort"
-) |>
-  summarise_baseline() |>
-  extract_hcru() |>
-  fit_ps() |>
-  adjust_ps() |>
-  compile_trajectories() |>
-  simulate_economics(time_horizon = 10, n_samples = 100) |>
-  run_cea()
-
-# Decision-Analytic Visualizations & Summary
-plot_ceac(study)
-plot_plane(study)
-table_summary(study)
-```
-
-### Outputs
-
-![Cost-Effectiveness
-Plane](reference/figures/ceplane.png)![Cost-Effectiveness Acceptability
-Curve](reference/figures/ceac.png)
-
-------------------------------------------------------------------------
-
-## Project Structure
+  
 
 ``` text
 HERMES/
@@ -297,9 +289,9 @@ HERMES/
         └── pkgdown.yaml                # Automated GitHub Pages documentation deployment
 ```
 
-------------------------------------------------------------------------
+**Development Workflow**
 
-## Development Workflow
+  
 
 ### 1. Local Monorepo Resolution
 
@@ -337,9 +329,9 @@ pkgdown::build_site(preview = FALSE, install = FALSE)
 rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
 ```
 
-------------------------------------------------------------------------
+**Coding Standards**
 
-## Coding Standards
+  
 
 - **Language:** R (Target R \>= 4.1).
 
@@ -365,9 +357,9 @@ rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
   lintr::lint_package(".", linters = lintr::linters_with_defaults(lintr::object_name_linter(styles = "camelCase")))
   ```
 
-------------------------------------------------------------------------
+**Testing**
 
-## Testing
+  
 
 HERMES uses `testthat` (edition 3) for automated testing:
 
@@ -391,9 +383,28 @@ devtools::test("packages/CohortCosts")
 devtools::test("packages/CohortEconomics")
 ```
 
-------------------------------------------------------------------------
+**Documentation & Vignettes**
 
-## Contributing
+  
+
+- **[The HERMES Ecosystem & Modular
+  Suite](https://iomedhealth.github.io/hermes/vignettes/hermes-ecosystem.Rmd)**:
+  Architecture, package separation, and workflow guide.
+- **[Introduction to HEOR for OMOP
+  Users](https://iomedhealth.github.io/hermes/vignettes/intro-to-heor.Rmd)**:
+  Conceptual Rosetta Stone translating OHDSI concepts to Health
+  Economics.
+- **[Cohort Utilization & Cost
+  Enrichment](https://iomedhealth.github.io/hermes/vignettes/cohort-utilization.Rmd)**:
+  Step-by-step hands-on guide for `CohortUtilisation` and `CohortCosts`
+  verbs.
+- **[HCRU Extraction
+  Logic](https://iomedhealth.github.io/hermes/vignettes/hcru_logic.Rmd)**:
+  Deep dive into the OMOP `COST` table extraction and fallback rules.
+
+**Contributing**
+
+  
 
 We welcome contributions! Please follow these steps:
 
@@ -407,9 +418,9 @@ We welcome contributions! Please follow these steps:
 4.  Ensure all unit tests, vignette renders, and `devtools::check()`
     pass with 0 errors and 0 warnings before submitting a pull request.
 
-------------------------------------------------------------------------
+**License**
 
-## License
+  
 
 This project is licensed under the MIT License - see the
 [LICENSE](https://iomedhealth.github.io/hermes/LICENSE) file for
