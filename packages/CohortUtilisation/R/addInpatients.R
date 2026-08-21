@@ -14,7 +14,7 @@
 #' @param name Name of the new table in the write schema. If NULL, a temporary table is returned.
 #'
 #' @return The cohort table `x` with added inpatient metric columns.
-#' @aliases addHospitalizations addInpatient
+#' @aliases addHospitalizations addInpatient addIcuStays
 #' @export
 addInpatients <- function(
   x,
@@ -154,20 +154,28 @@ addInpatients <- function(
           ~ sum(ifelse(.x & !.data$is_icu, 1L, 0L), na.rm = TRUE)
         ),
         .groups = "drop"
+      ) |>
+      dplyr::mutate(
+        inp_mean_los = ifelse(.data$inp_adm > 0, .data$inp_los / .data$inp_adm, 0),
+        icu_mean_los = ifelse(.data$icu_adm > 0, .data$icu_los / .data$icu_adm, 0)
       )
 
     # Naming
     c_inp_adm <- paste0("inpatient_admissions_", win_name)
     c_inp_los <- paste0("inpatient_los_days_", win_name)
+    c_inp_mean_los <- paste0("inpatient_mean_los_days_", win_name)
     c_icu_adm <- paste0("icu_admissions_", win_name)
     c_icu_los <- paste0("icu_los_days_", win_name)
+    c_icu_mean_los <- paste0("icu_mean_los_days_", win_name)
     c_readm_30 <- paste0("readmissions_30d_", win_name)
     c_readm_90 <- paste0("readmissions_90d_", win_name)
 
     names(win_summary)[names(win_summary) == "inp_adm"] <- c_inp_adm
     names(win_summary)[names(win_summary) == "inp_los"] <- c_inp_los
+    names(win_summary)[names(win_summary) == "inp_mean_los"] <- c_inp_mean_los
     names(win_summary)[names(win_summary) == "icu_adm"] <- c_icu_adm
     names(win_summary)[names(win_summary) == "icu_los"] <- c_icu_los
+    names(win_summary)[names(win_summary) == "icu_mean_los"] <- c_icu_mean_los
     names(win_summary)[names(win_summary) == "readm_30"] <- c_readm_30
     names(win_summary)[names(win_summary) == "readm_90"] <- c_readm_90
 
@@ -217,3 +225,38 @@ addHospitalizations <- addInpatients
 #' @rdname addInpatients
 #' @export
 addInpatient <- addInpatients
+
+#' @rdname addInpatients
+#' @export
+addIcuStays <- function(
+  x,
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
+  window = list(c(-365, -1), c(0, 365)),
+  icuConceptIds = 32037L,
+  icuSpecialtyConceptIds = c(38004500L),
+  nameStyle = "{domain}_{metric}_{window_name}",
+  name = NULL
+) {
+  # Call addInpatients with visitConceptIds set to empty to focus on ICU metrics.
+  res <- addInpatients(
+    x = x,
+    indexDate = indexDate,
+    censorDate = censorDate,
+    window = window,
+    visitConceptIds = integer(),
+    icuConceptIds = icuConceptIds,
+    icuSpecialtyConceptIds = icuSpecialtyConceptIds,
+    readmissions = FALSE,
+    nameStyle = nameStyle,
+    name = name
+  )
+
+  # Drop general inpatient columns to return ONLY ICU-related values
+  cols_to_remove <- grep("^inpatient_", colnames(res), value = TRUE)
+  if (length(cols_to_remove) > 0) {
+    res <- res |> dplyr::select(-dplyr::all_of(cols_to_remove))
+  }
+
+  return(res)
+}

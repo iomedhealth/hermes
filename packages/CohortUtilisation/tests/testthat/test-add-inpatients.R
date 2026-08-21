@@ -24,18 +24,20 @@ test_that("addInpatients computes admissions, LOS, ICU stays, and readmissions",
 
   cols <- colnames(cohortEnriched)
   expect_true(all(c(
-    "inpatient_admissions_baseline", "inpatient_los_days_baseline",
-    "inpatient_admissions_followup", "inpatient_los_days_followup",
-    "icu_admissions_followup", "icu_los_days_followup",
+    "inpatient_admissions_baseline", "inpatient_los_days_baseline", "inpatient_mean_los_days_baseline",
+    "inpatient_admissions_followup", "inpatient_los_days_followup", "inpatient_mean_los_days_followup",
+    "icu_admissions_followup", "icu_los_days_followup", "icu_mean_los_days_followup",
     "readmissions_30d_followup"
   ) %in% cols))
 
-  # Patient 1 has 2 inpatient admissions (4 + 3 = 7 days LOS), 1 ICU (2 days), 1 30d readmission in followup
+  # Patient 1 has 2 inpatient admissions (4 + 3 = 7 days LOS, mean 3.5), 1 ICU (2 days, mean 2), 1 30d readmission in followup
   p1 <- cohortEnriched |> dplyr::filter(.data$subject_id == 1L)
   expect_equal(p1$inpatient_admissions_followup, 2)
   expect_equal(p1$inpatient_los_days_followup, 7)
+  expect_equal(p1$inpatient_mean_los_days_followup, 3.5)
   expect_equal(p1$icu_admissions_followup, 1)
   expect_equal(p1$icu_los_days_followup, 2)
+  expect_equal(p1$icu_mean_los_days_followup, 2)
   expect_equal(p1$readmissions_30d_followup, 1)
 })
 

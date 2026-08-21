@@ -29,7 +29,7 @@ summariseUtilization <- function(
   if (is.null(variables)) {
     allCols <- colnames(cohort)
     utilPatterns <- c(
-      "inpatient_admissions", "inpatient_los", "icu_admissions", "icu_los", "readmissions",
+      "inpatient_admissions", "inpatient_los", "inpatient_mean_los", "icu_admissions", "icu_los", "icu_mean_los", "readmissions",
       "emergency_visits", "gp_visits", "specialist_visits", "other_outpatient", "_visits",
       "rx_fills", "days_supply", "pdc", "infusions",
       "lab_tests", "imaging", "procedures_count"

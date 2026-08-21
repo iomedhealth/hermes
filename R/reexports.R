@@ -1,13 +1,15 @@
 # Top-level re-exports from CohortUtilisation, CohortCosts, and CohortEconomics
 
 # --- CohortUtilisation ---
-#' @importFrom CohortUtilisation addInpatients addHospitalizations addInpatient
+#' @importFrom CohortUtilisation addInpatients addHospitalizations addInpatient addIcuStays
 #' @export
 CohortUtilisation::addInpatients
 #' @export
 CohortUtilisation::addHospitalizations
 #' @export
 CohortUtilisation::addInpatient
+#' @export
+CohortUtilisation::addIcuStays
 
 #' @importFrom CohortUtilisation addEmergencyCare addEmergency addEmergencyVisits
 #' @export

@@ -4,6 +4,7 @@
 \alias{addInpatients}
 \alias{addHospitalizations}
 \alias{addInpatient}
+\alias{addIcuStays}
 \title{Add Inpatient and ICU Hospitalization Metrics to a Cohort}
 \usage{
 addInpatients(
@@ -47,6 +48,17 @@ addInpatient(
   stratifySpecialty = FALSE,
   specialties = NULL,
   readmissions = FALSE,
+  nameStyle = "{domain}_{metric}_{window_name}",
+  name = NULL
+)
+
+addIcuStays(
+  x,
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
+  window = list(c(-365, -1), c(0, 365)),
+  icuConceptIds = 32037L,
+  icuSpecialtyConceptIds = c(38004500L),
   nameStyle = "{domain}_{metric}_{window_name}",
   name = NULL
 )

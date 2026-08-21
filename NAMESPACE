@@ -5,6 +5,7 @@ export(addEmergency)
 export(addEmergencyCare)
 export(addEmergencyVisits)
 export(addHospitalizations)
+export(addIcuStays)
 export(addInpatient)
 export(addInpatients)
 export(addOutpatientVisits)
@@ -60,6 +61,7 @@ importFrom(CohortUtilisation,
   addEmergencyCare,
   addEmergencyVisits,
   addHospitalizations,
+  addIcuStays,
   addInpatient,
   addInpatients,
   addOutpatientVisits,
