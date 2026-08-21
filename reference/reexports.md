@@ -32,6 +32,7 @@ to see their documentation.
   [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html),
   [`addEmergencyVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html),
   [`addHospitalizations()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html),
+  [`addIcuStays()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html),
   [`addInpatient()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html),
   [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html),
   [`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html),
