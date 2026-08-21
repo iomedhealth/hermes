@@ -1,15 +1,15 @@
-# HERMES Agent Guidelines & Architecture Instructions
+# omopHeor Agent Guidelines & Architecture Instructions
 
-Welcome to the **HERMES** repository. HERMES is an R package ecosystem
-for Real-World Evidence (RWE) and Health Economics and Outcomes Research
-(HEOR) focused on Healthcare Resource Utilization (HCRU) and
-Cost-Effectiveness Analysis (CEA) on OMOP CDM data.
+Welcome to the **omopHeor** repository. omopHeor is an R package
+ecosystem for Real-World Evidence (RWE) and Health Economics and
+Outcomes Research (HEOR) focused on Healthcare Resource Utilization
+(HCRU) and Cost-Effectiveness Analysis (CEA) on OMOP CDM data.
 
 ------------------------------------------------------------------------
 
 ## 1. Core Architecture & The 6-Stage Analytical Pipeline
 
-Agents developing functions or modules in HERMES must align their
+Agents developing functions or modules in omopHeor must align their
 implementations with the 6-stage framework:
 
 1.  **Stage 1: Cohort Generation**

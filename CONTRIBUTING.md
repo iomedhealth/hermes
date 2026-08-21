@@ -1,4 +1,4 @@
-# Contributing to HERMES
+# Contributing to omopHeor
 
 ## Filing issues
 
@@ -47,7 +47,7 @@ coverage can be checked using:
 ``` r
 
 # note, you may first have to detach the package
-# detach("package:HERMES", unload = TRUE)
+# detach("package:omopHeor", unload = TRUE)
 devtools::test_coverage()
 ```
 

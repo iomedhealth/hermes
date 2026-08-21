@@ -2,8 +2,8 @@
 
 ### Getting Started
 
-- [The HERMES Ecosystem: Modular Architecture & Package
-  Suite](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.md):
+- [The omopHeor Ecosystem: Modular Architecture & Package
+  Suite](https://iomedhealth.github.io/omopHeor/articles/omopheor-ecosystem.md):
 - [Introduction to HEOR for OMOP
   Users](https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.md):
 - [Cohort Utilization & Cost

@@ -1,12 +1,12 @@
-# HERMES: Health Economic Resource Modeling & Evaluation System
+# omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM
 
 [![R-CMD-check](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/omopHeor/)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
+[![Version](https://img.shields.io/badge/version-0.6.1-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**HERMES** is an R-based analytical ecosystem developed by
+**omopHeor** is an R-based analytical ecosystem developed by
 [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and
 Health Economics and Outcomes Research (HEOR). It streamlines the
 end-to-end process of Healthcare Resource Utilization (HCRU) analysis,
@@ -31,7 +31,7 @@ Model (CDM)**.
   (`Cyclops`), Markov state-transition models, and CEA visualizations
   (`BCEA`).
 - **Instant Prototyping**: Includes
-  [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockHERMES.md)
+  [`mockOmopHeor()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md)
   providing an in-memory synthetic DuckDB OMOP CDM database.
 
 ## Getting Started
@@ -66,7 +66,7 @@ library(omopHeor)
 library(dplyr)
 
 # 0. Connect to CDM (built-in synthetic mock database)
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 
 # 1. Enrich cohort with visits, prescriptions, and direct costs in-database
 cdm$study_enriched <- cdm$target_cohort |>
@@ -106,7 +106,7 @@ economic simulation pipeline:
 library(omopHeor)
 
 # 0. Setup Connection
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 
 # 1-6. Run the End-to-End Pipeline
 study <- init(
@@ -140,8 +140,8 @@ Curve](reference/figures/ceac.png)
 For in-depth architecture, tutorials, and technical specifications,
 explore the documentation articles:
 
-- **[The HERMES Ecosystem & Modular
-  Architecture](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.html)**:
+- **[The omopHeor Ecosystem & Modular
+  Architecture](https://iomedhealth.github.io/omopHeor/articles/omopheor-ecosystem.html)**:
   Comprehensive breakdown of `CohortUtilisation`, `CohortCosts`,
   `CohortEconomics`, technology stack, and package design.
 - **[Introduction to HEOR for OMOP
@@ -180,7 +180,7 @@ S.L.](https://www.iomed.health/)
 Functions for defining, initializing, and building care episodes.
 
 - [`init()`](https://rdrr.io/pkg/CohortEconomics/man/init.html) :
-  Initialize a HERMES study (Stage 1: Cohort Generation) (from
+  Initialize an omopHeor study (Stage 1: Cohort Generation) (from
   CohortEconomics)
 - [`compute_hospitalization_cohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html)
   [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html)
@@ -291,15 +291,16 @@ Economic simulation and decision analysis.
 
 Helpers for creating synthetic in-memory OMOP CDM test references.
 
-- [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockHERMES.md)
+- [`mockOmopHeor()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md)
+  [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md)
   : Create a Mock OMOP CDM Reference for Testing and Demonstrations
 
 # Articles
 
 ### Getting Started
 
-- [The HERMES Ecosystem: Modular Architecture & Package
-  Suite](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.md):
+- [The omopHeor Ecosystem: Modular Architecture & Package
+  Suite](https://iomedhealth.github.io/omopHeor/articles/omopheor-ecosystem.md):
 - [Introduction to HEOR for OMOP
   Users](https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.md):
 - [Cohort Utilization & Cost

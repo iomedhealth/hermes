@@ -10,7 +10,7 @@ diagnostics, procedures, and financial claims).
 
 Following the **DARWIN EU / OHDSI** package ecosystem standards
 (`CohortConstructor`, `PatientProfiles`, `CohortCharacteristics`),
-**HERMES** provides a pipe-friendly, 3-layer architecture for cohort
+**omopHeor** provides a pipe-friendly, 3-layer architecture for cohort
 construction, in-database column enrichment, and standardized reporting.
 
 ------------------------------------------------------------------------
@@ -43,7 +43,7 @@ construction, in-database column enrichment, and standardized reporting.
 
 ### 1. Setup & CDM Connection
 
-We initialize an OMOP CDM reference (such as the mock HERMES test
+We initialize an OMOP CDM reference (such as the mock omopHeor test
 database):
 
 ``` r
@@ -53,7 +53,7 @@ library(dplyr)
 library(omopgenerics)
 
 # Connect to OMOP CDM
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 ```
 
 ------------------------------------------------------------------------
@@ -83,9 +83,9 @@ cdm$hosp_episodes |>
 #> # A tibble: 4 × 4
 #>   cohort_definition_id subject_id cohort_start_date cohort_end_date
 #>                  <int>      <int> <date>            <date>         
-#> 1                    1          2 2010-03-10        2010-03-15     
-#> 2                    1          1 2010-02-01        2010-02-05     
-#> 3                    1          1 2010-02-20        2010-02-23     
+#> 1                    1          1 2010-02-01        2010-02-05     
+#> 2                    1          1 2010-02-20        2010-02-23     
+#> 3                    1          2 2010-03-10        2010-03-15     
 #> 4                    2          1 2010-02-20        2010-02-23
 ```
 
@@ -386,7 +386,7 @@ tableUtilization(
 
 ### 5. Visualizing Care Utilization & Costs (`visOmopResults` Style)
 
-HERMES provides
+`CohortUtilisation` and `CohortCosts` provide
 [`plotUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html)
 and [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html)
 for rapid exploratory and publication visualization, leveraging standard

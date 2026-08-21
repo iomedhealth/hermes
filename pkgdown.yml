@@ -4,9 +4,9 @@ pkgdown_sha: ~
 articles:
   cohort-utilization: cohort-utilization.html
   hcru_logic: hcru_logic.html
-  hermes-ecosystem: hermes-ecosystem.html
   intro-to-heor: intro-to-heor.html
-last_built: 2026-08-21T17:09Z
+  omopheor-ecosystem: omopheor-ecosystem.html
+last_built: 2026-08-21T19:29Z
 urls:
   reference: https://iomedhealth.github.io/omopHeor/reference
   article: https://iomedhealth.github.io/omopHeor/articles

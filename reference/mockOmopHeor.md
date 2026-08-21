@@ -5,6 +5,8 @@ Create a Mock OMOP CDM Reference for Testing and Demonstrations
 ## Usage
 
 ``` r
+mockOmopHeor(numberIndividuals = 10)
+
 mockHERMES(numberIndividuals = 10)
 ```
 
@@ -23,9 +25,9 @@ A `cdm_reference` object connected to an in-memory DuckDB database.
 ``` r
 # \donttest{
 library(omopHeor)
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpwuN0Vw/duckdb
+#> ℹ /tmp/RtmpaDLV8h/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.

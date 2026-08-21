@@ -1,16 +1,15 @@
-# The HERMES Ecosystem: Modular Architecture & Package Suite
+# The omopHeor Ecosystem: Modular Architecture & Package Suite
 
-## The HERMES Ecosystem
+## The omopHeor Ecosystem
 
-**HERMES** (Health Economic Resource Modeling & Evaluation System) is an
-R package ecosystem developed by [IOMED](https://www.iomed.health/) for
-Real-World Evidence (RWE) and Health Economics and Outcomes Research
-(HEOR) on observational healthcare data structured in the **OMOP Common
-Data Model (CDM)**.
+**omopHeor** is an R package ecosystem developed by
+[IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and
+Health Economics and Outcomes Research (HEOR) on observational
+healthcare data structured in the **OMOP Common Data Model (CDM)**.
 
-Starting in version 0.5.0, HERMES adopts a **modular monorepo
-architecture** composed of three standalone domain packages under the
-DARWIN EU standard, unified by the root `hermes` umbrella metapackage.
+The framework adopts a **modular monorepo architecture** composed of
+three standalone domain packages under the DARWIN EU standard, unified
+by the root `omopHeor` umbrella metapackage.
 
 ------------------------------------------------------------------------
 
@@ -32,7 +31,7 @@ distinct paradigms:
 
 Decoupling these domains allows users to install only the dependencies
 required for their specific workflow while maintaining a single, unified
-interface through the `hermes` metapackage.
+interface through the `omopHeor` metapackage.
 
 ``` text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -42,7 +41,7 @@ interface through the `hermes` metapackage.
                                             │
                                             ▼
                     ┌───────────────────────────────────────────────┐
-                    │               hermes Metapackage              │
+                    │               omopHeor Metapackage            │
                     │      (Unified entry point & re-exports)       │
                     └───────────────────────┬───────────────────────┘
                                             │
@@ -129,7 +128,7 @@ library(omopHeor)
 library(dplyr)
 
 # Load synthetic mock CDM
-cdm <- mockHERMES()
+cdm <- mockOmopHeor()
 
 # Enrich cohort across baseline [-365, -1] and 1-year follow-up [0, 365]
 cdm$target_enriched <- cdm$target_cohort |>
@@ -342,7 +341,7 @@ experience:
   [`library(omopHeor)`](https://iomedhealth.github.io/omopHeor/)
   attaches all three packages and re-exports all analytical functions.
 - **Built-in Mock Data**:
-  [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockHERMES.md)
+  [`mockOmopHeor()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md)
   provides a self-contained in-memory DuckDB OMOP CDM database for
   testing and demonstrations.
 
@@ -355,4 +354,4 @@ experience:
 | **`CohortUtilisation`** | In-database HCRU extraction across care settings | [`addInpatients()`](https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html), [`addEmergencyCare()`](https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html), [`addOutpatientVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html), [`addVisits()`](https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html), [`addPrescriptions()`](https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html), [`addProcedures()`](https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html), [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html), [`summariseUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/summariseUtilization.html), [`tableUtilization()`](https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html) | Epidemiologists, Data Analysts |
 | **`CohortCosts`** | Direct medical costs & OMOP COST table linkage | [`addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html), [`summariseCosts()`](https://rdrr.io/pkg/CohortCosts/man/summariseCosts.html), [`tableCosts()`](https://rdrr.io/pkg/CohortCosts/man/tableCosts.html), [`plotCosts()`](https://rdrr.io/pkg/CohortCosts/man/plotCosts.html) | Health Economists, Financial Analysts |
 | **`CohortEconomics`** | Propensity scores, trajectories, simulation & CEA | [`init()`](https://rdrr.io/pkg/CohortEconomics/man/init.html), [`summarise_baseline()`](https://rdrr.io/pkg/CohortEconomics/man/summarise_baseline.html), [`extract_hcru()`](https://rdrr.io/pkg/CohortEconomics/man/extract_hcru.html), [`fit_ps()`](https://rdrr.io/pkg/CohortEconomics/man/fit_ps.html), [`adjust_ps()`](https://rdrr.io/pkg/CohortEconomics/man/adjust_ps.html), [`compile_trajectories()`](https://rdrr.io/pkg/CohortEconomics/man/compile_trajectories.html), [`simulate_economics()`](https://rdrr.io/pkg/CohortEconomics/man/simulate_economics.html), [`run_cea()`](https://rdrr.io/pkg/CohortEconomics/man/run_cea.html), [`plot_ceac()`](https://rdrr.io/pkg/CohortEconomics/man/plot_ceac.html), [`plot_plane()`](https://rdrr.io/pkg/CohortEconomics/man/plot_plane.html) | Health Economists, HTA Researchers |
-| **`omopHeor`** | Umbrella metapackage & unified developer interface | All verbs re-exported + [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockHERMES.md) | All RWE / HEOR Practitioners |
+| **`omopHeor`** | Umbrella metapackage & unified developer interface | All verbs re-exported + [`mockOmopHeor()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md) | All RWE / HEOR Practitioners |

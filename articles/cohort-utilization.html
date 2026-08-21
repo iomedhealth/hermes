@@ -36,7 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
-    <li><a class="dropdown-item" href="../articles/hermes-ecosystem.html">The HERMES Ecosystem: Modular Architecture &amp; Package Suite</a></li>
+    <li><a class="dropdown-item" href="../articles/omopheor-ecosystem.html">The omopHeor Ecosystem: Modular Architecture &amp; Package Suite</a></li>
     <li><a class="dropdown-item" href="../articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
     <li><a class="dropdown-item" href="../articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -82,9 +82,9 @@ across multiple care settings (inpatient, outpatient, emergency,
 pharmacy, diagnostics, procedures, and financial claims).</p>
 <p>Following the <strong>DARWIN EU / OHDSI</strong> package ecosystem
 standards (<code>CohortConstructor</code>, <code>PatientProfiles</code>,
-<code>CohortCharacteristics</code>), <strong>HERMES</strong> provides a
-pipe-friendly, 3-layer architecture for cohort construction, in-database
-column enrichment, and standardized reporting.</p>
+<code>CohortCharacteristics</code>), <strong>omopHeor</strong> provides
+a pipe-friendly, 3-layer architecture for cohort construction,
+in-database column enrichment, and standardized reporting.</p>
 <hr>
 <div class="section level3">
 <h3 id="layer-architecture-overview">3-Layer Architecture Overview<a class="anchor" aria-label="anchor" href="#layer-architecture-overview"></a>
@@ -113,7 +113,7 @@ column enrichment, and standardized reporting.</p>
 <div class="section level3">
 <h3 id="setup-cdm-connection">1. Setup &amp; CDM Connection<a class="anchor" aria-label="anchor" href="#setup-cdm-connection"></a>
 </h3>
-<p>We initialize an OMOP CDM reference (such as the mock HERMES test
+<p>We initialize an OMOP CDM reference (such as the mock omopHeor test
 database):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://iomedhealth.github.io/omopHeor/">omopHeor</a></span><span class="op">)</span></span>
@@ -121,7 +121,7 @@ database):</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/omopgenerics/" class="external-link">omopgenerics</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Connect to OMOP CDM</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockHERMES.html">mockHERMES</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockOmopHeor.html">mockOmopHeor</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level3">
@@ -150,9 +150,9 @@ and register them in the database write schema.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 4</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1          2 2010-03-10        2010-03-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1          1 2010-02-01        2010-02-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    1          1 2010-02-20        2010-02-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1          1 2010-02-01        2010-02-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1          1 2010-02-20        2010-02-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    1          2 2010-03-10        2010-03-15     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>                    2          1 2010-02-20        2010-02-23</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -5053,10 +5053,10 @@ publication-grade summary tables:</p>
 <h3 id="visualizing-care-utilization-costs-visomopresults-style">5. Visualizing Care Utilization &amp; Costs
 (<code>visOmopResults</code> Style)<a class="anchor" aria-label="anchor" href="#visualizing-care-utilization-costs-visomopresults-style"></a>
 </h3>
-<p>HERMES provides <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html" class="external-link">plotUtilization()</a></code> and
-<code><a href="https://rdrr.io/pkg/CohortCosts/man/plotCosts.html" class="external-link">plotCosts()</a></code> for rapid exploratory and publication
-visualization, leveraging standard <code>visOmopResults</code> ggplot
-themes and facets.</p>
+<p><code>CohortUtilisation</code> and <code>CohortCosts</code> provide
+<code><a href="https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html" class="external-link">plotUtilization()</a></code> and <code><a href="https://rdrr.io/pkg/CohortCosts/man/plotCosts.html" class="external-link">plotCosts()</a></code> for rapid
+exploratory and publication visualization, leveraging standard
+<code>visOmopResults</code> ggplot themes and facets.</p>
 <div class="section level4">
 <h4 id="bar-plots-for-care-utilization">Bar Plots for Care Utilization<a class="anchor" aria-label="anchor" href="#bar-plots-for-care-utilization"></a>
 </h4>

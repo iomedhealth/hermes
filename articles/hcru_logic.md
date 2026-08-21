@@ -4,13 +4,13 @@
 
 This document outlines the extraction and linkage logic for Healthcare
 Resource Utilization (HCRU) and direct medical expenditures from the
-OMOP CDM `COST` table across the HERMES ecosystem.
+OMOP CDM `COST` table across the omopHeor ecosystem.
 
 ------------------------------------------------------------------------
 
 ### 1. Dual Cost Extraction Modalities
 
-HERMES provides two complementary mechanisms for extracting cost data:
+omopHeor provides two complementary mechanisms for extracting cost data:
 
 1.  **In-Database Cohort Enrichment
     ([`CohortCosts::addCosts()`](https://rdrr.io/pkg/CohortCosts/man/addCosts.html))**:

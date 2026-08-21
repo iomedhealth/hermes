@@ -5,7 +5,7 @@
 Functions for defining, initializing, and building care episodes.
 
 - [`init()`](https://rdrr.io/pkg/CohortEconomics/man/init.html) :
-  Initialize a HERMES study (Stage 1: Cohort Generation) (from
+  Initialize an omopHeor study (Stage 1: Cohort Generation) (from
   CohortEconomics)
 - [`compute_hospitalization_cohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html)
   [`computeHospitalizationCohorts()`](https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html)
@@ -116,5 +116,6 @@ Economic simulation and decision analysis.
 
 Helpers for creating synthetic in-memory OMOP CDM test references.
 
-- [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockHERMES.md)
+- [`mockOmopHeor()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md)
+  [`mockHERMES()`](https://iomedhealth.github.io/omopHeor/reference/mockOmopHeor.md)
   : Create a Mock OMOP CDM Reference for Testing and Demonstrations

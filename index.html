@@ -39,7 +39,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
-    <li><a class="dropdown-item" href="articles/hermes-ecosystem.html">The HERMES Ecosystem: Modular Architecture &amp; Package Suite</a></li>
+    <li><a class="dropdown-item" href="articles/omopheor-ecosystem.html">The omopHeor Ecosystem: Modular Architecture &amp; Package Suite</a></li>
     <li><a class="dropdown-item" href="articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
     <li><a class="dropdown-item" href="articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -63,11 +63,11 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.svg" class="logo" alt=""><h1 id="hermes-health-economic-resource-modeling--evaluation-system">HERMES: Health Economic Resource Modeling &amp; Evaluation System<a class="anchor" aria-label="anchor" href="#hermes-health-economic-resource-modeling--evaluation-system"></a>
+<img src="logo.svg" class="logo" alt=""><h1 id="omopheor-health-economics-and-outcomes-research-pipeline-on-omop-cdm">omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM<a class="anchor" aria-label="anchor" href="#omopheor-health-economics-and-outcomes-research-pipeline-on-omop-cdm"></a>
 </h1>
 </div>
-<p><a href="https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://iomedhealth.github.io/omopHeor/"><img src="https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a> <a href="https://github.com/iomedhealth/omopHeor/releases" class="external-link"><img src="https://img.shields.io/badge/version-0.6.0-blue.svg" alt="Version"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
-<p><strong>HERMES</strong> is an R-based analytical ecosystem developed by <a href="https://www.iomed.health/" class="external-link">IOMED</a> for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the <strong>OMOP Common Data Model (CDM)</strong>.</p>
+<p><a href="https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://iomedhealth.github.io/omopHeor/"><img src="https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a> <a href="https://github.com/iomedhealth/omopHeor/releases" class="external-link"><img src="https://img.shields.io/badge/version-0.6.1-blue.svg" alt="Version"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></p>
+<p><strong>omopHeor</strong> is an R-based analytical ecosystem developed by <a href="https://www.iomed.health/" class="external-link">IOMED</a> for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the <strong>OMOP Common Data Model (CDM)</strong>.</p>
 <div class="section level2">
 <h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h2>
@@ -83,7 +83,7 @@
 <li>
 <strong>End-to-End Decision Science</strong>: Propensity score adjustment (<code>Cyclops</code>), Markov state-transition models, and CEA visualizations (<code>BCEA</code>).</li>
 <li>
-<strong>Instant Prototyping</strong>: Includes <code><a href="reference/mockHERMES.html">mockHERMES()</a></code> providing an in-memory synthetic DuckDB OMOP CDM database.</li>
+<strong>Instant Prototyping</strong>: Includes <code><a href="reference/mockOmopHeor.html">mockOmopHeor()</a></code> providing an in-memory synthetic DuckDB OMOP CDM database.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -119,7 +119,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 0. Connect to CDM (built-in synthetic mock database)</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mockHERMES.html">mockHERMES</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mockOmopHeor.html">mockOmopHeor</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 1. Enrich cohort with visits, prescriptions, and direct costs in-database</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">study_enriched</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">target_cohort</span> <span class="op">|&gt;</span></span>
@@ -156,7 +156,7 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://iomedhealth.github.io/omopHeor/">omopHeor</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 0. Setup Connection</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mockHERMES.html">mockHERMES</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mockOmopHeor.html">mockOmopHeor</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 1-6. Run the End-to-End Pipeline</span></span>
 <span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init</a></span><span class="op">(</span></span>
@@ -191,7 +191,7 @@
 <p>For in-depth architecture, tutorials, and technical specifications, explore the documentation articles:</p>
 <ul>
 <li>
-<strong><a href="https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.html">The HERMES Ecosystem &amp; Modular Architecture</a></strong>: Comprehensive breakdown of <code>CohortUtilisation</code>, <code>CohortCosts</code>, <code>CohortEconomics</code>, technology stack, and package design.</li>
+<strong><a href="https://iomedhealth.github.io/omopHeor/articles/omopheor-ecosystem.html">The omopHeor Ecosystem &amp; Modular Architecture</a></strong>: Comprehensive breakdown of <code>CohortUtilisation</code>, <code>CohortCosts</code>, <code>CohortEconomics</code>, technology stack, and package design.</li>
 <li>
 <strong><a href="https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></strong>: Conceptual guide translating OMOP CDM vocabulary to Health Economics (ICER, QALY, Markov health states).</li>
 <li>

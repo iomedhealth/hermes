@@ -36,7 +36,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
-    <li><a class="dropdown-item" href="../articles/hermes-ecosystem.html">The HERMES Ecosystem: Modular Architecture &amp; Package Suite</a></li>
+    <li><a class="dropdown-item" href="../articles/omopheor-ecosystem.html">The omopHeor Ecosystem: Modular Architecture &amp; Package Suite</a></li>
     <li><a class="dropdown-item" href="../articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></li>
     <li><a class="dropdown-item" href="../articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -73,15 +73,14 @@
     
     
 <div class="section level2">
-<h2 id="welcome-to-hermes">Welcome to HERMES<a class="anchor" aria-label="anchor" href="#welcome-to-hermes"></a>
+<h2 id="welcome-to-omopheor">Welcome to omopHeor<a class="anchor" aria-label="anchor" href="#welcome-to-omopheor"></a>
 </h2>
 <p>If you are reading this, you are likely familiar with the
 Observational Medical Outcomes Partnership (OMOP) Common Data Model
 (CDM) and the OHDSI ecosystem. You know how to define cohorts, run
 incidence rate analyses, and perhaps perform population-level effect
 estimation.</p>
-<p><strong>HERMES</strong> (Health Economic Resource Modeling &amp;
-Evaluation System) bridges the gap between the OMOP world and
+<p><strong>omopHeor</strong> bridges the gap between the OMOP world and
 <strong>Health Economics and Outcomes Research (HEOR)</strong>. This
 guide will help translate the concepts you already know into the
 framework of Cost-Effectiveness Analysis (CEA).</p>
@@ -135,7 +134,7 @@ OMOP CDM? We map OHDSI concepts to HEOR concepts.</p>
 <thead><tr class="header">
 <th align="left">OMOP / OHDSI Concept</th>
 <th align="left">HEOR / CEA Concept</th>
-<th align="left">HERMES Stage</th>
+<th align="left">omopHeor Stage</th>
 <th align="left">Package Responsible</th>
 </tr></thead>
 <tbody>
@@ -230,10 +229,10 @@ NMB)</strong></td>
 </table>
 </div>
 <div class="section level2">
-<h2 id="the-hermes-6-stage-pipeline">The HERMES 6-Stage Pipeline<a class="anchor" aria-label="anchor" href="#the-hermes-6-stage-pipeline"></a>
+<h2 id="the-omopheor-6-stage-pipeline">The omopHeor 6-Stage Pipeline<a class="anchor" aria-label="anchor" href="#the-omopheor-6-stage-pipeline"></a>
 </h2>
 <p>To get from raw OMOP data to a finalized ICER and decision-analytic
-plots, HERMES enforces a strict 6-stage pipeline:</p>
+plots, omopHeor enforces a strict 6-stage pipeline:</p>
 <div class="section level3">
 <h3 id="cohort-generation-init">1. Cohort Generation (<code>init()</code>)<a class="anchor" aria-label="anchor" href="#cohort-generation-init"></a>
 </h3>
@@ -246,10 +245,10 @@ instantiate them in the database.</p>
 <h3 id="descriptive-baseline-hcru-characterization-summarise_baseline-extract_hcru">2. Descriptive Baseline &amp; HCRU Characterization
 (<code>summarise_baseline()</code>, <code>extract_hcru()</code>)<a class="anchor" aria-label="anchor" href="#descriptive-baseline-hcru-characterization-summarise_baseline-extract_hcru"></a>
 </h3>
-<p>HERMES profiles the cohorts, extracting demographics and calculating
-unadjusted care utilization (hospitalizations, outpatient visits) and
-direct medical costs by directly querying the OMOP <code>COST</code>
-table.</p>
+<p>omopHeor profiles the cohorts, extracting demographics and
+calculating unadjusted care utilization (hospitalizations, outpatient
+visits) and direct medical costs by directly querying the OMOP
+<code>COST</code> table.</p>
 </div>
 <div class="section level3">
 <h3 id="causal-propensity-score-ps-adjustment-fit_ps-adjust_ps-assess_balance">3. Causal Propensity Score (PS) Adjustment (<code>fit_ps()</code>,
@@ -257,7 +256,7 @@ table.</p>
 </h3>
 <p>Observational data is biased. Patients prescribed the new expensive
 drug might be sicker (or healthier) than those on the standard of care.
-HERMES uses high-dimensional regularized logistic regression (via
+omopHeor uses high-dimensional regularized logistic regression (via
 <code>Cyclops</code>) to calculate Propensity Scores and match/weight
 the cohorts, creating a pseudo-randomized population.</p>
 </div>
@@ -266,15 +265,15 @@ the cohorts, creating a pseudo-randomized population.</p>
 (<code>compile_trajectories()</code>)<a class="anchor" aria-label="anchor" href="#trajectory-compilation-state-cost-extraction-compile_trajectories"></a>
 </h3>
 <p>Patient timelines are sliced into discrete time cycles (e.g.,
-months). HERMES tracks how patients transition between different health
-states (e.g., from “Healthy” to “Outcome Event” to “Dead”) and extracts
-the specific costs accrued while in those states.</p>
+months). omopHeor tracks how patients transition between different
+health states (e.g., from “Healthy” to “Outcome Event” to “Dead”) and
+extracts the specific costs accrued while in those states.</p>
 </div>
 <div class="section level3">
 <h3 id="economic-simulation-simulate_economics">5. Economic Simulation (<code>simulate_economics()</code>)<a class="anchor" aria-label="anchor" href="#economic-simulation-simulate_economics"></a>
 </h3>
 <p>Using the transition probabilities and cost distributions derived in
-Stage 4, HERMES simulates a decision-analytic Markov model. This
+Stage 4, omopHeor simulates a decision-analytic Markov model. This
 projects the long-term costs and QALYs over a lifetime horizon with
 probabilistic sensitivity analysis (PSA).</p>
 </div>
@@ -282,7 +281,7 @@ probabilistic sensitivity analysis (PSA).</p>
 <h3 id="decision-analysis-post-processing-run_cea-plot_ceac-plot_plane">6. Decision Analysis &amp; Post-Processing (<code>run_cea()</code>,
 <code>plot_ceac()</code>, <code>plot_plane()</code>)<a class="anchor" aria-label="anchor" href="#decision-analysis-post-processing-run_cea-plot_ceac-plot_plane"></a>
 </h3>
-<p>Finally, HERMES calculates the ICER and Net Monetary Benefit (NMB),
+<p>Finally, omopHeor calculates the ICER and Net Monetary Benefit (NMB),
 generating standardized visualizations like the Cost-Effectiveness Plane
 and the Cost-Effectiveness Acceptability Curve (CEAC), powered by
 <code>BCEA</code>.</p>
@@ -293,9 +292,9 @@ and the Cost-Effectiveness Acceptability Curve (CEAC), powered by
 </h2>
 <ul>
 <li>
-<strong><a href="hermes-ecosystem.html">The HERMES Ecosystem &amp;
-Modular Suite</a></strong>: Overview of the 3 standalone packages and
-architecture.</li>
+<strong><a href="omopheor-ecosystem.html">The omopHeor Ecosystem
+&amp; Modular Suite</a></strong>: Overview of the 3 standalone packages
+and architecture.</li>
 <li>
 <strong><a href="cohort-utilization.html">Cohort Utilization &amp;
 Cost Enrichment</a></strong>: Deep dive into the 3-layer in-database
