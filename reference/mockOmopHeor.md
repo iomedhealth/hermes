@@ -27,7 +27,7 @@ A `cdm_reference` object connected to an in-memory DuckDB database.
 library(omopHeor)
 cdm <- mockOmopHeor()
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpBSd49N/duckdb
+#> ℹ /tmp/RtmpNwzWLI/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.
