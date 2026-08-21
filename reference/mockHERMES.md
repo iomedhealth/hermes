@@ -25,7 +25,7 @@ A `cdm_reference` object connected to an in-memory DuckDB database.
 library(hermes)
 cdm <- mockHERMES()
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpMdnKqW/duckdb
+#> ℹ /tmp/RtmpFiINqW/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.

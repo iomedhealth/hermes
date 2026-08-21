@@ -135,7 +135,83 @@ metapackage.</p>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="package-1-cohortutilisation">2. Package 1: <code>CohortUtilisation</code><a class="anchor" aria-label="anchor" href="#package-1-cohortutilisation"></a>
+<h3 id="technology-stack">2. Technology Stack<a class="anchor" aria-label="anchor" href="#technology-stack"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Layer</th>
+<th align="left">Technologies &amp; Dependencies</th>
+<th align="left">Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>Language &amp; Core</strong></td>
+<td align="left">
+<code>R (&gt;= 4.1.0)</code>, <code>rlang</code>,
+<code>cli</code>, <code>glue</code>
+</td>
+<td align="left">Base R execution engine and tidy evaluation
+framework.</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>OMOP / DARWIN EU</strong></td>
+<td align="left">
+<code>omopgenerics (&gt;= 0.3.0)</code>,
+<code>CDMConnector (&gt;= 1.4.0)</code>, <code>PatientProfiles</code>,
+<code>CohortConstructor</code>, <code>CohortCharacteristics</code>,
+<code>visOmopResults</code>
+</td>
+<td align="left">Database-agnostic cohort manipulation, patient
+profiling, and standardized result schemas.</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Database &amp; SQL Engine</strong></td>
+<td align="left">
+<code>duckdb</code>, <code>dbplyr (&gt;= 2.4.0)</code>,
+<code>DBI</code>, <code>dplyr (&gt;= 1.1.0)</code>
+</td>
+<td align="left">High-performance in-database SQL translation and
+in-memory analytical querying.</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Causal &amp; HEOR Engines</strong></td>
+<td align="left">
+<code>Cyclops</code>, <code>CohortMethod</code>,
+<code>hesim</code>, <code>BCEA</code>, <code>stats</code>
+</td>
+<td align="left">High-dimensional regularized logistic regression,
+Markov microsimulations, and Bayesian CEA.</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Reporting &amp; Formatting</strong></td>
+<td align="left">
+<code>ggplot2</code>, <code>gt</code>,
+<code>flextable</code>, <code>tibble</code>
+</td>
+<td align="left">Publication-ready summary tables, cost-effectiveness
+acceptability curves, and planes.</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>Tooling &amp; Maintenance</strong></td>
+<td align="left">
+<code>testthat (&gt;= 3.0.0)</code>,
+<code>pkgdown</code>, <code>knitr</code>, <code>rmarkdown</code>,
+<code>styler</code>, <code>lintr</code>
+</td>
+<td align="left">Monorepo package checking, continuous integration, and
+automated documentation.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="package-1-cohortutilisation">3. Package 1: <code>CohortUtilisation</code><a class="anchor" aria-label="anchor" href="#package-1-cohortutilisation"></a>
 </h3>
 <p><strong><code>CohortUtilisation</code></strong> is a standalone,
 lightweight package designed to extract and quantify Healthcare Resource
@@ -246,7 +322,7 @@ utilization distributions.</li>
 </div>
 </div>
 <div class="section level3">
-<h3 id="package-2-cohortcosts">3. Package 2: <code>CohortCosts</code><a class="anchor" aria-label="anchor" href="#package-2-cohortcosts"></a>
+<h3 id="package-2-cohortcosts">4. Package 2: <code>CohortCosts</code><a class="anchor" aria-label="anchor" href="#package-2-cohortcosts"></a>
 </h3>
 <p><strong><code>CohortCosts</code></strong> handles direct medical cost
 extraction by linking polymorphic OMOP <code>COST</code> table records
@@ -325,12 +401,23 @@ cost distributions.</li>
 </div>
 </div>
 <div class="section level3">
-<h3 id="package-3-cohorteconomics">4. Package 3: <code>CohortEconomics</code><a class="anchor" aria-label="anchor" href="#package-3-cohorteconomics"></a>
+<h3 id="package-3-cohorteconomics">5. Package 3: <code>CohortEconomics</code><a class="anchor" aria-label="anchor" href="#package-3-cohorteconomics"></a>
 </h3>
 <p><strong><code>CohortEconomics</code></strong> is the core Health
 Economics and Outcomes Research (HEOR) modeling package. It implements
 the complete <strong>6-stage analytical pipeline</strong> from cohort
 definition to decision analysis:</p>
+<pre class="mermaid"><code>graph TD
+    A[(OMOP CDM)] --&gt; S1[Stage 1: Cohort Generation]
+    S1 --&gt; S2[Stage 2: Baseline &amp; HCRU Characterization]
+    S2 --&gt; S3[Stage 3: Causal PS Adjustment]
+    S3 --&gt; S4[Stage 4: Trajectory Compilation]
+    S4 --&gt; S5[Stage 5: Economic Simulation]
+    S5 --&gt; S6[Stage 6: Decision Analysis CEA]
+    
+    S6 --&gt; P1[CEAC Plot]
+    S6 --&gt; P2[CE Plane Plot]
+    S6 --&gt; P3[Summary Table]</code></pre>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Stage 1: Cohort Generation &amp; Initialization</strong>
@@ -367,7 +454,7 @@ Incremental Cost-Effectiveness Ratios (ICER) and Net Monetary Benefit
 <div class="section level4">
 <h4 id="example-end-to-end-heor-pipeline">Example: End-to-End HEOR Pipeline<a class="anchor" aria-label="anchor" href="#example-end-to-end-heor-pipeline"></a>
 </h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1-6. Run the complete pipeline</span></span>
 <span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/CohortEconomics/man/init.html" class="external-link">init</a></span><span class="op">(</span></span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
@@ -410,7 +497,7 @@ Incremental Cost-Effectiveness Ratios (ICER) and Net Monetary Benefit
 </div>
 </div>
 <div class="section level3">
-<h3 id="the-hermes-umbrella-metapackage">5. The <code>hermes</code> Umbrella Metapackage<a class="anchor" aria-label="anchor" href="#the-hermes-umbrella-metapackage"></a>
+<h3 id="the-hermes-umbrella-metapackage">6. The <code>hermes</code> Umbrella Metapackage<a class="anchor" aria-label="anchor" href="#the-hermes-umbrella-metapackage"></a>
 </h3>
 <p>The root <strong><code>hermes</code></strong> package unifies
 <code>CohortUtilisation</code>, <code>CohortCosts</code>, and
@@ -430,13 +517,10 @@ functions.</li>
 provides a self-contained in-memory DuckDB OMOP CDM database for testing
 and demonstrations.</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Load entire ecosystem</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://iomedhealth.github.io/hermes/">hermes</a></span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level3">
-<h3 id="package-summary-matrix">6. Package Summary Matrix<a class="anchor" aria-label="anchor" href="#package-summary-matrix"></a>
+<h3 id="package-summary-matrix">7. Package Summary Matrix<a class="anchor" aria-label="anchor" href="#package-summary-matrix"></a>
 </h3>
 <table class="table">
 <colgroup>

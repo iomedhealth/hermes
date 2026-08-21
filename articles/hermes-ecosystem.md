@@ -62,7 +62,20 @@ interface through the `hermes` metapackage.
 
 ------------------------------------------------------------------------
 
-### 2. Package 1: `CohortUtilisation`
+### 2. Technology Stack
+
+| Layer | Technologies & Dependencies | Description |
+|:---|:---|:---|
+| **Language & Core** | `R (>= 4.1.0)`, `rlang`, `cli`, `glue` | Base R execution engine and tidy evaluation framework. |
+| **OMOP / DARWIN EU** | `omopgenerics (>= 0.3.0)`, `CDMConnector (>= 1.4.0)`, `PatientProfiles`, `CohortConstructor`, `CohortCharacteristics`, `visOmopResults` | Database-agnostic cohort manipulation, patient profiling, and standardized result schemas. |
+| **Database & SQL Engine** | `duckdb`, `dbplyr (>= 2.4.0)`, `DBI`, `dplyr (>= 1.1.0)` | High-performance in-database SQL translation and in-memory analytical querying. |
+| **Causal & HEOR Engines** | `Cyclops`, `CohortMethod`, `hesim`, `BCEA`, `stats` | High-dimensional regularized logistic regression, Markov microsimulations, and Bayesian CEA. |
+| **Reporting & Formatting** | `ggplot2`, `gt`, `flextable`, `tibble` | Publication-ready summary tables, cost-effectiveness acceptability curves, and planes. |
+| **Tooling & Maintenance** | `testthat (>= 3.0.0)`, `pkgdown`, `knitr`, `rmarkdown`, `styler`, `lintr` | Monorepo package checking, continuous integration, and automated documentation. |
+
+------------------------------------------------------------------------
+
+### 3. Package 1: `CohortUtilisation`
 
 **`CohortUtilisation`** is a standalone, lightweight package designed to
 extract and quantify Healthcare Resource Utilization (HCRU) from OMOP
@@ -153,7 +166,7 @@ colnames(cdm$target_enriched)
 
 ------------------------------------------------------------------------
 
-### 3. Package 2: `CohortCosts`
+### 4. Package 2: `CohortCosts`
 
 **`CohortCosts`** handles direct medical cost extraction by linking
 polymorphic OMOP `COST` table records across clinical events
@@ -219,11 +232,25 @@ tableCosts(cost_summary, type = "tibble")
 
 ------------------------------------------------------------------------
 
-### 4. Package 3: `CohortEconomics`
+### 5. Package 3: `CohortEconomics`
 
 **`CohortEconomics`** is the core Health Economics and Outcomes Research
 (HEOR) modeling package. It implements the complete **6-stage analytical
 pipeline** from cohort definition to decision analysis:
+
+``` mermaid
+graph TD
+    A[(OMOP CDM)] --> S1[Stage 1: Cohort Generation]
+    S1 --> S2[Stage 2: Baseline & HCRU Characterization]
+    S2 --> S3[Stage 3: Causal PS Adjustment]
+    S3 --> S4[Stage 4: Trajectory Compilation]
+    S4 --> S5[Stage 5: Economic Simulation]
+    S5 --> S6[Stage 6: Decision Analysis CEA]
+    
+    S6 --> P1[CEAC Plot]
+    S6 --> P2[CE Plane Plot]
+    S6 --> P3[Summary Table]
+```
 
 1.  **Stage 1: Cohort Generation & Initialization**
     ([`init()`](https://rdrr.io/pkg/CohortEconomics/man/init.html)):
@@ -301,7 +328,7 @@ table_summary(study)
 
 ------------------------------------------------------------------------
 
-### 5. The `hermes` Umbrella Metapackage
+### 6. The `hermes` Umbrella Metapackage
 
 The root **`hermes`** package unifies `CohortUtilisation`,
 `CohortCosts`, and `CohortEconomics` into a single, cohesive developer
@@ -317,15 +344,9 @@ experience:
   provides a self-contained in-memory DuckDB OMOP CDM database for
   testing and demonstrations.
 
-``` r
-
-# Load entire ecosystem
-library(hermes)
-```
-
 ------------------------------------------------------------------------
 
-### 6. Package Summary Matrix
+### 7. Package Summary Matrix
 
 | Package | Primary Scope | Key Verbs | Target Persona |
 |:---|:---|:---|:---|

@@ -75,29 +75,13 @@
 <li>
 <strong>OMOP CDM Native</strong>: Connects directly to OMOP CDM databases via <code>CDMConnector</code> and <code>omopgenerics</code>.</li>
 <li>
-<strong>3-Layer Care Utilization Suite (<code>CohortUtilisation</code>)</strong>:
-<ul>
+<strong>Modular Monorepo Architecture</strong>: Decouples lightweight HCRU extraction (<code>CohortUtilisation</code>), direct costing (<code>CohortCosts</code>), and HEOR modeling (<code>CohortEconomics</code>) under a unified metapackage (<code>hermes</code>).</li>
 <li>
-<em>Layer 1 (Episodes)</em>: <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/compute_hospitalization_cohorts.html" class="external-link">computeHospitalizationCohorts()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/computeInfusionCohorts.html" class="external-link">computeInfusionCohorts()</a></code>.</li>
+<strong>3-Layer Care Utilization Suite</strong>: Episode constructors, in-database column enrichers, and standardized GT / Flextable reporting.</li>
 <li>
-<em>Layer 2 (Enrichers)</em>: <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html" class="external-link">addInpatients()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addEmergencyCare.html" class="external-link">addEmergencyCare()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addOutpatientVisits.html" class="external-link">addOutpatientVisits()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addVisits.html" class="external-link">addVisits()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addPrescriptions.html" class="external-link">addPrescriptions()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addProcedures.html" class="external-link">addProcedures()</a></code>.</li>
+<strong>Direct Medical Cost Extraction</strong>: Polymorphic OMOP <code>COST</code> table linkage across visits, drugs, and procedures with automated zero-fill handling.</li>
 <li>
-<em>Layer 3 (Reporting)</em>: <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/summariseUtilization.html" class="external-link">summariseUtilization()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/tableUtilization.html" class="external-link">tableUtilization()</a></code>, <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/plotUtilization.html" class="external-link">plotUtilization()</a></code>.</li>
-</ul>
-</li>
-<li>
-<strong>Direct Medical Cost Extraction (<code>CohortCosts</code>)</strong>:
-<ul>
-<li>
-<code><a href="https://rdrr.io/pkg/CohortCosts/man/addCosts.html" class="external-link">addCosts()</a></code>, <code><a href="https://rdrr.io/pkg/CohortCosts/man/summariseCosts.html" class="external-link">summariseCosts()</a></code>, <code><a href="https://rdrr.io/pkg/CohortCosts/man/tableCosts.html" class="external-link">tableCosts()</a></code>, <code><a href="https://rdrr.io/pkg/CohortCosts/man/plotCosts.html" class="external-link">plotCosts()</a></code> linking polymorphic OMOP <code>COST</code> records.</li>
-</ul>
-</li>
-<li>
-<strong>Decision Science &amp; Simulation (<code>CohortEconomics</code>)</strong>:
-<ul>
-<li>End-to-end HEOR simulation from propensity score matching to Markov modeling and CEAC visualizations.</li>
-</ul>
-</li>
+<strong>End-to-End Decision Science</strong>: Propensity score adjustment (<code>Cyclops</code>), Markov state-transition models, and CEA visualizations (<code>BCEA</code>).</li>
 <li>
 <strong>Instant Prototyping</strong>: Includes <code><a href="reference/mockHERMES.html">mockHERMES()</a></code> providing an in-memory synthetic DuckDB OMOP CDM database.</li>
 </ul>
@@ -199,272 +183,33 @@
 </h3>
 <p align="center">
 <img src="reference/figures/ceplane.png" width="45%" alt="Cost-Effectiveness Plane"><img src="reference/figures/ceac.png" width="45%" alt="Cost-Effectiveness Acceptability Curve"></p>
-<details><summary><b>Project Architecture</b>
-</summary><p><br></p>
-<p>HERMES is structured as a <strong>modular monorepo</strong> consisting of three specialized domain packages conforming to DARWIN EU standards, unified under the root <code>hermes</code> umbrella metapackage:</p>
-<pre class="text"><code>┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   OMOP CDM DATABASE                                    │
-│  (visit_occurrence, provider, drug_exposure, procedure_occurrence, measurement, cost)  │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-                                            │
-                                            ▼
-                    ┌───────────────────────────────────────────────┐
-                    │               hermes Metapackage              │
-                    │      (Unified entry point &amp; re-exports)       │
-                    └───────────────────────┬───────────────────────┘
-                                            │
-        ┌───────────────────────────────────┼───────────────────────────────────┐
-        ▼                                   ▼                                   ▼
-┌───────────────────────────┐   ┌───────────────────────────┐   ┌───────────────────────────┐
-│     CohortUtilisation     │   │        CohortCosts        │   │      CohortEconomics      │
-│  ───────────────────────  │   │  ───────────────────────  │   │  ───────────────────────  │
-│  • Inpatient / ICU stays  │   │  • OMOP COST linkage      │   │  • Propensity Scores (PS) │
-│  • Emergency care         │   │  • Domain expenditures    │   │  • State trajectories     │
-│  • Outpatient visits      │   │  • Standardised summaries │   │  • Markov simulations     │
-│  • Prescription adherence │   │  • Cost tables &amp; plots    │   │  • CEA (ICER, CEAC, NMB)  │
-│  • Diagnostic procedures  │   │                           │   │                           │
-│  • Episode constructors   │   │                           │   │                           │
-└───────────────────────────┘   └───────────────────────────┘   └───────────────────────────┘</code></pre>
-</details>
 </div>
-<div class="section level3">
-<h3 id="the-6-stage-analytical-pipeline">The 6-Stage Analytical Pipeline<a class="anchor" aria-label="anchor" href="#the-6-stage-analytical-pipeline"></a>
-</h3>
-<pre class="mermaid"><code>graph TD
-    A[(OMOP CDM)] --&gt; S1[Stage 1: Cohort Generation]
-    S1 --&gt; S2[Stage 2: Baseline &amp; HCRU Characterization]
-    S2 --&gt; S3[Stage 3: Causal PS Adjustment]
-    S3 --&gt; S4[Stage 4: Trajectory Compilation]
-    S4 --&gt; S5[Stage 5: Economic Simulation]
-    S5 --&gt; S6[Stage 6: Decision Analysis CEA]
-
-    S6 --&gt; P1[CEAC Plot]
-    S6 --&gt; P2[CE Plane Plot]
-    S6 --&gt; P3[Summary Table]</code></pre>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Stage 1: Cohort Generation (<code>init</code>)</strong>: Define target treatment, comparator, and clinical outcome cohorts.</li>
-<li>
-<strong>Stage 2: Descriptive Baseline &amp; HCRU Characterization (<code>summarise_baseline</code>, <code>extract_hcru</code>)</strong>: Build unadjusted baseline tables, enrich with demographics (via <code>PatientProfiles</code>), and extract care utilization and direct medical costs.</li>
-<li>
-<strong>Stage 3: Causal Propensity Score Adjustment (<code>fit_ps</code>, <code>adjust_ps</code>, <code>assess_balance</code>)</strong>: Fit regularized logistic regression (via <code>Cyclops</code>) based on baseline clinical features to estimate propensity scores and balance cohorts.</li>
-<li>
-<strong>Stage 4: Trajectory Compilation &amp; State-Cost Extraction (<code>compile_trajectories</code>)</strong>: Slice longitudinal patient timelines into discrete health states, extracting transition probability matrices and state-specific expenditure distributions.</li>
-<li>
-<strong>Stage 5: Economic Simulation (<code>simulate_economics</code>)</strong>: Run a Markov state-transition microsimulation with Probabilistic Sensitivity Analysis (PSA) to project lifetime costs and QALYs.</li>
-<li>
-<strong>Stage 6: Decision Analysis &amp; Post-Processing (<code>run_cea</code>)</strong>: Compute Incremental Cost-Effectiveness Ratios (ICER) and Net Monetary Benefit (NMB), generating CEAC and cost-effectiveness plane plots powered by <code>BCEA</code>.</li>
-</ol>
-<details><summary><b>Technology Stack</b>
-</summary><p><br></p>
-<table class="table">
-<colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
-</colgroup>
-<thead><tr>
-<th align="left">Layer</th>
-<th align="left">Technologies &amp; Dependencies</th>
-<th align="left">Description</th>
-</tr></thead>
-<tbody>
-<tr>
-<td align="left"><strong>Language &amp; Core</strong></td>
-<td align="left">
-<code>R (&gt;= 4.1.0)</code>, <code>rlang</code>, <code>cli</code>, <code>glue</code>
-</td>
-<td align="left">Base R execution engine and tidy evaluation framework.</td>
-</tr>
-<tr>
-<td align="left"><strong>OMOP / DARWIN EU</strong></td>
-<td align="left">
-<code>omopgenerics (&gt;= 0.3.0)</code>, <code>CDMConnector (&gt;= 1.4.0)</code>, <code>PatientProfiles</code>, <code>CohortConstructor</code>, <code>CohortCharacteristics</code>, <code>visOmopResults</code>
-</td>
-<td align="left">Database-agnostic cohort manipulation, patient profiling, and standardized result schemas.</td>
-</tr>
-<tr>
-<td align="left"><strong>Database &amp; SQL Engine</strong></td>
-<td align="left">
-<code>duckdb</code>, <code>dbplyr (&gt;= 2.4.0)</code>, <code>DBI</code>, <code>dplyr (&gt;= 1.1.0)</code>
-</td>
-<td align="left">High-performance in-database SQL translation and in-memory analytical querying.</td>
-</tr>
-<tr>
-<td align="left"><strong>Causal &amp; HEOR Engines</strong></td>
-<td align="left">
-<code>Cyclops</code>, <code>CohortMethod</code>, <code>hesim</code>, <code>BCEA</code>, <code>stats</code>
-</td>
-<td align="left">High-dimensional regularized logistic regression, Markov microsimulations, and Bayesian CEA.</td>
-</tr>
-<tr>
-<td align="left"><strong>Reporting &amp; Formatting</strong></td>
-<td align="left">
-<code>ggplot2</code>, <code>gt</code>, <code>flextable</code>, <code>tibble</code>
-</td>
-<td align="left">Publication-ready summary tables, cost-effectiveness acceptability curves, and planes.</td>
-</tr>
-<tr>
-<td align="left"><strong>Tooling &amp; Maintenance</strong></td>
-<td align="left">
-<code>testthat (&gt;= 3.0.0)</code>, <code>pkgdown</code>, <code>knitr</code>, <code>rmarkdown</code>, <code>styler</code>, <code>lintr</code>
-</td>
-<td align="left">Monorepo package checking, continuous integration, and automated documentation.</td>
-</tr>
-</tbody>
-</table></details><details><summary><b>Project Structure</b>
-</summary><p><br></p>
-<pre class="text"><code>HERMES/
-├── DESCRIPTION                         # Metapackage metadata &amp; dependencies
-├── NAMESPACE                           # Export directives and package imports
-├── README.md                           # Project documentation &amp; quickstarts
-├── NEWS.md                             # Changelog &amp; release notes
-├── _pkgdown.yml                        # Documentation website configuration
-├── AGENTS.md                           # Architecture guidelines &amp; CI conformance rules
-│
-├── R/                                  # Metapackage source code
-│   ├── zzz.R                           # .onAttach() tidyverse-style startup banner
-│   ├── mockHERMES.R                    # Synthetic DuckDB OMOP CDM test database generator
-│   └── reexports.R                     # Top-level re-exports from subpackages
-│
-├── packages/                           # Standalone modular domain packages
-│   ├── CohortUtilisation/              # In-database HCRU extraction verbs &amp; care episodes
-│   │   ├── DESCRIPTION
-│   │   ├── NAMESPACE
-│   │   ├── R/
-│   │   ├── man/
-│   │   └── tests/testthat/
-│   │
-│   ├── CohortCosts/                    # Direct medical expenditure extraction &amp; costing
-│   │   ├── DESCRIPTION
-│   │   ├── NAMESPACE
-│   │   ├── R/
-│   │   ├── man/
-│   │   └── tests/testthat/
-│   │
-│   └── CohortEconomics/                # Causal PS, trajectories, microsimulation &amp; CEA
-│       ├── DESCRIPTION
-│       ├── NAMESPACE
-│       ├── R/
-│       ├── man/
-│       └── tests/testthat/
-│
-├── vignettes/                          # Documentation guides &amp; deep dives
-│   ├── hermes-ecosystem.Rmd            # Overview of the 3 standalone packages &amp; architecture
-│   ├── intro-to-heor.Rmd               # Conceptual Rosetta Stone translating OMOP to HEOR
-│   ├── cohort-utilization.Rmd          # Hands-on guide for 3-layer in-database cohort enrichers
-│   └── hcru_logic.Rmd                  # Technical rules for OMOP COST extraction and fallback
-│
-├── tests/testthat/                     # Metapackage integration &amp; end-to-end test suites
-│   ├── test-e2e.R                      # Full 6-stage pipeline &amp; multi-domain integration test
-│   └── test-metapackage.R              # Re-export and multi-domain workflow tests
-│
-└── .github/                            # Continuous Integration &amp; community files
-    ├── CONTRIBUTING.md                 # Contribution guidelines &amp; styling rules
-    └── workflows/
-        ├── R-CMD-check.yaml            # Multi-OS CRAN check workflow
-        └── pkgdown.yaml                # Automated GitHub Pages documentation deployment</code></pre>
-</details><details><summary><b>Development Workflow</b>
-</summary><p><br></p>
-</details>
 </div>
-<div class="section level3">
-<h3 id="id_1-local-monorepo-resolution">1. Local Monorepo Resolution<a class="anchor" aria-label="anchor" href="#id_1-local-monorepo-resolution"></a>
-</h3>
-<p>Subpackages must be installed and documented locally before building the root metapackage:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"local::packages/CohortUtilisation"</span>,</span>
-<span>  <span class="st">"local::packages/CohortCosts"</span>,</span>
-<span>  <span class="st">"local::packages/CohortEconomics"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="id_2-documenting--building">2. Documenting &amp; Building<a class="anchor" aria-label="anchor" href="#id_2-documenting--building"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Update documentation across root and subpackages</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="st">"packages/CohortUtilisation"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="st">"packages/CohortCosts"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="st">"packages/CohortEconomics"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Build pkgdown documentation site</span></span>
-<span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span>preview <span class="op">=</span> <span class="cn">FALSE</span>, install <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="id_3-running-checks">3. Running Checks<a class="anchor" aria-label="anchor" href="#id_3-running-checks"></a>
-</h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run R CMD check with CRAN conformance flags</span></span>
-<span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"--no-manual"</span>, <span class="st">"--as-cran"</span><span class="op">)</span>, error_on <span class="op">=</span> <span class="st">"warning"</span><span class="op">)</span></span></code></pre></div>
-
-<details><summary><b>Coding Standards</b>
-</summary><p><br></p>
-<ul>
-<li><p><strong>Language:</strong> R (Target R &gt;= 4.1).</p></li>
-<li><p><strong>Pipes:</strong> Always use the base R pipe <code>|&gt;</code> (never <code>%&gt;%</code>).</p></li>
-<li><p><strong>Assignment:</strong> Always use <code>&lt;-</code> for assignment (never <code>=</code>).</p></li>
-<li>
-<p><strong>Naming Conventions (DARWIN EU Standard):</strong></p>
+<div class="section level2">
+<h2 id="documentation--guides">Documentation &amp; Guides<a class="anchor" aria-label="anchor" href="#documentation--guides"></a>
+</h2>
+<p>For in-depth architecture, tutorials, and technical specifications, explore the documentation articles:</p>
 <ul>
 <li>
-<strong>Functions &amp; Arguments:</strong> <code>lowerCamelCase</code> (e.g., <code><a href="https://rdrr.io/pkg/CohortUtilisation/man/addInpatients.html" class="external-link">addInpatients()</a></code>, <code>indexDate = "cohort_start_date"</code>).</li>
+<strong><a href="https://iomedhealth.github.io/hermes/articles/hermes-ecosystem.html">The HERMES Ecosystem &amp; Modular Architecture</a></strong>: Comprehensive breakdown of <code>CohortUtilisation</code>, <code>CohortCosts</code>, <code>CohortEconomics</code>, technology stack, and package design.</li>
 <li>
-<strong>Database &amp; Cohort Columns:</strong> <code>snake_case</code> (e.g., <code>cohort_start_date</code>, <code>inpatient_admissions</code>, <code>total_paid</code>).</li>
+<strong><a href="https://iomedhealth.github.io/hermes/articles/intro-to-heor.html">Introduction to HEOR for OMOP Users</a></strong>: Conceptual guide translating OMOP CDM vocabulary to Health Economics (ICER, QALY, Markov health states).</li>
 <li>
-<strong>S3 Classes:</strong> <code>snake_case</code> prefixed with <code>hermes_</code> (e.g., <code>hermes_study</code>, <code>hermes_hcru</code>, <code>hermes_cea</code>).</li>
+<strong><a href="https://iomedhealth.github.io/hermes/articles/cohort-utilization.html">Cohort Utilization &amp; Cost Enrichment</a></strong>: Step-by-step hands-on tutorial for the 3-layer in-database cohort enrichers.</li>
+<li>
+<strong><a href="https://iomedhealth.github.io/hermes/articles/hcru_logic.html">HCRU &amp; Direct Cost Extraction Logic</a></strong>: Deep dive into OMOP <code>COST</code> polymorphic linkage, schema checks, and zero-fill fallback rules.</li>
 </ul>
-</li>
-<li>
-<p><strong>Formatting &amp; Linting:</strong></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">styler</span><span class="fu">::</span><span class="fu">style_dir</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">lintr</span><span class="fu">::</span><span class="fu">lint_package</span><span class="op">(</span><span class="st">"."</span>, linters <span class="op">=</span> <span class="fu">lintr</span><span class="fu">::</span><span class="fu">linters_with_defaults</span><span class="op">(</span><span class="fu">lintr</span><span class="fu">::</span><span class="fu">object_name_linter</span><span class="op">(</span>styles <span class="op">=</span> <span class="st">"camelCase"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</li>
-</ul></details><details><summary><b>Testing</b>
-</summary><p><br></p>
-<p>HERMES uses <code>testthat</code> (edition 3) for automated testing:</p>
-<ul>
-<li>
-<strong>Subpackage Test Suites</strong>: Dedicated unit tests under <code>packages/*/tests/testthat/</code> covering every domain enricher, care episode constructor, and costing verb.</li>
-<li>
-<strong>End-to-End Test Suite</strong>: Integration tests under <code>tests/testthat/test-e2e.R</code> validating the full 6-stage pipeline and multi-domain workflows against DuckDB and Eunomia datasets.</li>
-</ul>
-<p>To run tests across the ecosystem:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run root test suite</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Run subpackage test suites</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="st">"packages/CohortUtilisation"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="st">"packages/CohortCosts"</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="st">"packages/CohortEconomics"</span><span class="op">)</span></span></code></pre></div>
-</details><details><summary><b>Documentation &amp; Vignettes</b>
-</summary><p><br></p>
-<ul>
-<li>
-<strong><a href="vignettes/hermes-ecosystem.Rmd">The HERMES Ecosystem &amp; Modular Suite</a></strong>: Architecture, package separation, and workflow guide.</li>
-<li>
-<strong><a href="vignettes/intro-to-heor.Rmd">Introduction to HEOR for OMOP Users</a></strong>: Conceptual Rosetta Stone translating OHDSI concepts to Health Economics.</li>
-<li>
-<strong><a href="vignettes/cohort-utilization.Rmd">Cohort Utilization &amp; Cost Enrichment</a></strong>: Step-by-step hands-on guide for <code>CohortUtilisation</code> and <code>CohortCosts</code> verbs.</li>
-<li>
-<strong><a href="vignettes/hcru_logic.Rmd">HCRU Extraction Logic</a></strong>: Deep dive into the OMOP <code>COST</code> table extraction and fallback rules.</li>
-</ul></details><details><summary><b>Contributing</b>
-</summary><p><br></p>
-<p>We welcome contributions! Please follow these steps:</p>
-<ol style="list-style-type: decimal">
-<li>Open an issue beforehand to discuss bug reports or proposed enhancements.</li>
-<li>Provide a minimal reproducible example (<a href="https://reprex.tidyverse.org/" class="external-link">reprex</a>) when reporting bugs.</li>
-<li>Adhere to the DARWIN EU code styling and monorepo guidelines in <a href="CONTRIBUTING.html"><code>.github/CONTRIBUTING.md</code></a> and <a href="AGENTS.html"><code>AGENTS.md</code></a>.</li>
-<li>Ensure all unit tests, vignette renders, and <code>devtools::check()</code> pass with 0 errors and 0 warnings before submitting a pull request.</li>
-</ol></details><details><summary><b>License</b>
-</summary><p><br></p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>We welcome contributions! Please review <a href="CONTRIBUTING.html"><code>.github/CONTRIBUTING.md</code></a> and <a href="AGENTS.html"><code>AGENTS.md</code></a> for coding standards, styling conventions, and test procedures.</p>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
 <p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
 <p>Copyright © 2026 <a href="https://iomed.health" class="external-link">IOMED Medical Solutions S.L.</a></p>
-</details>
-</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
