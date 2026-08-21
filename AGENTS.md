@@ -186,6 +186,35 @@ strictly verify the following conformance checks:
 
 ------------------------------------------------------------------------
 
+## 5. Python ETL & Airflow Pipeline Orchestration
+
+`CohortCosts` contains ground-source cost ingestion and catalog
+normalization pipelines located under `packages/CohortCosts/`:
+
+- **Airflow DAG**: `packages/CohortCosts/dags/cost_extraction_dag.py`
+  (`hermes_cost_catalogs_etl`).
+- **ETL Scripts**: `packages/CohortCosts/scripts/`
+  (`download_costs_sources.py`, `scrape_costs_es.py`,
+  `generate_eda_report.py`, `build_dashboard_html.py`).
+- **Developer Make Targets**:
+  - `make venv`: Initialize virtualenv at `.venv`.
+  - `make py-deps`: Install Python dependencies from `requirements.txt`.
+  - `make dag-test`: Execute standalone local test of the TaskFlow DAG.
+  - `make dag-run` / `make dag-airflow`: Execute DAG via Airflow CLI
+    test runner.
+  - `make etl-download`: Download official regional gazettes and INE
+    price series.
+  - `make etl-scrape`: Run offline cost extraction and normalization.
+  - `make etl-report`: Generate EDA report
+    (`audit/eda_costs_spain_report.md`) and HTML dashboard
+    (`audit/dashboard.html`).
+  - `make etl-all`: Orchestrate full end-to-end data pipeline.
+- **CRAN Build Isolation**: All ETL raw/intermediate data, DAG files,
+  and Python scripts are excluded from CRAN builds via
+  `packages/CohortCosts/.Rbuildignore`.
+
+------------------------------------------------------------------------
+
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
 specs/005-hcru-domain-extraction/plan.md

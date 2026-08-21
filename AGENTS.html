@@ -196,6 +196,35 @@
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">gh</span> release create vX.Y.Z <span class="at">--title</span> <span class="st">"vX.Y.Z"</span> <span class="at">--notes</span> <span class="st">"Release notes for vX.Y.Z"</span></span></code></pre></div>
 </li>
 </ol></li>
+</ul><hr></div>
+<div class="section level2">
+<h2 id="id_5-python-etl--airflow-pipeline-orchestration">5. Python ETL &amp; Airflow Pipeline Orchestration<a class="anchor" aria-label="anchor" href="#id_5-python-etl--airflow-pipeline-orchestration"></a></h2>
+<p><code>CohortCosts</code> contains ground-source cost ingestion and catalog normalization pipelines located under <code>packages/CohortCosts/</code>:</p>
+<ul><li>
+<strong>Airflow DAG</strong>: <code>packages/CohortCosts/dags/cost_extraction_dag.py</code> (<code>hermes_cost_catalogs_etl</code>).</li>
+<li>
+<strong>ETL Scripts</strong>: <code>packages/CohortCosts/scripts/</code> (<code>download_costs_sources.py</code>, <code>scrape_costs_es.py</code>, <code>generate_eda_report.py</code>, <code>build_dashboard_html.py</code>).</li>
+<li>
+<strong>Developer Make Targets</strong>:
+<ul><li>
+<code>make venv</code>: Initialize virtualenv at <code>.venv</code>.</li>
+<li>
+<code>make py-deps</code>: Install Python dependencies from <code>requirements.txt</code>.</li>
+<li>
+<code>make dag-test</code>: Execute standalone local test of the TaskFlow DAG.</li>
+<li>
+<code>make dag-run</code> / <code>make dag-airflow</code>: Execute DAG via Airflow CLI test runner.</li>
+<li>
+<code>make etl-download</code>: Download official regional gazettes and INE price series.</li>
+<li>
+<code>make etl-scrape</code>: Run offline cost extraction and normalization.</li>
+<li>
+<code>make etl-report</code>: Generate EDA report (<code>audit/eda_costs_spain_report.md</code>) and HTML dashboard (<code>audit/dashboard.html</code>).</li>
+<li>
+<code>make etl-all</code>: Orchestrate full end-to-end data pipeline.</li>
+</ul></li>
+<li>
+<strong>CRAN Build Isolation</strong>: All ETL raw/intermediate data, DAG files, and Python scripts are excluded from CRAN builds via <code>packages/CohortCosts/.Rbuildignore</code>.</li>
 </ul><hr><!-- SPECKIT START --><p>For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan: specs/005-hcru-domain-extraction/plan.md <!-- SPECKIT END --></p>
 </div>
 </div>
