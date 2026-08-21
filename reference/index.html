@@ -42,25 +42,14 @@
     </div>
 
     <div class="section level2">
-      <h2 id="-testing-demonstration-utilities">🛠️ Testing &amp; Demonstration Utilities<a class="anchor" aria-label="anchor" href="#-testing-demonstration-utilities"></a></h2>
+      <h2 id="healthcare-resource-utilization-cohortutilisation-">Healthcare Resource Utilization (CohortUtilisation)<a class="anchor" aria-label="anchor" href="#healthcare-resource-utilization-cohortutilisation-"></a></h2>
 
-      <div class="section-desc"><p>Synthetic in-memory OMOP CDM reference for demonstrations, vignettes, and tests.</p></div>
+      <div class="section-desc"><p>In-database care episode constructors and cohort enrichment verbs following DARWIN EU standards.</p></div>
 
       <dl></dl></div><div class="section level2">
 
-
-
-
-      <dl><dt>
-
-          <code><a href="mockHERMES.html">mockHERMES()</a></code>
-
-        </dt>
-        <dd>Create a Mock OMOP CDM Reference for Testing and Demonstrations</dd>
-      </dl></div><div class="section level2">
-      <h2 id="-re-exported-domain-verbs">📦 Re-Exported Domain Verbs<a class="anchor" aria-label="anchor" href="#-re-exported-domain-verbs"></a></h2>
-
-      <div class="section-desc"><p>Functions imported and re-exported from <code>CohortUtilisation</code>, <code>CohortCosts</code>, and <code>CohortEconomics</code>.</p></div>
+      <h3 id="care-episode-constructors-layer-">Care Episode Constructors (Layer 1)<a class="anchor" aria-label="anchor" href="#care-episode-constructors-layer-"></a></h3>
+      <div class="section-desc"><p>Constructs collapsed inpatient and infusion therapy episode cohorts in the database write schema.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -73,6 +62,160 @@
 
         </dt>
         <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="in-database-cohort-enrichers-layer-">In-Database Cohort Enrichers (Layer 2)<a class="anchor" aria-label="anchor" href="#in-database-cohort-enrichers-layer-"></a></h3>
+      <div class="section-desc"><p>Enriches OMOP cohorts with utilization metric columns across fixed or open-ended temporal windows.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="analytics-tables-visualizations-layer-">Analytics, Tables &amp; Visualizations (Layer 3)<a class="anchor" aria-label="anchor" href="#analytics-tables-visualizations-layer-"></a></h3>
+      <div class="section-desc"><p>Aggregates metrics into standardised results and formats publication-ready tables and figures.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+      <h2 id="direct-medical-costs-tariffs-cohortcosts-">Direct Medical Costs &amp; Tariffs (CohortCosts)<a class="anchor" aria-label="anchor" href="#direct-medical-costs-tariffs-cohortcosts-"></a></h2>
+
+      <div class="section-desc"><p>Direct medical expenditure tracking, polymorphic OMOP COST linkage, and tariff modeling.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 id="cost-enrichment-reporting">Cost Enrichment &amp; Reporting<a class="anchor" aria-label="anchor" href="#cost-enrichment-reporting"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+      <h2 id="health-economics-simulation-cea-cohorteconomics-">Health Economics, Simulation &amp; CEA (CohortEconomics)<a class="anchor" aria-label="anchor" href="#health-economics-simulation-cea-cohorteconomics-"></a></h2>
+
+      <div class="section-desc"><p>The complete 6-stage HEOR pipeline: causal inference, Markov health-state trajectories, and CEA.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+      <h3 id="stage-cohort-setup-initialization">Stage 1: Cohort Setup &amp; Initialization<a class="anchor" aria-label="anchor" href="#stage-cohort-setup-initialization"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="stage-baseline-hcru-extraction">Stage 2: Baseline &amp; HCRU Extraction<a class="anchor" aria-label="anchor" href="#stage-baseline-hcru-extraction"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="stage-causal-propensity-score-adjustment">Stage 3: Causal Propensity Score Adjustment<a class="anchor" aria-label="anchor" href="#stage-causal-propensity-score-adjustment"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="stage-trajectories-markov-simulation">Stage 4 &amp; 5: Trajectories &amp; Markov Simulation<a class="anchor" aria-label="anchor" href="#stage-trajectories-markov-simulation"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+
+      <h3 id="stage-decision-analysis-post-processing">Stage 6: Decision Analysis &amp; Post-Processing<a class="anchor" aria-label="anchor" href="#stage-decision-analysis-post-processing"></a></h3>
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="reexports.html">reexports</a></code> <code><a href="reexports.html">addInpatients</a></code> <code><a href="reexports.html">addHospitalizations</a></code> <code><a href="reexports.html">addInpatient</a></code> <code><a href="reexports.html">addEmergencyCare</a></code> <code><a href="reexports.html">addEmergency</a></code> <code><a href="reexports.html">addEmergencyVisits</a></code> <code><a href="reexports.html">addOutpatientVisits</a></code> <code><a href="reexports.html">addVisits</a></code> <code><a href="reexports.html">addPrescriptions</a></code> <code><a href="reexports.html">addProcedures</a></code> <code><a href="reexports.html">computeHospitalizationCohorts</a></code> <code><a href="reexports.html">compute_hospitalization_cohorts</a></code> <code><a href="reexports.html">computeInfusionCohorts</a></code> <code><a href="reexports.html">summariseUtilization</a></code> <code><a href="reexports.html">tableUtilization</a></code> <code><a href="reexports.html">plotUtilization</a></code> <code><a href="reexports.html">addCosts</a></code> <code><a href="reexports.html">summariseCosts</a></code> <code><a href="reexports.html">tableCosts</a></code> <code><a href="reexports.html">plotCosts</a></code> <code><a href="reexports.html">init</a></code> <code><a href="reexports.html">summarise_baseline</a></code> <code><a href="reexports.html">extract_hcru</a></code> <code><a href="reexports.html">extractHcru</a></code> <code><a href="reexports.html">fit_ps</a></code> <code><a href="reexports.html">adjust_ps</a></code> <code><a href="reexports.html">assess_balance</a></code> <code><a href="reexports.html">compile_trajectories</a></code> <code><a href="reexports.html">simulate_economics</a></code> <code><a href="reexports.html">run_cea</a></code> <code><a href="reexports.html">plot_ceac</a></code> <code><a href="reexports.html">plot_plane</a></code> <code><a href="reexports.html">table_summary</a></code>
+
+        </dt>
+        <dd>Objects exported from other packages</dd>
+      </dl></div><div class="section level2">
+      <h2 id="demonstration-testing-utilities">Demonstration &amp; Testing Utilities<a class="anchor" aria-label="anchor" href="#demonstration-testing-utilities"></a></h2>
+
+      <div class="section-desc"><p>Built-in synthetic in-memory DuckDB OMOP CDM reference for demonstrations and tests.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="mockHERMES.html">mockHERMES()</a></code>
+
+        </dt>
+        <dd>Create a Mock OMOP CDM Reference for Testing and Demonstrations</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
