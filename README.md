@@ -1,11 +1,11 @@
-# omopHeor
+# omopHeor <br> HEOR & HCRU on OMOP
 
 [![R-CMD-check](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/omopHeor/)
 [![Version](https://img.shields.io/badge/version-0.6.1-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## HEOR & HCRU on OMOP
+
 
 **omopHeor** is an R-based analytical ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
 
