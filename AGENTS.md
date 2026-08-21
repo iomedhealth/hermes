@@ -153,25 +153,34 @@ strictly verify the following conformance checks:
     ```
 
   - Can also be sourced and invoked within R: `bumpVersion("patch")`.
-- **Release Checklist**:
-  1.  **Bump Version**: Run
-      `Rscript extras/bumpVersion.R <patch|minor|major>` to update all 4
-      `DESCRIPTION` files and refresh documentation.
+- **Release & CRAN Submission Checklist**:
+  1.  **Bump Version**: Run `make bump-patch` (or `minor`/`major`) to
+      synchronize all 4 `DESCRIPTION` files and refresh documentation.
 
-  2.  **Verify Conformance**: Run local tests (`devtools::test()`) and
-      package checks
-      ([`rcmdcheck::rcmdcheck()`](http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.md)).
+  2.  **Verify Conformance**: Run `make test` and `make check` (or
+      `make cran-dry-run`).
 
-  3.  **Commit**: Stage and commit release changes:
+  3.  **Commit & Tag**: Stage, commit, and tag release:
 
       ``` bash
       git commit -am "chore(release): bump version to X.Y.Z"
+      git tag vX.Y.Z
+      git push origin main --tags
       ```
 
-  4.  **Tag & Publish Release**:
+  4.  **Phased CRAN Submission (via `Makefile` /
+      `extras/submitCran.R`)**:
+
+      - **Wave 1**: `make cran-wave1` (Submits `CohortUtilisation` &
+        `CohortCosts`). Confirm email link.
+      - **Wave 2**: `make cran-wave2` (Submits `CohortEconomics` once
+        Wave 1 is live). Confirm email link.
+      - **Wave 3**: `make cran-wave3` (Submits root `omopHeor` once Wave
+        2 is live). Confirm email link.
+
+  5.  **Publish GitHub Release**:
 
       ``` bash
-      git tag vX.Y.Z
       gh release create vX.Y.Z --title "vX.Y.Z" --notes "Release notes for vX.Y.Z"
       ```
 

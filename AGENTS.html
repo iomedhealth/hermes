@@ -173,17 +173,27 @@
 <li><p>Can also be sourced and invoked within R: <code>bumpVersion("patch")</code>.</p></li>
 </ul></li>
 <li>
-<strong>Release Checklist</strong>:
-<ol style="list-style-type: decimal"><li><p><strong>Bump Version</strong>: Run <code>Rscript extras/bumpVersion.R &lt;patch|minor|major&gt;</code> to update all 4 <code>DESCRIPTION</code> files and refresh documentation.</p></li>
-<li><p><strong>Verify Conformance</strong>: Run local tests (<code>devtools::test()</code>) and package checks (<code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code>).</p></li>
+<strong>Release &amp; CRAN Submission Checklist</strong>:
+<ol style="list-style-type: decimal"><li><p><strong>Bump Version</strong>: Run <code>make bump-patch</code> (or <code>minor</code>/<code>major</code>) to synchronize all 4 <code>DESCRIPTION</code> files and refresh documentation.</p></li>
+<li><p><strong>Verify Conformance</strong>: Run <code>make test</code> and <code>make check</code> (or <code>make cran-dry-run</code>).</p></li>
 <li>
-<p><strong>Commit</strong>: Stage and commit release changes:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-am</span> <span class="st">"chore(release): bump version to X.Y.Z"</span></span></code></pre></div>
+<p><strong>Commit &amp; Tag</strong>: Stage, commit, and tag release:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-am</span> <span class="st">"chore(release): bump version to X.Y.Z"</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">git</span> tag vX.Y.Z</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">git</span> push origin main <span class="at">--tags</span></span></code></pre></div>
 </li>
 <li>
-<p><strong>Tag &amp; Publish Release</strong>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">git</span> tag vX.Y.Z</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">gh</span> release create vX.Y.Z <span class="at">--title</span> <span class="st">"vX.Y.Z"</span> <span class="at">--notes</span> <span class="st">"Release notes for vX.Y.Z"</span></span></code></pre></div>
+<p><strong>Phased CRAN Submission (via <code>Makefile</code> / <code>extras/submitCran.R</code>)</strong>:</p>
+<ul><li>
+<strong>Wave 1</strong>: <code>make cran-wave1</code> (Submits <code>CohortUtilisation</code> &amp; <code>CohortCosts</code>). Confirm email link.</li>
+<li>
+<strong>Wave 2</strong>: <code>make cran-wave2</code> (Submits <code>CohortEconomics</code> once Wave 1 is live). Confirm email link.</li>
+<li>
+<strong>Wave 3</strong>: <code>make cran-wave3</code> (Submits root <code>omopHeor</code> once Wave 2 is live). Confirm email link.</li>
+</ul></li>
+<li>
+<p><strong>Publish GitHub Release</strong>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">gh</span> release create vX.Y.Z <span class="at">--title</span> <span class="st">"vX.Y.Z"</span> <span class="at">--notes</span> <span class="st">"Release notes for vX.Y.Z"</span></span></code></pre></div>
 </li>
 </ol></li>
 </ul><hr><!-- SPECKIT START --><p>For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan: specs/005-hcru-domain-extraction/plan.md <!-- SPECKIT END --></p>
