@@ -4,6 +4,6 @@ bibentry(
   author       = person(given = "Gabriel", family = "Maeztu", email = "gabriel@iomed.health", role = c("aut", "cre")),
   year         = "2026",
   note         = "Developed by IOMED Medical Solutions SL. R package version 0.6.0.",
-  url          = "https://github.com/iomedhealth/hermes",
-  textVersion  = "Maeztu, G. (2026). omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM. Developed by IOMED. R package version 0.6.0. https://github.com/iomedhealth/hermes"
+  url          = "https://github.com/iomedhealth/omopHeor",
+  textVersion  = "Maeztu, G. (2026). omopHeor: Health Economics and Outcomes Research Pipeline on OMOP CDM. Developed by IOMED. R package version 0.6.0. https://github.com/iomedhealth/omopHeor"
 )

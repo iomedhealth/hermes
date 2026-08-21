@@ -12,8 +12,8 @@ Links polymorphic Observational Medical Outcomes Partnership (OMOP) COST records
 Useful links:
 \itemize{
   \item \url{https://www.iomed.health/}
-  \item \url{https://github.com/iomedhealth/hermes}
-  \item Report bugs at \url{https://github.com/iomedhealth/hermes/issues}
+  \item \url{https://github.com/iomedhealth/omopHeor}
+  \item Report bugs at \url{https://github.com/iomedhealth/omopHeor/issues}
 }
 
 }

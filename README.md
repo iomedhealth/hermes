@@ -1,8 +1,8 @@
 # HERMES: Health Economic Resource Modeling & Evaluation System
 
-[![R-CMD-check](https://github.com/iomedhealth/hermes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/hermes/actions/workflows/R-CMD-check.yaml)
-[![pkgdown](https://github.com/iomedhealth/hermes/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/hermes/)
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/hermes/releases)
+[![R-CMD-check](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/iomedhealth/omopHeor/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/iomedhealth/omopHeor/actions/workflows/pkgdown.yaml/badge.svg)](https://iomedhealth.github.io/omopHeor/)
+[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](https://github.com/iomedhealth/omopHeor/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **HERMES** is an R-based analytical ecosystem developed by [IOMED](https://www.iomed.health/) for Real-World Evidence (RWE) and Health Economics and Outcomes Research (HEOR). It streamlines the end-to-end process of Healthcare Resource Utilization (HCRU) analysis, direct medical costing, and Cost-Effectiveness Analysis (CEA) directly on observational healthcare data structured in the **OMOP Common Data Model (CDM)**.
@@ -27,12 +27,12 @@
 
 ```R
 # Install the complete omopHeor metapackage (recommended)
-pak::pkg_install("iomedhealth/hermes")
+pak::pkg_install("iomedhealth/omopHeor")
 
 # Or install individual standalone domain packages
-pak::pkg_install("iomedhealth/hermes/packages/CohortUtilisation")
-pak::pkg_install("iomedhealth/hermes/packages/CohortCosts")
-pak::pkg_install("iomedhealth/hermes/packages/CohortEconomics")
+pak::pkg_install("iomedhealth/omopHeor/packages/CohortUtilisation")
+pak::pkg_install("iomedhealth/omopHeor/packages/CohortCosts")
+pak::pkg_install("iomedhealth/omopHeor/packages/CohortEconomics")
 ```
 
 ### Quick Start 1: In-Database Cohort Utilization & Cost Enrichment
@@ -116,10 +116,10 @@ table_summary(study)
 
 For in-depth architecture, tutorials, and technical specifications, explore the documentation articles:
 
-- **[The HERMES Ecosystem & Modular Architecture](https://iomedhealth.github.io/hermes/articles/hermes-ecosystem.html)**: Comprehensive breakdown of `CohortUtilisation`, `CohortCosts`, `CohortEconomics`, technology stack, and package design.
-- **[Introduction to HEOR for OMOP Users](https://iomedhealth.github.io/hermes/articles/intro-to-heor.html)**: Conceptual guide translating OMOP CDM vocabulary to Health Economics (ICER, QALY, Markov health states).
-- **[Cohort Utilization & Cost Enrichment](https://iomedhealth.github.io/hermes/articles/cohort-utilization.html)**: Step-by-step hands-on tutorial for the 3-layer in-database cohort enrichers.
-- **[HCRU & Direct Cost Extraction Logic](https://iomedhealth.github.io/hermes/articles/hcru_logic.html)**: Deep dive into OMOP `COST` polymorphic linkage, schema checks, and zero-fill fallback rules.
+- **[The HERMES Ecosystem & Modular Architecture](https://iomedhealth.github.io/omopHeor/articles/hermes-ecosystem.html)**: Comprehensive breakdown of `CohortUtilisation`, `CohortCosts`, `CohortEconomics`, technology stack, and package design.
+- **[Introduction to HEOR for OMOP Users](https://iomedhealth.github.io/omopHeor/articles/intro-to-heor.html)**: Conceptual guide translating OMOP CDM vocabulary to Health Economics (ICER, QALY, Markov health states).
+- **[Cohort Utilization & Cost Enrichment](https://iomedhealth.github.io/omopHeor/articles/cohort-utilization.html)**: Step-by-step hands-on tutorial for the 3-layer in-database cohort enrichers.
+- **[HCRU & Direct Cost Extraction Logic](https://iomedhealth.github.io/omopHeor/articles/hcru_logic.html)**: Deep dive into OMOP `COST` polymorphic linkage, schema checks, and zero-fill fallback rules.
 
 ## Contributing
 

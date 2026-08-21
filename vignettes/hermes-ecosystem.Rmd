@@ -213,7 +213,7 @@ table_summary(study)
 
 The root **`omopHeor`** package unifies `CohortUtilisation`, `CohortCosts`, and `CohortEconomics` into a single, cohesive developer experience:
 
-* **One-Step Installation**: `pak::pkg_install("iomedhealth/hermes")` installs all subpackages and dependencies.
+* **One-Step Installation**: `pak::pkg_install("iomedhealth/omopHeor")` installs all subpackages and dependencies.
 * **Unified Attachment**: `library(omopHeor)` attaches all three packages and re-exports all analytical functions.
 * **Built-in Mock Data**: `mockHERMES()` provides a self-contained in-memory DuckDB OMOP CDM database for testing and demonstrations.
 

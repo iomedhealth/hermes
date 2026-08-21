@@ -15,8 +15,8 @@ Description: An R metapackage providing an end-to-end analytical ecosystem for
     Outcomes Partnership (OMOP) Common Data Model (CDM) data.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
-URL: https://iomedhealth.github.io/hermes/, https://www.iomed.health/, https://github.com/iomedhealth/hermes
-BugReports: https://github.com/iomedhealth/hermes/issues
+URL: https://iomedhealth.github.io/omopHeor/, https://www.iomed.health/, https://github.com/iomedhealth/omopHeor
+BugReports: https://github.com/iomedhealth/omopHeor/issues
 Depends: 
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)

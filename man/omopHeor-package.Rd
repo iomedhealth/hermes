@@ -13,10 +13,10 @@ An R metapackage providing an end-to-end analytical ecosystem for Real-World Evi
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://iomedhealth.github.io/hermes/}
+  \item \url{https://iomedhealth.github.io/omopHeor/}
   \item \url{https://www.iomed.health/}
-  \item \url{https://github.com/iomedhealth/hermes}
-  \item Report bugs at \url{https://github.com/iomedhealth/hermes/issues}
+  \item \url{https://github.com/iomedhealth/omopHeor}
+  \item Report bugs at \url{https://github.com/iomedhealth/omopHeor/issues}
 }
 
 }

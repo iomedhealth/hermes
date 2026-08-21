@@ -14,8 +14,8 @@ Description: Comprehensive Health Economics and Outcomes Research (HEOR) pipelin
     and Cost-Effectiveness Analysis (CEA) using 'BCEA'.
 License: MIT + file LICENSE
 Copyright: IOMED, S.L.
-URL: https://www.iomed.health/, https://github.com/iomedhealth/hermes
-BugReports: https://github.com/iomedhealth/hermes/issues
+URL: https://www.iomed.health/, https://github.com/iomedhealth/omopHeor
+BugReports: https://github.com/iomedhealth/omopHeor/issues
 Depends: 
     R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
